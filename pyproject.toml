@@ -98,7 +98,7 @@ indent-style = "space"
 
 # ─── pytest 配置 ──────────────────────────────────────────────────────
 [tool.pytest.ini_options]
-minversion = "0.0.1"
+minversion = "7.0"
 testpaths = ["tests", "backend/tests"]
 pythonpath = ["scripts", "backend"]
 addopts = [
