@@ -1,0 +1,69 @@
+name: Bug report
+description: Report a defect in the scripts, docs, or automation pipeline
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: checkboxes
+    id: searched
+    attributes:
+      label: Did you search existing issues first?
+      description: Search [Issues](../../issues) before submitting to avoid duplicates.
+      options:
+        - label: I searched existing issues and confirmed this is not a duplicate
+          required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Clearly and concisely describe the bug.
+      placeholder: "Running update.py throws an exception / CI workflow fails / doc link is dead"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Repro steps
+      description: Provide minimal repro steps, including commands and config.
+      placeholder: |
+        1. Clone the repo
+        2. Run `python3 scripts/update.py --verify`
+        3. Error appears
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: Describe what you expected to happen.
+      placeholder: "The script should finish and produce nodes/clash.yaml"
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Python version, branch or workflow run ID.
+      placeholder: "Ubuntu 22.04 / Python 3.12 / main"
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Redact tokens, cookies, and emails before pasting.
+      render: shell
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Confirmation
+      options:
+        - label: I did not expose any keys or personal node lists in the logs or screenshots
+          required: true

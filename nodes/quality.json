@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-07-07T12:18:36Z",
+  "summary": {
+    "total_nodes": 800,
+    "alive_nodes": 800,
+    "survival_rate": 100.0,
+    "avg_latency_ms": 160.4
+  },
+  "by_protocol": {
+    "trojan": {
+      "total": 176,
+      "alive": 176,
+      "survival_rate": 100.0,
+      "avg_latency": 74.6
+    },
+    "vmess": {
+      "total": 59,
+      "alive": 59,
+      "survival_rate": 100.0,
+      "avg_latency": 210.9
+    },
+    "ss": {
+      "total": 260,
+      "alive": 260,
+      "survival_rate": 100.0,
+      "avg_latency": 169.3
+    },
+    "vless": {
+      "total": 240,
+      "alive": 240,
+      "survival_rate": 100.0,
+      "avg_latency": 180.8
+    },
+    "hysteria2": {
+      "total": 64,
+      "alive": 64,
+      "survival_rate": 100.0,
+      "avg_latency": 237.3
+    },
+    "tuic": {
+      "total": 1,
+      "alive": 1,
+      "survival_rate": 100.0,
+      "avg_latency": 154.0
+    }
+  },
+  "failure_reasons": {},
+  "regions": {
+    "unknown": 800
+  }
+}

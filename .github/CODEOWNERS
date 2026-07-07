@@ -1,0 +1,15 @@
+# Global fallback maintainers
+* @MS33834
+
+# Python scripts and automation
+/scripts/ @MS33834
+/.github/workflows/ @MS33834
+/config/ @MS33834
+
+# Frontend website
+/web/ @MS33834
+
+# Documentation and community files
+/docs/ @MS33834
+/docs-site/ @MS33834
+*.md @MS33834

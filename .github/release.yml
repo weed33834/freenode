@@ -1,0 +1,32 @@
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+      - duplicate
+      - wontfix
+    authors:
+      - dependabot[bot]
+  categories:
+    - title: 新增功能
+      labels:
+        - enhancement
+        - feature
+        - "新增"
+    - title: 修复
+      labels:
+        - bug
+        - fix
+        - "修复"
+    - title: 文档与站点
+      labels:
+        - documentation
+        - docs
+        - "文档"
+    - title: 数据源
+      labels:
+        - data-source
+        - sources
+        - "数据源"
+    - title: 其他变更
+      labels:
+        - "*"

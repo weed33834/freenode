@@ -1,0 +1,75 @@
+name: Deploy Pages
+
+# GitHub Pages 上挂两样东西：
+#   /          轻量展示页（landing/，纯静态 HTML，介绍项目并跳转仓库）
+#   /docs/     完整文档站（docs-site/，VitePress 构建）
+# 前端 web/ 是带后端的动态应用，生产走 Docker Compose + Caddy，不进 Pages。
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'landing/**'
+      - 'docs-site/**'
+      - '.github/workflows/deploy-docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: 'docs-site/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: ./docs-site
+        run: npm ci
+
+      - name: Build docs-site
+        working-directory: ./docs-site
+        run: npm run docs:build
+
+      - name: Assemble Pages artifact
+        run: |
+          set -euo pipefail
+          mkdir -p _site
+          # 展示页放根路径
+          cp -r landing/. _site/
+          # 文档站放 /docs/ 子路径
+          mkdir -p _site/docs
+          cp -r docs-site/.vitepress/dist/. _site/docs/
+          # 列一下确认结构
+          find _site -maxdepth 2 -type f | head -20
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./_site
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

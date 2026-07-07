@@ -1,0 +1,34 @@
+# PR 自动打标规则，配合 .github/workflows/labeler.yml
+# 文档：https://github.com/actions/labeler
+
+backend:
+  - changed-files:
+      - any-glob-to-any-file: ['backend/**']
+
+frontend:
+  - changed-files:
+      - any-glob-to-any-file: ['web/**']
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file: ['docs-site/**', 'landing/**', '*.md']
+
+ci-cd:
+  - changed-files:
+      - any-glob-to-any-file: ['.github/workflows/**', '.github/labeler.yml', '.githooks/**']
+
+scripts:
+  - changed-files:
+      - any-glob-to-any-file: ['scripts/**', 'tests/**']
+
+config:
+  - changed-files:
+      - any-glob-to-any-file: ['config/**', '*.ini', '*.toml', '*.cfg']
+
+nodes:
+  - changed-files:
+      - any-glob-to-any-file: ['nodes/**']
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file: ['**/requirements.txt', '**/package.json', '**/package-lock.json']

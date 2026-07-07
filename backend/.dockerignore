@@ -1,0 +1,55 @@
+# backend 镜像构建时排除（context 是项目根，所以这里路径相对根）
+# 配合 backend/Dockerfile 的 COPY . /app，避免无关大目录进镜像。
+
+# VCS 与 CI
+.git/
+.github/
+.githooks/
+
+# 文档与展示页（不需要进后端镜像）
+docs-site/
+landing/
+*.md
+LICENSE
+
+# 前端源码与构建产物（后端不依赖）
+web/
+
+# Python 缓存
+**/__pycache__/
+**/*.py[cod]
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+.venv/
+venv/
+
+# 运行时数据与本地数据库
+backend/data/
+data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+nodes/*.tmp
+
+# 日志
+*.log
+logs/
+
+# 本地环境变量
+*.env
+.env.*
+!backend/.env.example
+
+# 工具配置
+.gitignore
+.gitattributes
+.editorconfig
+Dockerfile
+docker-compose.yml
+Caddyfile
+
+# OS
+.DS_Store
+Thumbs.db

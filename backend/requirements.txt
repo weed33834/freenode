@@ -1,0 +1,19 @@
+# FreeNode backend dependencies
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+gunicorn>=23.0.0
+pydantic>=2.9.0
+pydantic-settings>=2.5.0
+sqlalchemy>=2.0.35
+aiosqlite>=0.20.0
+# PostgreSQL 异步驱动：切到 postgresql+asyncpg:// 时需要。
+# 默认 SQLite 部署不会 import，不影响镜像大小。
+asyncpg>=0.29.0
+# alembic 迁移在 PostgreSQL 下用同步驱动（alembic/env.py 会把 asyncpg 替换为 psycopg2）。
+psycopg2-binary>=2.9.9
+alembic>=1.13.0
+apscheduler>=3.10.0
+pyyaml>=6.0
+cryptography>=43.0.0
+# 内存 TTL 缓存，给 stats/filters/订阅用
+cachetools>=5.5.0

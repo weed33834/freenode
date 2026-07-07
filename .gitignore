@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+*.whl
+.venv/
+venv/
+
+# 工具缓存
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+.cache/
+.turbo/
+
+# 测试覆盖率
+.coverage
+coverage/
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+*.env
+.env.*
+!/.env.example
+!backend/.env.example
+
+# Runtime output
+nodes/*.tmp
+data/
+backend/data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Frontend build output
+.next/
+dist/
+out/
+web/.next/
+web/dist/
+web/out/

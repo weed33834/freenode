@@ -1,0 +1,109 @@
+# FreeNode — full stack deployment (backend + frontend + reverse proxy)
+#
+# Usage:
+#   1. Copy backend/.env.example to backend/.env and edit.
+#   2. Set your domain in Caddyfile.
+#   3. docker compose up -d
+#
+# Services:
+#   backend  — FastAPI app (pipeline + API + scheduler)
+#   web      — Next.js frontend (standalone build)
+#   caddy    — reverse proxy with automatic HTTPS
+#   postgres — 可选的 PostgreSQL 数据库（节点 > 5k 或并发验证 worker > 50 时启用）
+#
+# 切换到 PostgreSQL：
+#   在 .env 里取消注释 FREENODE_DATABASE_URL=postgresql+asyncpg://...
+#   backend 服务的 FREENODE_DATABASE_URL 会自动从 .env 读到，覆盖下面默认的 sqlite。
+
+services:
+  # PostgreSQL 数据库，可选。默认走 SQLite 不需要起这个服务。
+  # 启用方法：在 .env 取消注释 FREENODE_DATABASE_URL 指向 postgresql+asyncpg://postgres:5432/...
+  postgres:
+    image: postgres:16-alpine
+    container_name: freenode-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-freenode}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-change_me}
+      - POSTGRES_DB=${POSTGRES_DB:-freenode}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # 健康检查：pg_isready 探活，backend depends_on 用 service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-freenode} -d ${POSTGRES_DB:-freenode}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    # 默认不对外暴露端口，只在 compose 网络内可见；如需宿主机调试可取消注释。
+    # ports:
+    #   - "127.0.0.1:5432:5432"
+
+  backend:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    container_name: freenode-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # 默认 SQLite；要切 PostgreSQL 就在 .env 里设 FREENODE_DATABASE_URL=postgresql+asyncpg://...
+      # compose 变量替换：.env 里有就用 .env 的，没设就用 sqlite 兜底。
+      - FREENODE_DATABASE_URL=${FREENODE_DATABASE_URL:-sqlite:///data/freenode.db}
+      - FREENODE_SOURCES_CONFIG_PATH=/app/config/sources.json
+      - FREENODE_NODES_OUTPUT_DIR=/app/nodes
+    volumes:
+      - backend_data:/app/backend/data
+      - nodes_output:/app/nodes
+      - ../config:/app/config:ro
+    ports:
+      - "127.0.0.1:8000:8000"  # Only expose locally; Caddy handles public traffic
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  web:
+    build:
+      context: ..
+      dockerfile: web/Dockerfile
+    container_name: freenode-web
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_BASE_URL=
+      - API_BASE_URL=http://backend:8000
+    depends_on:
+      - backend
+    # Next.js standalone 默认跑在 3000
+    ports:
+      - "127.0.0.1:3000:3000"
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: freenode-caddy
+    restart: unless-stopped
+    depends_on:
+      - backend
+      - web
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+      - nodes_output:/srv/nodes:ro  # Serve subscription files directly
+
+volumes:
+  backend_data:
+  nodes_output:
+  caddy_data:
+  caddy_config:
+  postgres_data:
