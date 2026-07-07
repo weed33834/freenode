@@ -113,7 +113,7 @@ filterwarnings = [
 
 # ─── mypy：可选静态检查 ───────────────────────────────────────────────
 [tool.mypy]
-python_version = "0.0.1"
+python_version = "3.12"
 warn_unused_ignores = true
 warn_redundant_casts = true
 # 不强制全量检查，只跑显式标注过的模块；CI 不 gate。
