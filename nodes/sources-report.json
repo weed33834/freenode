@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-07T12:18:36Z",
+  "generated_at": "2026-07-08T10:33:17Z",
   "window_days": 14,
   "reliability_score": {
     "pawdroid-free-servers": 100.0,
@@ -949,6 +949,301 @@
     },
     {
       "date": "2026-07-07",
+      "sources": [
+        {
+          "name": "pawdroid-free-servers",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "mfuu-v2ray",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "ebrasha-free-v2ray",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "caijh-free-proxies-scraper",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "ripaojiedian-freenode-sub",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "snakem982-proxypool-v2ray",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "Ruk1ng001-freeSub-v2ray",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "qjlxg-aggregator-v2ray",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "qjlxg-aggregator-nodes",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "nirevil-sstime",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "epodonios-v2ray-sub11",
+          "category": "free_node_sources",
+          "status": "failed"
+        },
+        {
+          "name": "epodonios-v2ray-sub20",
+          "category": "free_node_sources",
+          "status": "failed"
+        },
+        {
+          "name": "mahdibland-shadowsocks-eternity",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "hamedp-openproxylist-v2ray",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "w1770946466-auto-proxy-sub1",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "ermaozi01-free-clash-vpn",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "ermaozi-get-subscribe-v2ray",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "epodonios-v2ray-sub1",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "awesome-vpn-all",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "Au1rxx-free-vpn-subscriptions",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "Romaxa55-MegaV-vless",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "Romaxa55-MegaV-vmess",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "Romaxa55-MegaV-trojan",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "Romaxa55-MegaV-ss",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "Barabama-FreeNodes-nodev2ray",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "peasoft-NoMoreWalls-list",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "peasoft-NoMoreWalls-list-raw",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "mahdibland-v2rayaggregator-merge-base64",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "mahdibland-v2rayaggregator-sub-merge",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "mhditaheri-v2raycollector-mixbase64",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "mhditaheri-v2raycollector-vless",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "mhditaheri-v2raycollector-trojan",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "mhditaheri-v2raycollector-ss",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "mhditaheri-v2raycollector-vlessbase64",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "mhditaheri-v2raycollector-vmessbase64",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "free18-v2ray-vtxt",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "roosterkid-openproxylist-v2ray-base64",
+          "category": "free_node_sources",
+          "status": "success"
+        },
+        {
+          "name": "proxifly-free-proxy-list",
+          "category": "free_proxy_apis",
+          "status": "success"
+        },
+        {
+          "name": "TheSpeedX-http",
+          "category": "free_proxy_apis",
+          "status": "success"
+        },
+        {
+          "name": "TheSpeedX-socks4",
+          "category": "free_proxy_apis",
+          "status": "success"
+        },
+        {
+          "name": "TheSpeedX-socks5",
+          "category": "free_proxy_apis",
+          "status": "success"
+        },
+        {
+          "name": "ErcinDedeoglu-http",
+          "category": "free_proxy_apis",
+          "status": "success"
+        },
+        {
+          "name": "ErcinDedeoglu-https",
+          "category": "free_proxy_apis",
+          "status": "success"
+        },
+        {
+          "name": "ErcinDedeoglu-socks4",
+          "category": "free_proxy_apis",
+          "status": "success"
+        },
+        {
+          "name": "ErcinDedeoglu-socks5",
+          "category": "free_proxy_apis",
+          "status": "success"
+        },
+        {
+          "name": "jetkai-http",
+          "category": "free_proxy_apis",
+          "status": "success"
+        },
+        {
+          "name": "jetkai-socks4",
+          "category": "free_proxy_apis",
+          "status": "success"
+        },
+        {
+          "name": "jetkai-socks5",
+          "category": "free_proxy_apis",
+          "status": "success"
+        },
+        {
+          "name": "monosans-proxy-list-http",
+          "category": "free_proxy_apis",
+          "status": "success"
+        },
+        {
+          "name": "monosans-proxy-list-socks4",
+          "category": "free_proxy_apis",
+          "status": "success"
+        },
+        {
+          "name": "monosans-proxy-list-socks5",
+          "category": "free_proxy_apis",
+          "status": "success"
+        },
+        {
+          "name": "clarketm-proxy-list-raw",
+          "category": "free_proxy_apis",
+          "status": "success"
+        },
+        {
+          "name": "ShiftyTR-proxy-list-http",
+          "category": "free_proxy_apis",
+          "status": "success"
+        },
+        {
+          "name": "mmpx12-proxy-list-http",
+          "category": "free_proxy_apis",
+          "status": "failed"
+        },
+        {
+          "name": "mmpx12-proxy-list-socks5",
+          "category": "free_proxy_apis",
+          "status": "failed"
+        },
+        {
+          "name": "roosterkid-openproxylist-https",
+          "category": "free_proxy_apis",
+          "status": "success"
+        },
+        {
+          "name": "roosterkid-openproxylist-socks4",
+          "category": "free_proxy_apis",
+          "status": "success"
+        },
+        {
+          "name": "roosterkid-openproxylist-socks5",
+          "category": "free_proxy_apis",
+          "status": "success"
+        }
+      ]
+    },
+    {
+      "date": "2026-07-08",
       "sources": [
         {
           "name": "pawdroid-free-servers",
