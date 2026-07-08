@@ -133,7 +133,7 @@ export default defineConfig({
 
     footer: {
       message:
-        "Released under MIT License. 仅供学习网络协议、安全测试和隐私技术研究使用。",
+        "Released under CNCL License. 仅供学习网络协议、安全测试和隐私技术研究使用。",
       copyright: "Copyright © 2026-present FreeNode contributors",
     },
   },

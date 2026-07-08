@@ -77,3 +77,18 @@ Before merging:
 - [ ] No deprecation warnings from dependencies
 - [ ] No security scan warnings (CodeQL, gitleaks)
 - [ ] CI pipeline is fully green (not just passing with warnings)
+
+## Repository Cleanup Check
+
+Periodically (e.g., before major releases):
+
+- [ ] VERSION file matches README badges and package.json versions
+- [ ] LICENSE references are consistent across all docs (CNCL, not MIT)
+- [ ] .editorconfig sections match languages actually used (no Go config if no .go files)
+- [ ] dependabot.yml directories point to actual package.json/requirements.txt locations
+- [ ] No empty directories in the repository
+- [ ] No duplicate .env.example files
+- [ ] No hardcoded secrets or test credentials in code
+- [ ] docs-site/ and docs/ content is not duplicated
+- [ ] Obsolete test files or stubs are removed
+- [ ] Old/removed feature files are cleaned up

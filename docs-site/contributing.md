@@ -182,7 +182,7 @@ docs(faq): 补充 GitCode 镜像访问说明
 - 保持友善与尊重。
 - 不要提交 secrets、tokens 或个人节点列表。
 - 对公开数据源保持克制，避免过高频率抓取。
-- 所有贡献均遵循项目 [MIT 许可证](https://github.com/MS33834/freenode/blob/main/LICENSE)。
+- 所有贡献均遵循项目 [CNCL 许可证](https://github.com/MS33834/freenode/blob/main/LICENSE)。
 
 ## 获取帮助
 

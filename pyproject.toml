@@ -5,17 +5,17 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "freenode"
-version = "0.0.1"
+version = "1.2.4"
 description = "Community-curated aggregator of public network node lists. Daily pipeline fetches, parses, verifies, and outputs multi-format subscription files."
 readme = "README.md"
 requires-python = ">=3.12"
-license = { text = "MIT" }
+license = { text = "Custom Non-Commercial License (CNCL) v1.0" }
 authors = [{ name = "FreeNode Contributors" }]
 keywords = ["freenode", "aggregator", "subscription", "clash", "v2ray"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.12",
-    "License :: OSI Approved :: MIT License",
+    "License :: Other/Proprietary License",
     "Operating System :: OS Independent",
     "Topic :: Internet :: Proxy Servers",
 ]

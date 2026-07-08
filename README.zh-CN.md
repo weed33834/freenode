@@ -6,7 +6,7 @@
 [![Deploy Docs](https://github.com/MS33834/freenode/actions/workflows/deploy-docs.yml/badge.svg)](https://github.com/MS33834/freenode/actions/workflows/deploy-docs.yml)
 [![CI](https://github.com/MS33834/freenode/actions/workflows/ci.yml/badge.svg)](https://github.com/MS33834/freenode/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/MS33834/freenode/actions/workflows/codeql.yml/badge.svg)](https://github.com/MS33834/freenode/actions/workflows/codeql.yml)
-[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
+[![License](https://img.shields.io/badge/license-CNCL-red.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-1.2.4-blue)](VERSION)
 
 [English](README.md) | **简体中文**
@@ -215,4 +215,4 @@ FreeNode/
 
 ## 许可证
 
-[MIT](LICENSE)。FreeNode 不拥有也不运营任何被聚合的数据源——感谢 `config/sources.json` 中列出的社区源维护者。
+[CNCL](LICENSE)。FreeNode 不拥有也不运营任何被聚合的数据源——感谢 `config/sources.json` 中列出的社区源维护者。

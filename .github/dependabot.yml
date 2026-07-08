@@ -12,7 +12,7 @@ updates:
       prefix: "ci(deps)"
 
   - package-ecosystem: "npm"
-    directory: "/"
+    directory: "/web"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
@@ -27,6 +27,17 @@ updates:
       production:
         dependency-type: "production"
 
+  - package-ecosystem: "npm"
+    directory: "/docs-site"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "npm"
+    commit-message:
+      prefix: "deps"
+
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
@@ -38,8 +49,19 @@ updates:
     commit-message:
       prefix: "deps"
 
+  - package-ecosystem: "pip"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "pip"
+    commit-message:
+      prefix: "deps"
+
   - package-ecosystem: "docker"
-    directory: "/"
+    directory: "/backend"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
