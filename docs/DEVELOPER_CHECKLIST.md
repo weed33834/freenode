@@ -78,7 +78,7 @@ Before merging:
 - [ ] No security scan warnings (CodeQL, gitleaks)
 - [ ] CI pipeline is fully green (not just passing with warnings)
 
-## Repository Cleanup Check
+## Codebase Cleanup Check
 
 Periodically (e.g., before major releases):
 
