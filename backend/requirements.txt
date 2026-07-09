@@ -14,6 +14,6 @@ psycopg2-binary>=2.9.12
 alembic>=1.13.0
 apscheduler>=3.11.3
 pyyaml>=6.0
-cryptography>=43.0.0
+cryptography>=49.0.0
 # 内存 TTL 缓存，给 stats/filters/订阅用
 cachetools>=7.1.4
