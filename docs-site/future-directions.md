@@ -2,123 +2,56 @@
 
 This page lists directions FreeNode *could* go in. These are **not commitments** — they are exploratory ideas for community members who want to help. Each item explains the motivation and the rough shape of the work, so you can decide whether to pick one up.
 
+Most of the original roadmap (pluggable adapters, Telegram ingestion, HTML/RSS/git-repo sources, cross-source dedup, latency sorting, protocol-level verification for trojan/ss, schedule decoupling, PostgreSQL, decentralized distribution via IPFS/R2, security audit) has already shipped — see the [changelog](https://github.com/MS33834/freenode/blob/main/CHANGELOG.md). What remains is below.
+
 If you start working on something here, open an Issue first so we can coordinate.
-
-## Smarter source collection
-
-Today the crawler is intentionally simple: it fetches a static file (Base64 or plain text) from each entry in `config/sources.json`, decodes it, and extracts links with a regex. This works — the daily pipeline produces ~800 verified nodes — but the coverage and intelligence can clearly improve. Below are the directions that look most worthwhile.
-
-### 1. GitHub Search API discovery
-
-**Motivation.** Almost all current sources are `raw.githubusercontent.com` URLs that someone hand-added to `sources.json`. There are hundreds of public "free-node" repos on GitHub, many of which we have not discovered. New ones appear weekly; old ones go stale.
-
-**Shape of the work.** Add a discovery job that calls `GET /search/repositories?q=freenode+OR+v2ray+subscription+pushed:>2026-06-01` with a token, filters by stars / last-push / license, and proposes new `github_raw` candidates to a review queue (not auto-enabled). Respect GitHub's rate limits (30 searched requests/min for authenticated, 10/min anonymous). Cache results for 24h.
-
-**Why not auto-add.** Search results include repos with paid/private nodes, honeypots, or stolen configs. Human review stays required — discovery just widens the funnel.
-
-### 2. HTML page scraping
-
-**Motivation.** Some community sources publish nodes inside blog posts, forum threads, or paste pages, not as raw files. Today we skip them entirely.
-
-**Shape of the work.** Add a `web_html` source type. The fetcher downloads the HTML, then runs a configurable extractor: CSS selector or XPath pointing at the `<pre>` / `<code>` block that holds the Base64 blob or link list. Store the selector in `sources.json` per source. Use `selectolax` or `lxml` — both are fast and have no browser overhead.
-
-**Risk.** HTML sources break often when the site redesigns. The reliability score already in place will surface breakages; the auto-Issue workflow will flag them.
-
-### 3. Telegram channel ingestion
-
-**Motivation.** A large fraction of public free-node sharing happens in Telegram channels, not GitHub. Ignoring TG leaves a lot of coverage on the table.
-
-**Shape of the work.** Add a `telegram_channel` source type. Use [Telethon](https://docs.telethon.dev/) (client API, not bot API — bots can't read channel history) with a user session. Fetch the last N messages, extract links from message text or attached files. Rate-limit to 1 message/sec to avoid flood bans. Store the channel ID + access hash in `sources.json`.
-
-**Caveats.** This needs a real Telegram account session, which is a operational burden. Session files are sensitive — store encrypted, never commit. Some channels ban scraping in their bio; respect that.
-
-### 4. Git repo cloning for multi-file sources
-
-**Motivation.** A few sources publish nodes across multiple files inside a repo (e.g. `clash.yaml`, `v2ray.txt`, `ss.txt` in subfolders). Today we only fetch one raw URL per source, missing the rest.
-
-**Shape of the work.** Add a `git_repo` source type. Use `git clone --depth 1` to a temp dir, then glob for `*.yaml`, `*.txt`, `*.base64` and feed each through the existing parser. Clean up the clone after each run. Depth-1 keeps it fast (~1-3s per repo).
-
-### 5. RSS / Atom feeds
-
-**Motivation.** Some node-sharing sites publish updates via RSS. Polling RSS is cheaper than polling the full page and gives us a natural "what changed" signal.
-
-**Shape of the work.** Add a `rss` source type. Parse with `feedparser`, extract the node links from `<description>` or `<content:encoded>`. Use the feed's `last_updated` to skip unchanged entries.
-
-### 6. Cross-source deduplication
-
-**Motivation.** Right now the same node (same server + port + auth) often appears in 5+ sources, because many community repos mirror each other. We dedup by exact link string, but the *same* node can have different remarks / encoding / ordering and slip through. This inflates the candidate pool and wastes verification budget.
-
-**Shape of the work.** The DB already has `Node.compute_fingerprint(protocol, server, port, auth_secret)` which is content-based. Extend the crawler stage to compute fingerprints *before* verification, dedup by fingerprint, and only verify the unique set. This should cut verify time noticeably.
-
-### 7. Protocol coverage expansion
-
-**Motivation.** We currently parse `vmess`, `vless`, `ss`, `trojan`. Newer protocols gaining traction: `hysteria`, `hysteria2`, `tuic`, `naive`, `mieru`, `ssr`. Clients like sing-box and mihomo support them; we ignore them today.
-
-**Shape of the work.** Add parsers in `scripts/parser.py` for each protocol's URI scheme. Most have a `scheme://base64json` or `scheme://querystring` format similar to vmess. Extend `node_to_clash_config` and the Clash YAML emitter to output the new types. Add tests with sample links.
-
-### 8. Source adapter plugin API
-
-**Motivation.** Each new source type above is currently a hardcoded branch in `crawler.py`. As types grow, this becomes unmaintainable.
-
-**Shape of the work.** Define a `SourceAdapter` protocol: `fetch(source) -> str` and `parse(text) -> list[str]`. Register adapters by `type` field in `sources.json`. External packages can register additional adapters via entry points (`[project.entry-points."freenode.adapters"]`), so people can extend without forking.
-
-### 9. Auto-disable unreliable sources
-
-**Motivation.** `nodes/sources-report.json` already tracks a 14-day reliability score. Today a source can sit at 0% for weeks and still get fetched every run, wasting time and bandwidth.
-
-**Shape of the work.** In `crawl()`, skip sources whose 30-day reliability is below a threshold (e.g. 20%). Surface disabled sources on the status page. A maintainer can still force-enable by setting `force_enabled: true` in `sources.json`.
 
 ## Smarter verification
 
-### 10. Protocol-level handshake
+### 1. Protocol-level handshake for vmess / vless / hysteria / tuic
 
-**Motivation.** Today verification is a TCP `connect()` to `server:port`. A port being open does not mean the proxy actually works — many free nodes have live ports but broken auth, expired certs, or wrong transport.
+**Motivation.** `verify_node_protocol()` in `scripts/verifier.py` already does a real TLS handshake for trojan and a probe-byte check for ss. But vmess, vless, hysteria, hysteria2, and tuic still fall back to `tcp_only` — a live port says nothing about whether the auth or transport actually works.
 
-**Shape of the work.** After TCP connect, do a protocol-specific handshake:
-- `vmess` / `vless`: send a minimal request header, check for a response.
-- `ss`: do a SOCKS5-style handshake through the cipher.
-- `trojan`: TLS handshake + Trojan protocol header.
-- `hysteria` / `tuic`: QUIC handshake.
+**Shape of the work.** For vmess/vless, send a minimal request header and check for a response. For hysteria/tuic, do a QUIC handshake (the current TCP probe is meaningless for UDP-based protocols). This is slower per node (50-500ms vs 5-20ms for TCP) but the survival signal is far more accurate. Run it as a second-stage verify on TCP-alive nodes only, gated behind `FREENODE_VERIFY_LEVEL=protocol`.
 
-This is slower per node (50-500ms vs 5-20ms for TCP) but the survival signal is far more accurate. Run it as a second-stage verify on TCP-alive nodes only.
+### 2. Per-region subscription files
 
-### 11. Latency-aware sorting and regional routing
+**Motivation.** Today the output is a single `nodes/clash.yaml` (plus per-protocol splits when `verify_level=protocol`). Clients pick the first node, which may be slow for that user's region. The data is already there — `regions.json` groups nodes by region.
 
-**Motivation.** Today the output files are ordered by source order. Clients pick the first node, which may be slow for that user's region.
-
-**Shape of the work.** Sort alive nodes by latency in the output files. Optionally emit per-region subscription files (`nodes/clash-hk.yaml`, `nodes/clust-jp.yaml`, ...) so users can pick a region manually. The `regions.json` file already has the data.
+**Shape of the work.** Optionally emit per-region subscription files (`nodes/clash-hk.yaml`, `nodes/clash-jp.yaml`, ...) so users can pick a region manually. Reuse `to_clash_yaml()` with a region filter; add a flag (e.g. `FREENODE_REGION_SPLITS=HK,JP,US,SG`) to opt in.
 
 ## Operational hardening
 
-### 12. Decouple crawl and verify schedules
+### 3. Redis-backed rate limiter for multi-worker deployments
 
-**Motivation.** The scheduler currently runs the *full* pipeline (crawl + parse + verify + publish) every 30 minutes (`FREENODE_SCHEDULE_VERIFY_ALIVE`). Re-crawling 78 sources every 30 minutes is wasteful — most sources update daily, not hourly. The verify-only step should be cheap.
+**Motivation.** `backend/app/core/rate_limit.py` is an in-memory token bucket — fine for a single uvicorn worker, but `docker-compose.yml` runs gunicorn with 2 workers, so each worker has its own bucket and the effective limit doubles.
 
-**Shape of the work.** Split `run_full_pipeline` into `run_crawl_pipeline` (full refresh, daily) and `run_verify_pipeline` (re-verify existing DB nodes, every 30min). The verify-only path skips crawl entirely, reads `Node` rows from the DB, re-checks them, and updates `is_alive` / `last_latency_ms`. This cuts the 30-min job from ~5min to ~30s.
+**Shape of the work.** Swap the `OrderedDict` LRU for a Redis-backed limiter (e.g. `redis-py` + a sliding-window or token-bucket Lua script). Gate it behind `FREENODE_RATELIMIT_BACKEND=memory|redis` so dev stays dependency-free. Document the Redis URL env var in `CONFIGURATION.md`.
 
-### 13. PostgreSQL support and connection pooling
+### 4. Default-enable auto-disable of unreliable sources
 
-**Motivation.** SQLite is fine for a single-process dev setup but struggles under concurrent verify workers (50 threads writing `NodeCheck` rows). Production deployments on cloud servers should use PostgreSQL.
+**Motivation.** `crawler.py` already skips sources whose 30-day reliability is below `FREENODE_RELIABILITY_FLOOR`, but the default is `0` (disabled) to avoid false positives. As the project accumulates more `nodes/sources-report.json` history, we can pick a safe non-zero default (e.g. 10-20%) and let `force_enabled: true` override per source.
 
-**Shape of the work.** The `FREENODE_DATABASE_URL` already accepts any SQLAlchemy URL, so `postgresql+asyncpg://...` works out of the box. Add a `postgres` profile to `docker-compose.yml` (managed Postgres or `postgres:16-alpine` sidecar), document the switch in `deployment.md`, and load-test with ~10k nodes to confirm write throughput.
+**Shape of the work.** Wait until at least 30 days of reliability data is stable across runs, then raise the default floor in `crawler.py` and `CONFIGURATION.md`. Surface auto-disabled sources on the status page so maintainers can re-enable or remove them.
 
-### 14. Decentralized distribution
+### 5. Wire GitHub Search discovery into the pipeline
 
-**Motivation.** Today the subscription files live only on GitHub Raw and GitCode. If both rate-limit or block the project, users have no fallback.
+**Motivation.** `scripts/discover_sources.py` already calls the GitHub Search API, filters by stars/license/push-date, and writes candidate sources to `nodes/discovered-sources.json` (`enabled=false`). But it's a manual CLI — nothing in `update.py` or the scheduler runs it, so the candidate list goes stale.
 
-**Shape of the work.** Publish the daily `nodes/` directory to IPFS via a pinning service (Pinata, nft.storage) and/or a static mirror (Cloudflare R2 + Workers). Add a `nodes/mirrors.json` listing all distribution endpoints so clients can fall back automatically. Keep GitHub/GitCode as primary; IPFS/mirror as secondary.
+**Shape of the work.** Add a weekly scheduler job (e.g. `FREENODE_SCHEDULE_DISCOVER = "0 5 * * 1"`) that runs discovery and opens/updates an Issue listing new candidates for human review (never auto-enable). Respect GitHub's 30 req/min authenticated rate limit and cache results for 24h.
 
-### 15. Security audit
+## Testing
 
-**Motivation.** The crawler fetches arbitrary URLs and parses untrusted input. `validate_url` blocks SSRF to private IPs, but the parser, verifier, and formatter have not had an external audit.
+### 6. Fuzz tests for the parser
 
-**Shape of the work.** A focused review of: `validate_url` and `is_private_host` for bypass vectors (DNS rebinding, IPv6-mapped IPv4, IDN homograph), the parser's Base64/JSON handling for memory blowup, and the verifier's socket handling for resource leaks. Add fuzz tests for the parser with `atheris`.
+**Motivation.** `scripts/parser.py` decodes untrusted Base64/JSON from arbitrary public sources. `safe_b64decode` has a 256KB length cap, but the JSON parsing, vmess header decoding, and query-string extraction haven't been fuzzed. An adversarial input could still trigger an unhandled exception or memory spike.
+
+**Shape of the work.** Add `tests/test_parser_fuzz.py` using [atheris](https://github.com/google/atheris). Fuzz `parse_vmess_link`, `parse_hysteria2_link`, and the top-level link extractor with byte-string inputs. Run as a separate `make fuzz` target (not part of `make check`) since fuzz runs are long.
 
 ## How to pick
 
-- **New to the codebase?** Start with #6 (cross-source dedup) or #11 (latency sorting) — both are self-contained and have clear acceptance criteria.
-- **Want to broaden coverage?** #1 (GitHub Search), #2 (HTML scraping), or #4 (git repo clone) each unlock new source types.
-- **Interested in protocols?** #7 (protocol expansion) is well-scoped and high-impact.
-- **Operations-minded?** #12 (schedule split) and #13 (Postgres) make the project production-grade.
+- **Interested in protocols?** #1 (handshake expansion) is well-scoped and high-impact.
+- **Operations-minded?** #3 (Redis limiter) and #4 (default reliability floor) make the project production-grade.
+- **Want a self-contained task?** #2 (per-region files) or #6 (fuzz tests) have clear acceptance criteria.
 
 Pick one, open an Issue, and we'll scope it together.

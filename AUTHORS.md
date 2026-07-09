@@ -13,7 +13,7 @@ FreeNode is a community-driven open source project. The following people and gro
 ## Special thanks
 
 - The community source maintainers listed in `config/sources.json` for publicly sharing their nodes.
-- The creators and maintainers of [Next.js](https://nextjs.org/), [Tailwind CSS](https://tailwindcss.com/), [VitePress](https://vitepress.dev/), and [shadcn/ui](https://ui.shadcn.com/).
+- The creators and maintainers of [Next.js](https://nextjs.org/), [Tailwind CSS](https://tailwindcss.com/), and [VitePress](https://vitepress.dev/).
 - Every user who shares, improves, and spreads FreeNode.
 
 ---

@@ -155,4 +155,4 @@ The backend (`backend/app/`) mirrors this pipeline in `pipeline_service.py` so t
 
 ## Project status and direction
 
-The project is stable and runs daily. For what's already done, see [更新日志](/changelog). For directions we might explore — smarter source discovery, protocol-level verification, pluggable adapters, decentralized distribution — see [未来方向](/future-directions). Those are exploratory ideas, not promises.
+The project is stable and runs daily. For what's already done, see [更新日志](https://github.com/MS33834/freenode/blob/main/CHANGELOG.md). For directions we might explore — smarter source discovery, protocol-level verification, pluggable adapters, decentralized distribution — see [未来方向](/future-directions). Those are exploratory ideas, not promises.

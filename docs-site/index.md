@@ -96,4 +96,4 @@ features:
 - [参与贡献](/contributing) — 贡献代码、数据源与文档的方式。
 - [项目概览](/project-overview) — 项目定位、功能与使用教程。
 - [未来方向](/future-directions) — 可探索的扩展方向，非承诺。
-- [更新日志](/changelog) — 版本变更记录。
+- [更新日志](https://github.com/MS33834/freenode/blob/main/CHANGELOG.md) — 版本变更记录。

@@ -75,7 +75,6 @@ export default defineConfig({
         items: [
           { text: "参与贡献", link: "/contributing" },
           { text: "未来方向", link: "/future-directions" },
-          { text: "更新日志", link: "/changelog" },
         ],
       },
     ],

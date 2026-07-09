@@ -40,7 +40,7 @@ Use descriptive branch names with the following prefixes:
 
 ### Development Checklist
 
-Before opening a PR, verify each item below. See `docs/DEVELOPER_CHECKLIST.md` for the full checklist.
+Before opening a PR, verify each item below. See [`DEVELOPMENT.md`](DEVELOPMENT.md) for the full pre-push checklist and `make check` gate.
 
 - [ ] Code follows the project's style guide (linting passes)
 - [ ] All existing tests pass

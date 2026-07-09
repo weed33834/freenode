@@ -7,7 +7,7 @@
 [![CI](https://github.com/MS33834/freenode/actions/workflows/ci.yml/badge.svg)](https://github.com/MS33834/freenode/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/MS33834/freenode/actions/workflows/codeql.yml/badge.svg)](https://github.com/MS33834/freenode/actions/workflows/codeql.yml)
 [![License](https://img.shields.io/badge/license-CNCL-red.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.2.4-blue)](VERSION)
+[![Version](https://img.shields.io/badge/Version-1.4.0-blue)](VERSION)
 
 [English](README.md) | **简体中文**
 

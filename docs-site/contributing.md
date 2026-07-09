@@ -76,7 +76,7 @@ npm run docs:build
 git clone https://github.com/MS33834/freenode.git
 cd freenode
 
-# 安装 Python 依赖（推荐 Python 3.11+）
+# 安装 Python 依赖（需要 Python 3.12+）
 pip3 install -r requirements.txt
 
 # 运行一次完整更新（不验证，速度较快）
@@ -96,7 +96,7 @@ cd web
 npm install
 npm run dev      # 本地预览
 npm run lint     # ESLint 检查
-npm run build    # 静态导出
+npm run build    # standalone 生产构建
 
 # 文档站
 cd ../docs-site
@@ -121,21 +121,28 @@ npm run docs:build  # 构建静态站点
 
 | 命令 | 说明 |
 |---|---|
-| `make install` | 安装 Python 依赖 |
-| `make test` | 运行所有 Python 单元测试 |
-| `make update` | 运行完整节点更新（不验证） |
-| `make verify` | 运行完整节点更新（开启验证） |
-| `make lint` | 语法检查所有 Python 脚本与测试 |
+| `make install` | 安装 Python 依赖（根 + backend） |
+| `make check` | 推送前全门禁：lint + test + test-backend + 前端 tsc/lint |
+| `make test` | 运行 `tests/` 下的流水线单元测试 |
+| `make test-backend` | 运行 `backend/tests/` 下的 API 集成测试 |
+| `make test-fast` | 一把跑根 + backend 全部测试 |
+| `make cov` | 跑测试并生成覆盖率报告（终端 + htmlcov/） |
+| `make lint` | 编译 + ruff 检查 Python 脚本与测试 |
 | `make lint-web` | 运行 Next.js 主站的 ESLint |
 | `make build-web` | 构建 Next.js 主站 |
+| `make update` | 运行完整节点更新（不验证） |
+| `make verify` | 运行完整节点更新（开启验证） |
+| `make migrate` | 生成新的 alembic 迁移（需 `MSG=...`） |
+| `make migrate-up` | 应用迁移到最新 |
+| `make type-sync` | 从后端 openapi 重新生成前端类型 |
+| `make secrets` | 扫描泄露的密钥 |
+| `make install-hooks` | 启用 git pre-push 钩子 |
 | `make clean` | 清理 `__pycache__` 与 `.pyc` 文件 |
 
 在提交 PR 前，建议至少执行：
 
 ```bash
-make lint
-make test
-python3 scripts/update.py
+make check
 ```
 
 如果改动了主站或文档站，再额外运行对应的 `npm run lint` / `npm run build` 或 `npm run docs:build`。

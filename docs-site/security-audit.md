@@ -1,9 +1,9 @@
-# Security Audit Report — FreeNode / ProxieHub
+# Security Audit Report — FreeNode
 
 **Audit date:** 2026-07-04
 **Auditor:** Automated security review (GLM-5.2)
 **Scope:** `scripts/` data pipeline + `backend/app/core/` crypto & security modules
-**Target version:** 1.3.0
+**Target version:** 1.4.0
 
 ## Audit Scope
 

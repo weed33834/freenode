@@ -25,6 +25,7 @@ web/.next/
 web/dist/
 web/out/
 web/node_modules/
+web/.vercel/
 docs-site/node_modules/
 docs-site/.vitepress/cache/
 docs-site/.vitepress/dist/

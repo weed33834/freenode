@@ -7,7 +7,7 @@
 [![CI](https://github.com/MS33834/freenode/actions/workflows/ci.yml/badge.svg)](https://github.com/MS33834/freenode/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/MS33834/freenode/actions/workflows/codeql.yml/badge.svg)](https://github.com/MS33834/freenode/actions/workflows/codeql.yml)
 [![License](https://img.shields.io/badge/license-CNCL-red.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.2.4-blue)](VERSION)
+[![Version](https://img.shields.io/badge/Version-1.4.0-blue)](VERSION)
 
 **English** | [简体中文](README.zh-CN.md)
 
@@ -99,7 +99,7 @@ flowchart LR
 2. `parser.py` extracts `ss://`, `vmess://`, `vless://`, `trojan://`, `http(s)://`, `socks4://`, `socks5://` links.
 3. `verifier.py` does a lightweight TCP connect + latency test (when enabled).
 4. `formatter.py` writes Clash, V2Ray, and HTTP(S)/SOCKS4/SOCKS5 outputs, plus an optional regions.json.
-5. GitHub Actions runs the full pipeline daily at UTC 02:00 and pushes to both GitHub and GitCode.
+5. GitHub Actions runs the full pipeline daily at UTC 02:00 and pushes the regenerated `nodes/` to GitHub; GitCode mirrors the same content.
 
 ---
 
@@ -124,10 +124,10 @@ Pipeline behavior is controlled via environment variables. Copy `.env.example` t
 
 | Variable | Default | Description |
 |---|---|---|
-| `FREENODE_VERIFY_NODES` | `false` | Enable TCP connectivity check during update |
-| `FREENODE_MAX_NODES` | `500` | Max node links kept in output |
-| `FREENODE_MAX_PROXIES` | `200` | Max HTTP(S)/SOCKS4/SOCKS5 proxies kept |
-| `FREENODE_CRAWL_WORKERS` | `min(16, sources)` | Concurrent source fetches |
+| `FREENODE_VERIFY_NODES` | `true` | Enable TCP connectivity check during update |
+| `FREENODE_MAX_NODES` | `800` | Max node links kept in output |
+| `FREENODE_MAX_PROXIES` | `300` | Max HTTP(S)/SOCKS4/SOCKS5 proxies kept |
+| `FREENODE_CRAWL_WORKERS` | `16` | Concurrent source fetches |
 | `FREENODE_VERIFY_TIMEOUT` | `5` | Per-node TCP connect timeout (seconds) |
 | `FREENODE_VERIFY_WORKERS` | `50` | Concurrent verification threads |
 | `FREENODE_GEO_ENABLED` | `false` | Enable GeoIP region grouping |

@@ -16,8 +16,6 @@ jobs:
   update:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env:
-      GITCODE_TOKEN: ${{ secrets.GITCODE_TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -71,10 +69,3 @@ jobs:
             git commit -m "chore: daily node update"
             git push
           fi
-
-      - name: Clear GitCode credentials
-        if: ${{ always() && env.GITCODE_TOKEN != '' }}
-        run: |
-          git credential reject <<'EOF'
-          url=https://gitcode.com/badhope/freenode.git
-          EOF

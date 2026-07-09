@@ -1,5 +1,4 @@
 .PHONY: install test test-backend update verify clean lint lint-web build-web run-backend deploy check secrets install-hooks migrate migrate-up type-sync test-fast cov
-	mkdir -p backend/data
 
 # 一把跑完所有推送前必过的检查（lint + test + 前端类型/lint）
 check: lint test test-backend lint-web

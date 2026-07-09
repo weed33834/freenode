@@ -88,7 +88,7 @@ Each entry:
   "name": "example-source",
   "url": "https://example.com/nodes.txt",
   "category": "free_node_sources",
-  "adapter": "web_url",
+  "type": "web_url",
   "enabled": true,
   "decode_base64": false,
   "update_interval": "hourly",
@@ -101,7 +101,7 @@ Each entry:
 | `name`           | string    | Display name (non-empty, unique).                                     |
 | `url`            | string    | Source URL. Must be `http(s)://`. SSRF guard blocks private IP ranges. |
 | `category`       | string    | `free_node_sources` or `free_proxy_apis`.                             |
-| `adapter`        | string    | `web_url` \| `github_raw` \| `git_repo` \| `html` \| `rss`.           |
+| `type`           | string    | `web_url` \| `github_raw` \| `git_repo` \| `html` \| `rss`.           |
 | `enabled`        | bool      | Set `false` to skip without deleting.                                 |
 | `decode_base64`  | bool      | Base64-decode the response before parsing.                            |
 | `update_interval`| string    | `5min` \| `hourly` \| `12h` \| `daily` \| `inactive` — for the health dashboard. |
@@ -121,7 +121,6 @@ Caddy adds the following headers on every response (see
 - `X-Content-Type-Options: nosniff`
 - `X-Frame-Options: DENY`
 - `Referrer-Policy: strict-origin-when-cross-origin`
-- `Content-Security-Policy: default-src 'self'; ...` (see file for full CSP)
 
 The Next.js frontend also sets these in [`web/next.config.mjs`](web/next.config.mjs)
 so they apply even when serving via the standalone server directly.
