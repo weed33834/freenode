@@ -2,19 +2,13 @@
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import datetime
 
 from sqlalchemy import BigInteger, Boolean, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
-
-# SQLite-compatible auto-increment primary key.
-PK = BigInteger().with_variant(Integer, "sqlite")
-
-
-def _now() -> datetime:
-    return datetime.now(UTC)
+from app.models import PK, _now
 
 
 class ProxySource(Base):

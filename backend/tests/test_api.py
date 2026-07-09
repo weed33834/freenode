@@ -75,7 +75,6 @@ async def _seed_and_test() -> None:
                 tls=True,
                 remark=f"{region}-test",
                 region=region,
-                source_id=src.id,
                 source_name="test-source",
                 is_alive=alive,
                 last_latency_ms=lat,

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import base64
+import json
 import os
 import shutil
 import subprocess
@@ -20,15 +20,12 @@ from utils import (
     decode_bytes,
     get_logger,
     load_sources,
+    safe_b64decode,
     ssl_context,
     validate_url,
 )
 
 logger = get_logger("crawler")
-
-# reliability 低于此值的源自动跳过（除非 sources.json 里标了 force_enabled）。
-# 阈值通过环境变量调，0 = 不自动禁用。
-RELIABILITY_FLOOR = 0
 
 
 def _reliability_floor() -> float:
@@ -46,7 +43,6 @@ def _load_reliability_scores() -> dict[str, float]:
     if not report_path.exists():
         return {}
     try:
-        import json
         data = json.loads(report_path.read_text(encoding="utf-8"))
         scores = data.get("reliability_score", {})
         return {name: float(score) for name, score in scores.items()}
@@ -56,7 +52,6 @@ def _load_reliability_scores() -> dict[str, float]:
 
 def _fetch_with_curl(url: str, timeout: int, max_bytes: int = 50 * 1024 * 1024) -> str:
     """Fetch via curl with bounded size/time limits."""
-    validate_url(url)
     cmd = [
         "curl",
         "-fsSL",
@@ -84,7 +79,6 @@ def _fetch_with_curl(url: str, timeout: int, max_bytes: int = 50 * 1024 * 1024) 
 
 
 def _fetch_with_urllib(url: str, timeout: int) -> str:
-    validate_url(url)
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(req, timeout=timeout, context=ssl_context()) as resp:
         data = resp.read()
@@ -134,11 +128,10 @@ def maybe_decode_base64(text: str) -> str:
     text = text.strip()
     if not text or "://" in text or "\n" in text:
         return text
-    try:
-        decoded = base64.b64decode(text + "=" * (-len(text) % 4), validate=True)
-        return decoded.decode("utf-8", errors="ignore")
-    except Exception:
+    decoded = safe_b64decode(text)
+    if decoded is None:
         return text
+    return decoded.decode("utf-8", errors="ignore")
 
 
 def fetch_source(source: dict) -> str:
@@ -178,6 +171,19 @@ def _fetch_source_safe(source: dict, category: str) -> dict | None:
         return None
 
 
+def _collect_sources(config, key, category, floor, scores, skipped, sources):
+    for source in config.get(key, []):
+        if not source.get("enabled"):
+            continue
+        name = source.get("name", "unknown")
+        if floor > 0 and not source.get("force_enabled", False):
+            score = scores.get(name)
+            if score is not None and score < floor:
+                skipped.append((name, score))
+                continue
+        sources.append((source, category))
+
+
 def crawl(config_path: Path | None = None, max_workers: int | None = None) -> dict:
     """Fetch all enabled sources concurrently.
 
@@ -193,26 +199,8 @@ def crawl(config_path: Path | None = None, max_workers: int | None = None) -> di
 
     sources: list[tuple[dict, str]] = []
     skipped_by_reliability: list[tuple[str, float]] = []
-    for source in config.get("free_node_sources", []):
-        if not source.get("enabled"):
-            continue
-        name = source.get("name", "unknown")
-        if floor > 0 and not source.get("force_enabled", False):
-            score = scores.get(name)
-            if score is not None and score < floor:
-                skipped_by_reliability.append((name, score))
-                continue
-        sources.append((source, "nodes"))
-    for source in config.get("free_proxy_apis", []):
-        if not source.get("enabled"):
-            continue
-        name = source.get("name", "unknown")
-        if floor > 0 and not source.get("force_enabled", False):
-            score = scores.get(name)
-            if score is not None and score < floor:
-                skipped_by_reliability.append((name, score))
-                continue
-        sources.append((source, "proxies"))
+    _collect_sources(config, "free_node_sources", "nodes", floor, scores, skipped_by_reliability, sources)
+    _collect_sources(config, "free_proxy_apis", "proxies", floor, scores, skipped_by_reliability, sources)
 
     if skipped_by_reliability:
         for name, score in skipped_by_reliability:

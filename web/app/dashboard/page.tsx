@@ -4,7 +4,6 @@ import {
   useCallback,
   useEffect,
   useState,
-  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import {
@@ -22,62 +21,27 @@ import {
   Workflow,
 } from "lucide-react";
 import {
-  isAuthed,
-  setAdminKey,
   getMetrics,
   getTrend,
   type MetricsResponse,
   type TrendPoint,
   type TrendResponse,
 } from "@/lib/admin-api";
-
-// 登录态订阅：和管理后台共用同一个 Key
-const authListeners = new Set<() => void>();
-
-function notifyAuthChange() {
-  authListeners.forEach((l) => l());
-}
-
-function subscribeAuth(cb: () => void): () => void {
-  authListeners.add(cb);
-  if (typeof window !== "undefined") {
-    window.addEventListener("storage", cb);
-  }
-  return () => {
-    authListeners.delete(cb);
-    if (typeof window !== "undefined") {
-      window.removeEventListener("storage", cb);
-    }
-  };
-}
-
-function getAuthedSnapshot(): boolean {
-  return isAuthed();
-}
-
-function getAuthedServerSnapshot(): boolean {
-  return false;
-}
+import { useAuth, setAdminKey, clearAdminKey } from "@/lib/auth-store";
 
 export default function DashboardPage() {
-  const authed = useSyncExternalStore(
-    subscribeAuth,
-    getAuthedSnapshot,
-    getAuthedServerSnapshot
-  );
+  const authed = useAuth();
   const [keyInput, setKeyInput] = useState("");
 
   const handleLogin = () => {
     const key = keyInput.trim();
     if (!key) return;
     setAdminKey(key);
-    notifyAuthChange();
     setKeyInput("");
   };
 
   const handleLogout = () => {
-    setAdminKey("");
-    notifyAuthChange();
+    clearAdminKey();
   };
 
   if (!authed) {

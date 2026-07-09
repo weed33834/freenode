@@ -14,6 +14,8 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
+from cachetools import TTLCache
+
 # Reuse the existing pipeline modules from scripts/.
 from crawler import crawl  # type: ignore[import-not-found]
 from dedup import dedup_by_fingerprint  # type: ignore[import-not-found]
@@ -41,7 +43,7 @@ def _now() -> datetime:
 
 
 # In-memory task registry for manual refresh tracking.
-_tasks: dict[str, dict] = {}
+_tasks: TTLCache = TTLCache(maxsize=256, ttl=7 * 86400)
 
 # Strong refs to background asyncio.Tasks. CPython only holds weak refs to
 # running tasks, so without these they'd be GC'd mid-flight.
@@ -62,23 +64,14 @@ def _parse_node_fields(link: str) -> dict:
     network = cfg.get("network", "tcp")
     # Collect transport-specific options into a JSON blob.
     transport: dict = {}
-    if "ws-opts" in cfg:
-        transport["ws-opts"] = cfg["ws-opts"]
-    if "grpc-opts" in cfg:
-        transport["grpc-opts"] = cfg["grpc-opts"]
-    if "h2-opts" in cfg:
-        transport["h2-opts"] = cfg["h2-opts"]
+    for key in ("ws-opts", "grpc-opts", "h2-opts", "skip-cert-verify"):
+        if key in cfg:
+            transport[key] = cfg[key]
     sni = cfg.get("sni") or cfg.get("servername")
     if sni:
         transport["sni"] = sni
-    if "skip-cert-verify" in cfg:
-        transport["skip-cert-verify"] = cfg["skip-cert-verify"]
 
-    auth_secret = ""
-    if protocol == "vmess" or protocol == "vless":
-        auth_secret = cfg.get("uuid", "")
-    elif protocol == "ss" or protocol == "trojan":
-        auth_secret = cfg.get("password", "")
+    auth_secret = cfg.get("uuid", "") if protocol in ("vmess", "vless") else cfg.get("password", "")
 
     return {
         "protocol": protocol,
@@ -318,18 +311,14 @@ async def run_verify_pipeline(
 
 
 def _load_existing_proxies() -> list[str]:
-    """Read the existing proxies.txt so verify-only runs don't wipe it."""
-    settings = get_settings()
-    p = Path(settings.nodes_output_dir) / "proxies.txt"
+    p = Path(get_settings().nodes_output_dir) / "proxies.txt"
     if not p.exists():
         return []
-    proxies: list[str] = []
-    for line in p.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if not line or line.startswith("#"):
-            continue
-        proxies.append(line)
-    return proxies
+    return [
+        line
+        for raw in p.read_text(encoding="utf-8").splitlines()
+        if (line := raw.strip()) and not line.startswith("#")
+    ]
 
 
 async def _upsert_nodes(

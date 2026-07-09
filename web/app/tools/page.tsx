@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getSubscribeUrls } from "@/lib/data";
+import { getSubscriptionUrl } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: "工具与生态 — FreeNode",
@@ -21,8 +21,6 @@ import {
   Apple,
   Code,
 } from "lucide-react";
-
-const subscribeUrls = getSubscribeUrls();
 
 const categories = [
   {
@@ -284,7 +282,7 @@ const commands = [
   {
     title: "下载 Clash 订阅",
     description: "用 wget 将 GitHub 上的 Clash 配置文件保存到本地。",
-    code: `wget -O clash.yaml ${subscribeUrls.clash.github}`,
+    code: `wget -O clash.yaml ${getSubscriptionUrl("clash")}`,
   },
   {
     title: "验证节点可用性",

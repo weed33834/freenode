@@ -391,22 +391,19 @@ export default async function HomePage() {
             <SubscribeCard
               title="Clash"
               description="Clash Verge / Clash Meta / Clash for Windows / Stash / Surge"
-              githubUrl={clashUrl}
-              gitcodeUrl={clashUrl}
+              url={clashUrl}
               icon={<Server className="w-5 h-5" />}
             />
             <SubscribeCard
               title="V2Ray"
               description="v2rayN / v2rayNG / Shadowrocket / NekoBox / 其他 V2Ray 内核客户端"
-              githubUrl={v2rayUrl}
-              gitcodeUrl={v2rayUrl}
+              url={v2rayUrl}
               icon={<Globe className="w-5 h-5" />}
             />
             <SubscribeCard
               title="HTTP(S) / SOCKS4 / SOCKS5"
               description="浏览器扩展、爬虫、命令行工具使用的公开代理列表"
-              githubUrl={proxiesUrl}
-              gitcodeUrl={proxiesUrl}
+              url={proxiesUrl}
               icon={<Layers className="w-5 h-5" />}
             />
           </div>

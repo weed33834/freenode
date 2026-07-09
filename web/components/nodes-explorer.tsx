@@ -4,12 +4,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Search,
-  ChevronLeft,
-  ChevronRight,
   Loader2,
   Filter,
 } from "lucide-react";
 import { fetchNodes, type Node, type NodeQuery } from "@/lib/api";
+import { Pagination } from "@/components/pagination";
 
 const PAGE_SIZE = 20;
 
@@ -63,11 +62,6 @@ export function NodesExplorer({
   useEffect(() => {
     reload();
   }, [reload]);
-
-  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const currentPage = Math.floor(offset / PAGE_SIZE) + 1;
-  const canPrev = offset > 0;
-  const canNext = offset + PAGE_SIZE < total;
 
   return (
     <div className="border border-border bg-surface">
@@ -229,29 +223,12 @@ export function NodesExplorer({
       </div>
 
       {/* 分页 */}
-      <div className="px-4 py-3 border-t border-border flex items-center justify-between gap-3">
-        <span className="text-xs text-muted font-mono">
-          第 {currentPage} / {pageCount} 页
-        </span>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}
-            disabled={!canPrev}
-            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs border border-border text-muted hover:text-foreground hover:bg-surface-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <ChevronLeft className="w-3.5 h-3.5" /> 上一页
-          </button>
-          <button
-            type="button"
-            onClick={() => setOffset(offset + PAGE_SIZE)}
-            disabled={!canNext}
-            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs border border-border text-muted hover:text-foreground hover:bg-surface-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            下一页 <ChevronRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
+      <Pagination
+        total={total}
+        offset={offset}
+        pageSize={PAGE_SIZE}
+        onOffsetChange={setOffset}
+      />
     </div>
   );
 }

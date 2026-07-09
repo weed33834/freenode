@@ -117,22 +117,19 @@ export default function SubscribePage() {
         <SubscribeCard
           title="Clash"
           description="适用于 Clash Verge、Clash Meta、Clash for Windows、Stash、Surge 等 Clash 内核客户端。"
-          githubUrl={clashUrl}
-          gitcodeUrl={clashUrl}
+          url={clashUrl}
           icon={<Server className="w-5 h-5" />}
         />
         <SubscribeCard
           title="V2Ray"
           description="适用于 v2rayN、v2rayNG、Shadowrocket、NekoBox、Quantumult X 等支持 V2Ray 订阅的客户端。"
-          githubUrl={v2rayUrl}
-          gitcodeUrl={v2rayUrl}
+          url={v2rayUrl}
           icon={<Globe className="w-5 h-5" />}
         />
         <SubscribeCard
           title="HTTP(S) / SOCKS4 / SOCKS5"
           description="公开代理列表，适用于浏览器扩展、爬虫、curl、Python requests 等场景。"
-          githubUrl={proxiesUrl}
-          gitcodeUrl={proxiesUrl}
+          url={proxiesUrl}
           icon={<Layers className="w-5 h-5" />}
         />
       </div>

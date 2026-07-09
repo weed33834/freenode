@@ -55,10 +55,3 @@ def decrypt(ciphertext_hex: str) -> str:
     except Exception as e:
         # 解密失败（key 换了 / 数据损坏）抛 ValueError，调用方决定怎么处理
         raise ValueError(f"解密失败: {e}") from e
-
-
-def reset_aesgcm_singleton() -> None:
-    """清掉 AESGCM 单例。给测试用，业务代码不要调。"""
-    global _aesgcm
-    with _aesgcm_lock:
-        _aesgcm = None

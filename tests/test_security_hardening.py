@@ -131,32 +131,6 @@ def test_formatter_yaml_injection():
     assert "host" not in proxies[0]
 
 
-def test_formatter_yaml_injection_fallback_path(monkeypatch):
-    """fallback 路径（无 PyYAML）：手写序列化也要转义特殊字符。"""
-    import re
-
-    # 强制走 fallback 分支
-    monkeypatch.setattr(formatter, "yaml", None)
-
-    output = formatter.to_clash_yaml([_malicious_ss_link()])
-    lines = output.splitlines()
-    # name 行必须以 "- name: " 开头且引号在同一行闭合（换行没把键拆出去）
-    name_line = next((ln for ln in lines if ln.startswith("- name:")), None)
-    assert name_line is not None
-    m = re.search(r'^- name: "([^"]*)"$', name_line)
-    assert m is not None, f"name line not properly quoted: {name_line!r}"
-    assert re.match(r"^[A-Za-z0-9\-_.]+$", m.group(1)), f"unsafe name: {m.group(1)!r}"
-    # proxies 段里不应出现注入的 '  host:' 键（只允许预期的 ss 字段）
-    proxies_section = output.split("proxies:", 1)[1].split("proxy-groups:", 1)[0]
-    injected_key_lines = [
-        ln for ln in proxies_section.splitlines()
-        if ln.strip().startswith("host:") or ln.strip() == 'host: "127.0.0.1"'
-    ]
-    assert not injected_key_lines, f"injected host key detected: {injected_key_lines}"
-    # server 仍是 example.com，未被注入覆盖
-    assert any('server: "example.com"' in ln for ln in lines)
-
-
 # ─── verifier 资源：异常路径 socket 关闭 ─────────────────────────────
 
 
@@ -223,6 +197,5 @@ if __name__ == "__main__":
     test_is_private_host_cgnat_blocked()
     test_parser_size_limit()
     test_formatter_yaml_injection()
-    test_formatter_yaml_injection_fallback_path(__import__("pytest").monkeypatch())
     test_verifier_socket_closed_on_error(__import__("pytest").monkeypatch())
     print("security hardening tests passed")

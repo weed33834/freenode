@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import asyncio
+import logging
 from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -9,6 +11,7 @@ from fastapi import status as http_status
 from sqlalchemy import Integer, cast, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.cache import invalidate_all
 from app.core.rate_limit import limit_public
 from app.core.security import require_admin
 from app.database import get_db
@@ -29,7 +32,15 @@ from app.schemas.schemas import (
     TrendPoint,
     TrendResponse,
 )
-from app.services.pipeline_service import _tasks, create_task_id, run_full_pipeline
+from app.services.pipeline_service import (
+    _tasks,
+    _track_task,
+    create_task_id,
+    run_full_pipeline,
+)
+from app.services.pipeline_service import (
+    get_task_status as _get_task_status,
+)
 
 router = APIRouter(tags=["health & admin"])
 
@@ -60,8 +71,6 @@ async def health(db: AsyncSession = Depends(get_db)) -> HealthOut:
         )
     except Exception:
         # 内部错误细节只写日志，不返回客户端
-        import logging
-
         logging.getLogger("freenode").exception("health check failed")
         return HealthOut(
             status="degraded",
@@ -79,10 +88,6 @@ async def health(db: AsyncSession = Depends(get_db)) -> HealthOut:
 )
 async def trigger_refresh(body: RefreshRequest) -> TaskResponse:
     """Manually trigger a full pipeline run (requires admin API key)."""
-    import asyncio
-
-    from app.services.pipeline_service import _track_task
-
     task_id = create_task_id()
     # Fire-and-forget; _track_task keeps a strong ref so the GC doesn't kill it.
     task = asyncio.create_task(run_full_pipeline(verify=body.verify, task_id=task_id))
@@ -100,13 +105,10 @@ async def trigger_refresh(body: RefreshRequest) -> TaskResponse:
 )
 async def get_task_status(task_id: str) -> dict:
     """Poll the status of a pipeline task."""
-    from app.services.pipeline_service import get_task_status
-    status = get_task_status(task_id)
-    if not status:
-        from fastapi import HTTPException
-        from fastapi import status as http_status
+    task_status = _get_task_status(task_id)
+    if not task_status:
         raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="Task not found")
-    return {"task_id": task_id, **status}
+    return {"task_id": task_id, **task_status}
 
 
 @router.delete(
@@ -121,8 +123,6 @@ async def delete_node(node_id: int, db: AsyncSession = Depends(get_db)) -> dict:
     node.is_deleted = True
     node.updated_at = datetime.now(UTC)
     await db.commit()
-    from app.core.cache import invalidate_all
-
     invalidate_all()
     return {"id": node_id, "deleted": True}
 
@@ -205,8 +205,6 @@ async def delete_source(
         raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="Source not found")
     await db.delete(source)
     await db.commit()
-    from app.core.cache import invalidate_all
-
     invalidate_all()
     return {"id": source_id, "deleted": True}
 

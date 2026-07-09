@@ -8,7 +8,6 @@
 from __future__ import annotations
 
 import hashlib
-from collections.abc import Callable
 
 from parser import node_to_clash_config
 
@@ -65,8 +64,3 @@ def dedup_by_fingerprint(links: list[str]) -> list[str]:
     if dropped:
         logger.info("dedup: dropped %d duplicate links (by fingerprint)", dropped)
     return result
-
-
-# 给 backend pipeline_service 用的便捷包装：接受 links，返回去重后的 links。
-# 这样 update.py 和 pipeline_service.py 调用方式一致。
-dedup: Callable[[list[str]], list[str]] = dedup_by_fingerprint

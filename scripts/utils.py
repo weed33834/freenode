@@ -106,9 +106,9 @@ def decode_bytes(data: bytes) -> str:
     for encoding in ("utf-8", "gbk", "latin-1"):
         try:
             return data.decode(encoding)
-        except (UnicodeDecodeError, LookupError):
+        except UnicodeDecodeError:
             continue
-    return data.decode("utf-8", errors="ignore")
+    return data.decode("latin-1")
 
 
 def allowed_hosts() -> set[str]:

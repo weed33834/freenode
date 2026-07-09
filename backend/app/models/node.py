@@ -3,19 +3,13 @@
 from __future__ import annotations
 
 import hashlib
-from datetime import UTC, datetime
+from datetime import datetime
 
-from sqlalchemy import BigInteger, Boolean, Index, Integer, String, Text
+from sqlalchemy import Boolean, Index, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
-
-# SQLite-compatible auto-increment primary key.
-PK = BigInteger().with_variant(Integer, "sqlite")
-
-
-def _now() -> datetime:
-    return datetime.now(UTC)
+from app.models import PK, _now
 
 
 class Node(Base):
@@ -34,7 +28,6 @@ class Node(Base):
     protocol: Mapped[str] = mapped_column(String(16), nullable=False, index=True)
     server: Mapped[str] = mapped_column(String(255), nullable=False)
     port: Mapped[int] = mapped_column(Integer, nullable=False)
-    # UUID / password / secret — stored as-is for now (encrypt before going live).
     auth_secret: Mapped[str] = mapped_column(Text, nullable=False, default="")
 
     # Transport configuration (path, host, sni, alpn, serviceName, ...).
@@ -47,10 +40,6 @@ class Node(Base):
     remark: Mapped[str] = mapped_column(String(255), nullable=False, default="")
     region: Mapped[str] = mapped_column(String(64), nullable=False, default="unknown", index=True)
 
-    # Source tracking.
-    source_id: Mapped[int | None] = mapped_column(
-        BigInteger, nullable=True, index=True
-    )
     source_name: Mapped[str] = mapped_column(String(128), nullable=False, default="")
 
     # Verification state (denormalised for fast list filtering).

@@ -203,21 +203,10 @@ class TrendResponse(BaseModel):
     days: list[TrendPoint]
 
 
-class SourceFetchLogOut(BaseModel):
+class SourceFetchLogOut(ORMModel):
     id: int
     source_id: int | None
     status: str | None
     new_count: int
     error: str | None
     started_at: datetime
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-# --------------------------------------------------------------------------- #
-# Subscriptions
-# --------------------------------------------------------------------------- #
-class SubscriptionInfo(BaseModel):
-    format: str
-    url: str
-    description: str

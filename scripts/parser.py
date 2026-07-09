@@ -26,7 +26,6 @@ LINK_PATTERNS = [
 OUTPUT_SCHEMES = {"ss", "vmess", "vless", "trojan", "hysteria", "hysteria2", "tuic"}
 # Recognized but unsupported schemes (no Clash config writer); skipped on output.
 SKIPPED_SCHEMES = {"ssr"}
-SUPPORTED_SCHEMES = OUTPUT_SCHEMES | SKIPPED_SCHEMES
 
 
 def extract_node_links(text: str | None) -> list[str]:

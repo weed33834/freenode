@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Loader2,
   CheckCircle,
@@ -10,8 +10,6 @@ import {
   Power,
   LogOut,
   LogIn,
-  ChevronLeft,
-  ChevronRight,
   Plus,
   Pencil,
 } from "lucide-react";
@@ -24,8 +22,6 @@ import {
   type Source,
 } from "@/lib/api";
 import {
-  isAuthed,
-  setAdminKey,
   triggerRefresh,
   getTaskStatus,
   deleteNode,
@@ -34,59 +30,27 @@ import {
   deleteSource,
   type TaskStatus,
 } from "@/lib/admin-api";
+import { useAuth, setAdminKey, clearAdminKey } from "@/lib/auth-store";
+import { Pagination } from "@/components/pagination";
 import { SourceForm, type SourceFormValues } from "@/components/source-form";
 
 const PAGE_SIZE = 20;
 const POLL_INTERVAL_MS = 2000;
 const POLL_MAX_ATTEMPTS = 60;
 
-// 用外部 store 订阅登录态：避免在 effect 里同步 setState，也避开 hydration 不一致
-const authListeners = new Set<() => void>();
-
-function notifyAuthChange() {
-  authListeners.forEach((l) => l());
-}
-
-function subscribeAuth(cb: () => void): () => void {
-  authListeners.add(cb);
-  if (typeof window !== "undefined") {
-    window.addEventListener("storage", cb);
-  }
-  return () => {
-    authListeners.delete(cb);
-    if (typeof window !== "undefined") {
-      window.removeEventListener("storage", cb);
-    }
-  };
-}
-
-function getAuthedSnapshot(): boolean {
-  return isAuthed();
-}
-
-function getAuthedServerSnapshot(): boolean {
-  return false;
-}
-
 export default function AdminPage() {
-  const authed = useSyncExternalStore(
-    subscribeAuth,
-    getAuthedSnapshot,
-    getAuthedServerSnapshot
-  );
+  const authed = useAuth();
   const [keyInput, setKeyInput] = useState("");
 
   const handleLogin = () => {
     const key = keyInput.trim();
     if (!key) return;
     setAdminKey(key);
-    notifyAuthChange();
     setKeyInput("");
   };
 
   const handleLogout = () => {
-    setAdminKey("");
-    notifyAuthChange();
+    clearAdminKey();
   };
 
   if (!authed) {
@@ -325,11 +289,6 @@ function NodesPanel() {
     }
   };
 
-  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const currentPage = Math.floor(offset / PAGE_SIZE) + 1;
-  const canPrev = offset > 0;
-  const canNext = offset + PAGE_SIZE < total;
-
   return (
     <section className="border border-border bg-surface mb-6">
       <div className="px-4 py-3 border-b border-border flex flex-col gap-3">
@@ -439,29 +398,12 @@ function NodesPanel() {
         )}
       </div>
 
-      <div className="px-4 py-3 border-t border-border flex items-center justify-between gap-3">
-        <span className="text-xs text-muted font-mono">
-          第 {currentPage} / {pageCount} 页
-        </span>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}
-            disabled={!canPrev}
-            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs border border-border text-muted hover:text-foreground hover:bg-surface-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <ChevronLeft className="w-3.5 h-3.5" /> 上一页
-          </button>
-          <button
-            type="button"
-            onClick={() => setOffset(offset + PAGE_SIZE)}
-            disabled={!canNext}
-            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs border border-border text-muted hover:text-foreground hover:bg-surface-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            下一页 <ChevronRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
+      <Pagination
+        total={total}
+        offset={offset}
+        pageSize={PAGE_SIZE}
+        onOffsetChange={setOffset}
+      />
     </section>
   );
 }

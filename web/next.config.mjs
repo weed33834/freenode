@@ -15,7 +15,6 @@ const nextConfig = {
   // 去掉 basePath，部署时由 Caddy 反代
   allowedDevOrigins: [
     "127.0.0.1",
-    "*.trae.cn",
   ],
   images: {
     unoptimized: true,

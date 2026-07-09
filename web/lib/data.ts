@@ -1,6 +1,5 @@
 import fs from "fs";
 import path from "path";
-import { getSubscriptionUrl } from "@/lib/api";
 
 const PROJECT_ROOT = path.join(process.cwd(), "..");
 const CHANGELOG_PATH = path.join(PROJECT_ROOT, "CHANGELOG.md");
@@ -48,22 +47,4 @@ export function getLatestVersion(): string {
   const entries = parseChangelog();
   const first = entries[0];
   return first ? `v${first.version}` : "-";
-}
-
-// 保留旧的结构以兼容 tools 等页面，链接改为后端订阅接口
-export function getSubscribeUrls() {
-  return {
-    clash: {
-      github: getSubscriptionUrl("clash"),
-      gitcode: getSubscriptionUrl("clash"),
-    },
-    v2ray: {
-      github: getSubscriptionUrl("v2ray"),
-      gitcode: getSubscriptionUrl("v2ray"),
-    },
-    proxies: {
-      github: getSubscriptionUrl("plain"),
-      gitcode: getSubscriptionUrl("plain"),
-    },
-  };
 }

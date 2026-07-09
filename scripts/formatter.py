@@ -8,11 +8,7 @@ import tempfile
 from pathlib import Path
 from urllib.parse import urlparse
 
-try:
-    import yaml
-except ImportError:  # pragma: no cover
-    yaml = None
-
+import yaml
 from parser import (
     decode_vmess,
     node_to_clash_config,
@@ -29,42 +25,6 @@ from utils import NODES_DIR, is_private_host
 
 def _clean_name(name: str) -> str:
     return re.sub(r'[^\w\-_.]', '_', name)[:64]
-
-
-def _yaml_escape(value) -> str:
-    """转义字符串用于 YAML 双引号标量：剥掉控制字符，转义反斜杠和引号。
-
-    仅用于无 PyYAML 时的手写 fallback 序列化，防止节点 name/server/密码等
-    字段里的特殊字符（换行、引号、冒号）造成 YAML 注入。
-    """
-    text = "".join(ch for ch in str(value) if ord(ch) >= 0x20 and ord(ch) != 0x7F)
-    return text.replace("\\", "\\\\").replace('"', '\\"')
-
-
-def _yaml_dump(data: dict) -> str:
-    if yaml:
-        return yaml.dump(data, allow_unicode=True, sort_keys=False, default_flow_style=False)
-    # Fallback: minimal manual serialization for proxies list
-    lines = ['- name: "{}"'.format(_yaml_escape(data["name"]))]
-    for k, v in data.items():
-        if k == "name":
-            continue
-        if isinstance(v, bool):
-            lines.append("  {}: {}".format(k, "true" if v else "false"))
-        elif isinstance(v, int):
-            lines.append(f"  {k}: {v}")
-        elif isinstance(v, dict):
-            lines.append(f"  {k}:")
-            for sk, sv in v.items():
-                if isinstance(sv, dict):
-                    lines.append(f"    {sk}:")
-                    for ssk, ssv in sv.items():
-                        lines.append(f"      {ssk}: {_yaml_escape(ssv)}")
-                else:
-                    lines.append(f"    {sk}: {_yaml_escape(sv)}")
-        else:
-            lines.append(f'  {k}: "{_yaml_escape(v)}"')
-    return "\n".join(lines)
 
 
 def _node_info(item):
@@ -234,30 +194,7 @@ def to_clash_yaml(items, stats: dict | None = None) -> str:
     summary = _compute_stats(items) if stats is None else stats
     disclaimer.extend(_format_stats_lines(summary))
 
-    if yaml:
-        return "\n".join(disclaimer) + "\n" + yaml.dump(output, allow_unicode=True, sort_keys=False)
-
-    # Fallback manual builder
-    lines = disclaimer + [
-        "port: 7890",
-        "socks-port: 7891",
-        "mixed-port: 7892",
-        "mode: rule",
-        "log-level: info",
-        "external-controller: 127.0.0.1:9090",
-        "proxies:",
-    ]
-    for p in proxies:
-        lines.append(_yaml_dump(p))
-    lines.append("proxy-groups:")
-    lines.append("  - name: PROXY")
-    lines.append("    type: select")
-    lines.append("    proxies:")
-    for n in (names if names else ["DIRECT"]):
-        lines.append(f"      - {n}")
-    lines.append("rules:")
-    lines.append("  - MATCH,DIRECT")
-    return "\n".join(lines) + "\n"
+    return "\n".join(disclaimer) + "\n" + yaml.dump(output, allow_unicode=True, sort_keys=False)
 
 
 def to_v2ray_subscription(items, stats: dict | None = None) -> str:

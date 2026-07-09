@@ -50,11 +50,6 @@ function getBaseURL(): string {
   return process.env.NEXT_PUBLIC_API_BASE_URL || "";
 }
 
-// 订阅链接是给最终用户用的，统一用公开 base
-function getPublicBaseURL(): string {
-  return process.env.NEXT_PUBLIC_API_BASE_URL || "";
-}
-
 function buildUrl(
   endpoint: string,
   params?: Record<string, string | number | boolean | null | undefined>
@@ -193,7 +188,7 @@ export function getSubscriptionUrl(
   format: SubscriptionFormat,
   options: SubscriptionOptions = {}
 ): string {
-  const base = getPublicBaseURL();
+  const base = process.env.NEXT_PUBLIC_API_BASE_URL || "";
   const url = `${base}/api/subscriptions/${format}`;
   const params = new URLSearchParams();
   if (options.protocol) params.append("protocol", options.protocol);

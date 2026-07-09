@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -131,7 +131,6 @@ async def get_node(node_id: int, db: AsyncSession = Depends(get_db)) -> NodeDeta
     """Get a single node. auth_secret is never returned — use /api/subscriptions/* for raw_link."""
     node = await db.get(Node, node_id)
     if not node or node.is_deleted:
-        from fastapi import HTTPException, status
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Node not found")
     return NodeDetail.model_validate(node)
 
