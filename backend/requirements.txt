@@ -10,7 +10,7 @@ aiosqlite>=0.22.1
 # 默认 SQLite 部署不会 import，不影响镜像大小。
 asyncpg>=0.29.0
 # alembic 迁移在 PostgreSQL 下用同步驱动（alembic/env.py 会把 asyncpg 替换为 psycopg2）。
-psycopg2-binary>=2.9.9
+psycopg2-binary>=2.9.12
 alembic>=1.13.0
 apscheduler>=3.11.3
 pyyaml>=6.0
