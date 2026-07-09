@@ -65,7 +65,7 @@ flowchart LR
 
 | 文件/目录 | 说明 |
 |---|---|
-| `scripts/parser.py` | 提取 `ss://`、`ssr://`、`vmess://`、`vless://`、`trojan://`、`hysteria://`、`hysteria2://` 等链接 |
+| `scripts/parser.py` | 提取 `ss://`、`vmess://`、`vless://`、`trojan://`、`hysteria://`、`hysteria2://`、`tuic://` 等链接（`ssr://` 会被识别但跳过不输出） |
 
 主要函数：
 
@@ -162,7 +162,7 @@ flowchart LR
 
 关键点：
 
-- `parser.py` 支持 `ss://`、`vmess://`、`vless://`、`trojan://`、`hysteria://`、`hysteria2://` 以及 HTTP(S)/SOCKS4/SOCKS5 代理链接。
+- `parser.py` 支持 `ss://`、`vmess://`、`vless://`、`trojan://`、`hysteria://`、`hysteria2://`、`tuic://` 以及 HTTP(S)/SOCKS4/SOCKS5 代理链接。
 - 解析后先进行 URL 级别去重，避免同一节点多次输出。
 - `verifier.py` 通过轻量级 TCP 连接测试 `host:port`，可选开启 GeoIP 地区识别。
 - CI 默认不启用验证以加快测试；每日自动更新默认启用 `--verify`。

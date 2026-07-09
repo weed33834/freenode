@@ -101,8 +101,8 @@ Output lands in `nodes/`. Tune limits via environment variables:
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `FREENODE_MAX_NODES` | 500 | Max nodes in the output files |
-| `FREENODE_MAX_PROXIES` | 200 | Max proxies in the output files |
+| `FREENODE_MAX_NODES` | 800 | Max nodes in the output files |
+| `FREENODE_MAX_PROXIES` | 300 | Max proxies in the output files |
 | `FREENODE_VERIFY_NODES` | true | Whether to verify connectivity |
 | `FREENODE_VERIFY_TIMEOUT` | 5 | Per-node TCP connect timeout (seconds) |
 | `FREENODE_VERIFY_WORKERS` | 50 | Concurrent verification workers |

@@ -27,17 +27,13 @@ class TokenBucket:
         self._last: OrderedDict[str, float] = OrderedDict()
 
     def _touch(self, key: str, default_tokens: float, default_last: float) -> None:
-        """LRU bookkeeping: move existing keys to the end, evict oldest when over cap."""
-        if key in self._tokens:
-            self._tokens.move_to_end(key)
-            self._last.move_to_end(key)
-        else:
-            self._tokens[key] = default_tokens
-            self._last[key] = default_last
-            if len(self._tokens) > _MAX_TRACKED_IPS:
-                # popitem(last=False) 弹出最旧的（LRU 头）
-                self._tokens.popitem(last=False)
-                self._last.popitem(last=False)
+        """Add a new key with default values, evicting the oldest entry when over cap."""
+        self._tokens[key] = default_tokens
+        self._last[key] = default_last
+        if len(self._tokens) > _MAX_TRACKED_IPS:
+            # popitem(last=False) 弹出最旧的（LRU 头）
+            self._tokens.popitem(last=False)
+            self._last.popitem(last=False)
 
     def allow(self, key: str) -> bool:
         now = time.monotonic()

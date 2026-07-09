@@ -40,7 +40,6 @@ def _build_engine() -> AsyncEngine:
     new_engine = create_async_engine(
         database_url,
         echo=settings.debug,
-        future=True,
         pool_pre_ping=True,  # catches stale PG connections; no-op on SQLite
         pool_recycle=1800,
     )

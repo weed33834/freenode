@@ -96,7 +96,7 @@ flowchart LR
 ```
 
 1. `crawler.py` reads `config/sources.json` and fetches sources concurrently.
-2. `parser.py` extracts `ss://`, `vmess://`, `vless://`, `trojan://`, `http(s)://`, `socks4://`, `socks5://` links.
+2. `parser.py` extracts `ss://`, `vmess://`, `vless://`, `trojan://`, `hysteria://`, `hysteria2://`, `tuic://`, and `http(s)://`, `socks4://`, `socks5://` links.
 3. `verifier.py` does a lightweight TCP connect + latency test (when enabled).
 4. `formatter.py` writes Clash, V2Ray, and HTTP(S)/SOCKS4/SOCKS5 outputs, plus an optional regions.json.
 5. GitHub Actions runs the full pipeline daily at UTC 02:00 and pushes the regenerated `nodes/` to GitHub; GitCode mirrors the same content.

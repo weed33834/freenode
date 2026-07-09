@@ -216,7 +216,7 @@ def _pick_primary_file(candidate_files: list[str]) -> str | None:
     """从候选文件里挑一个作为输出 URL 的指向，没有就返回 None。"""
     if not candidate_files:
         return None
-    return sorted(candidate_files, key=_candidate_priority)[0]
+    return min(candidate_files, key=_candidate_priority)
 
 
 def build_candidate_entry(repo: dict, candidate_files: list[str]) -> dict | None:

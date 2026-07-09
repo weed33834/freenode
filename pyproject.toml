@@ -60,9 +60,12 @@ freenode-update = "update:main"
 
 # 让 setuptools 把 scripts/ 下的扁平模块作为顶层 py-module 安装，
 # 这样 `pipx install freenode` 后 freenode-update 能 import 到 update/crawler 等。
+# update.py 的 import 闭包：update → {crawler, dedup, formatter, parser, verifier, utils}，
+# crawler → adapters 包，因此 dedup 与 adapters 都必须在此声明，否则 freenode-update 会 ImportError。
 [tool.setuptools]
 package-dir = {"" = "scripts"}
-py-modules = ["update", "crawler", "parser", "verifier", "formatter", "utils"]
+py-modules = ["update", "crawler", "dedup", "parser", "verifier", "formatter", "utils"]
+packages = ["adapters"]
 
 # ─── ruff：lint + format 配置 ─────────────────────────────────────────
 [tool.ruff]

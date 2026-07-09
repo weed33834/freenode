@@ -3,11 +3,15 @@
 from __future__ import annotations
 
 import logging
+from datetime import UTC, datetime, timedelta
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
+from sqlalchemy import delete
 
 from app.config import get_settings
+from app.database import db_session
+from app.models import NodeCheck
 from app.services.pipeline_service import run_full_pipeline, run_verify_pipeline
 
 logger = logging.getLogger("freenode.scheduler")
@@ -46,13 +50,6 @@ async def _cleanup_job() -> None:
     """Drop NodeCheck rows older than 90 days."""
     logger.info("scheduled cleanup starting")
     try:
-        from datetime import UTC, datetime, timedelta
-
-        from sqlalchemy import delete
-
-        from app.database import db_session
-        from app.models import NodeCheck
-
         cutoff = datetime.now(UTC) - timedelta(days=90)
         async with db_session() as session:
             result = await session.execute(

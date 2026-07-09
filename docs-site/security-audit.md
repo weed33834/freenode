@@ -349,7 +349,7 @@ that are linear in input length. No ReDoS risk found.
 ## Verification
 
 ```bash
-cd /workspace/proxiehub
+cd /workspace/freenode
 python3 -m py_compile scripts/utils.py scripts/parser.py scripts/verifier.py scripts/formatter.py   # OK
 python3 -m ruff check scripts/utils.py scripts/parser.py scripts/verifier.py scripts/formatter.py \
     tests/test_security_hardening.py                                                                  # All checks passed

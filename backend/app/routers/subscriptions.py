@@ -104,17 +104,10 @@ async def subscription_plain(
     if cached is not None:
         content, media_type, filename = cached
         return _build_response(content, media_type, filename)
-    # Note: this endpoint returns proxy-style entries; nodes are vmess/vless/ss/trojan
-    # so this is kept for API symmetry. For raw proxies, use /api/nodes?protocol=...
-    # Return node links as plain text (one per line) for non-Clash clients.
-    stmt = select(Node).where(Node.is_deleted == False)  # noqa: E712
-    if alive:
-        stmt = stmt.where(Node.is_alive == True)  # noqa: E712
-    stmt = stmt.order_by(Node.last_latency_ms.asc().nullslast()).limit(limit)
-    result = await db.execute(stmt)
-    links = [n.raw_link for n in result.scalars().all()]
-    if not links:
+    # plain 端点不带 protocol/region 过滤，直接复用 _fetch_nodes
+    nodes = await _fetch_nodes(db, None, None, alive, limit)
+    if not nodes:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No nodes available")
-    content = "\n".join(links) + "\n"
+    content = "\n".join(n.raw_link for n in nodes) + "\n"
     cache[cache_key] = (content, "text/plain", "freenode-plain.txt")
     return _build_response(content, "text/plain", "freenode-plain.txt")

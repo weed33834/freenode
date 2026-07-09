@@ -102,8 +102,11 @@ def safe_b64decode(data: str) -> bytes | None:
 
 
 def decode_bytes(data: bytes) -> str:
-    """Decode bytes to text, trying utf-8 then gbk then latin-1."""
-    for encoding in ("utf-8", "gbk", "latin-1"):
+    """Decode bytes to text, trying utf-8 then gbk, falling back to latin-1.
+
+    latin-1 映射每个字节，绝不会抛 UnicodeDecodeError，因此作为兜底编码。
+    """
+    for encoding in ("utf-8", "gbk"):
         try:
             return data.decode(encoding)
         except UnicodeDecodeError:

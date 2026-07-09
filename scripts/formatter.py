@@ -9,16 +9,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import yaml
-from parser import (
-    decode_vmess,
-    node_to_clash_config,
-    parse_hysteria2_link,
-    parse_hysteria_link,
-    parse_ss_link,
-    parse_trojan_link,
-    parse_tuic_link,
-    parse_vless_link,
-)
+from parser import node_to_clash_config
 
 from utils import NODES_DIR, is_private_host
 
@@ -34,33 +25,16 @@ def _node_info(item):
     return item, "unknown", None
 
 
-def _extract_host_from_link(link: str) -> str | None:
-    """Extract the server host from a node link without full Clash conversion."""
-    if not link or "://" not in link:
+def _extract_host_from_link(link: str | None) -> str | None:
+    """Extract the server host from a node link.
+
+    复用 node_to_clash_config 的协议分发，避免在这里再维护一份按 scheme
+    选 parser 的重复逻辑。
+    """
+    if not link:
         return None
-    scheme = link.split("://", 1)[0].lower()
-    if scheme == "vmess":
-        cfg = decode_vmess(link)
-        return cfg.get("add") if cfg else None
-    if scheme == "vless":
-        cfg = parse_vless_link(link)
-        return cfg.get("server") if cfg else None
-    if scheme == "trojan":
-        cfg = parse_trojan_link(link)
-        return cfg.get("server") if cfg else None
-    if scheme == "ss":
-        cfg = parse_ss_link(link)
-        return cfg.get("server") if cfg else None
-    if scheme == "hysteria":
-        cfg = parse_hysteria_link(link)
-        return cfg.get("server") if cfg else None
-    if scheme in ("hysteria2", "hy2"):
-        cfg = parse_hysteria2_link(link)
-        return cfg.get("server") if cfg else None
-    if scheme == "tuic":
-        cfg = parse_tuic_link(link)
-        return cfg.get("server") if cfg else None
-    return None
+    cfg = node_to_clash_config(link)
+    return cfg.get("server") if cfg else None
 
 
 def _compute_stats(items: list) -> dict:

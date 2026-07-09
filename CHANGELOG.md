@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Fixed
+- **打包缺失模块**：`pyproject.toml` 的 `[tool.setuptools]` 漏列 `dedup` 模块与 `adapters` 包，导致 `pip install freenode` 后 `freenode-update` 因 `ModuleNotFoundError: dedup` 启动失败。补全 `py-modules` 与 `packages`，CLI 入口恢复正常。
+- **流水线默认值不一致**：`scripts/update.py` 的 `MAX_NODES`/`MAX_PROXIES` 默认 500/200，与 `backend/app/config.py`（800/300）及所有文档不符。统一为 800/300，消除「同一项目两套默认值」的困惑。
+
+### Changed
+- **backend 性能**：`pipeline_service._upsert_nodes` 与 `run_verify_pipeline` 的逐条 `SELECT/UPDATE`（N+1）改为单次 `IN` 批量预取 + 内存改写 + 批量提交，后台流水线 round-trip 由 O(N) 降到 O(1)。
+- **scripts 去重**：`formatter._extract_host_from_link` 不再维护第二份按协议选 parser 的分发表，统一复用 `node_to_clash_config`，移除 7 个因此变成未使用的 parser import。
+- **backend 清理**：`database.py` 去掉 SQLAlchemy 2.x 已废弃的 `future=True`；`rate_limit.TokenBucket._touch` 移除不可达分支；`subscriptions.subscription_plain` 复用 `_fetch_nodes` 消除重复查询；`jobs._cleanup_job` 懒加载 import 上移；alembic 失败日志改用 `logger.exception` 保留 traceback。
+- **web 清理**：移除 `lib/admin-api.ts` 中未被引用的 `setAdminKey`/`isAuthed`/`getSourceLogs` 死代码；`components/subscribe-card.tsx` 移除多余的 `use client` 指令回归服务端组件。
+- **scripts 微优化**：`utils.decode_bytes` 去掉不可达的 latin-1 兜底分支；`discover_sources._pick_primary_file` 由 `sorted(...)[0]` 改为 `min(...)`（O(n)）。
+
+### Documentation
+- 修正 `README.md` / `README.zh-CN.md` / `docs-site/architecture.md` 协议清单：补齐 `hysteria://`、`hysteria2://`、`tuic://`，并说明 `ssr://` 仅识别不输出。
+- 修正 `README.zh-CN.md` / `docs-site/automation.md` / `docs-site/project-overview.md` 的环境变量默认值（`verify_nodes`/`max_nodes`/`max_proxies`）与代码对齐。
+- `docs-site/development.md`：Python 版本要求 3.10+ → 3.12+（与 `pyproject.toml` 一致）。
+- `docs-site/maintenance.md`：失效的数据源页面链接 `/sources` → `/docs/data-sources.html`。
+- `docs-site/security-audit.md`：验证步骤路径 `/workspace/proxiehub` → `/workspace/freenode`。
+- `docs-site/data-sources.md`：修正 `mahdibland-shadowsocks-eternity` 名称拼写，移除已不存在的 `gfpcom` 系列残留说明。
+- `landing/index.html`：页脚许可证 MIT → CNCL（与 LICENSE 一致）。
+- `.env.example`：默认值与代码对齐（800/300/true）。
+
 ## [1.4.0] - 2026-07-05
 
 ### Added

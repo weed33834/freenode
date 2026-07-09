@@ -252,28 +252,40 @@ async def run_verify_pipeline(
         now = _now()
         alive_count = 0
         async with db_session() as session:
+            # 一次 SELECT 拉所有目标 Node，改成在内存里改属性 + commit 时批量 flush，
+            # 避免 N 次 await session.execute(update(...)) 各自带一次 round-trip
+            target_ids = [nid for nid in node_id_by_link.values() if nid]
+            nodes_by_id: dict[int, Node] = (
+                {
+                    n.id: n
+                    for n in (
+                        await session.scalars(
+                            select(Node).where(Node.id.in_(target_ids))
+                        )
+                    ).all()
+                }
+                if target_ids
+                else {}
+            )
+            checks: list[NodeCheck] = []
             for link, result in result_map.items():
                 node_id = node_id_by_link.get(link)
                 if not node_id:
+                    continue
+                node = nodes_by_id.get(node_id)
+                if node is None:
                     continue
                 is_alive = bool(result.get("alive"))
                 latency = result.get("latency_ms")
                 fail_reason = result.get("error")
                 if is_alive:
                     alive_count += 1
-                # 直接 UPDATE，省一次 SELECT
-                await session.execute(
-                    update(Node)
-                    .where(Node.id == node_id)
-                    .values(
-                        is_alive=is_alive,
-                        last_latency_ms=latency,
-                        last_checked_at=now,
-                        fail_reason=fail_reason,
-                        updated_at=now,
-                    )
-                )
-                session.add(
+                node.is_alive = is_alive
+                node.last_latency_ms = latency
+                node.last_checked_at = now
+                node.fail_reason = fail_reason
+                node.updated_at = now
+                checks.append(
                     NodeCheck(
                         node_id=node_id,
                         checked_at=now,
@@ -282,6 +294,8 @@ async def run_verify_pipeline(
                         fail_reason=fail_reason,
                     )
                 )
+            if checks:
+                session.add_all(checks)
             await session.commit()
 
         # 6. 重新 publish 平面文件（DB 里 alive 节点 + 现有 proxies，不重新抓 proxies）
@@ -357,6 +371,21 @@ async def _upsert_nodes(
 
     async with db_session() as session:
         now = _now()
+        # 预取所有匹配指纹的现有节点，避免每个链接一次 SELECT（N+1）
+        existing_by_fp: dict[str, Node] = (
+            {
+                n.fingerprint: n
+                for n in (
+                    await session.scalars(
+                        select(Node).where(
+                            Node.fingerprint.in_([fp for _, _, fp in valid])
+                        )
+                    )
+                ).all()
+            }
+            if valid
+            else {}
+        )
         for link, fields, fingerprint in valid:
             result = result_map.get(link, {})
             is_alive = result.get("alive", False) if not skip_alive_state else None
@@ -364,9 +393,7 @@ async def _upsert_nodes(
             region = result.get("region", "unknown") or "unknown"
             fail_reason = result.get("error") if not skip_alive_state else None
 
-            existing = await session.scalar(
-                select(Node).where(Node.fingerprint == fingerprint)
-            )
+            existing = existing_by_fp.get(fingerprint)
             if existing:
                 existing.raw_link = link
                 existing.transport_config = fields["transport_config"]
@@ -441,19 +468,13 @@ async def _upsert_nodes(
 
 def _publish_files(links: list[str], proxies: list[str], result_map: dict) -> None:
     """Write the legacy flat subscription files (clash.yaml, v2ray.txt, ...)."""
-    settings = get_settings()
-    out_dir = Path(settings.nodes_output_dir)
+    out_dir = Path(get_settings().nodes_output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     # write_outputs expects either raw link strings or result dicts.
-    items: list = []
-    for link in links:
-        r = result_map.get(link)
-        if r:
-            items.append(r)
-        else:
-            items.append(link)
-    if not items:
-        items = links  # fall back to raw links
+    items: list = [
+        r if (r := result_map.get(link)) else link
+        for link in links
+    ]
     try:
         write_outputs(items, proxies)
     except Exception:

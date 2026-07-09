@@ -82,9 +82,9 @@ cd ../docs-site && npm install && npm run docs:build
 
 | 变量 | 默认值 | 说明 |
 |---|---|---|
-| `FREENODE_VERIFY_NODES` | `false` | 更新时是否启用 TCP 连通性校验 |
-| `FREENODE_MAX_NODES` | `500` | 输出节点链接最大数量 |
-| `FREENODE_MAX_PROXIES` | `200` | 输出 HTTP(S)/SOCKS4/SOCKS5 代理最大数量 |
+| `FREENODE_VERIFY_NODES` | `true` | 更新时是否启用 TCP 连通性校验 |
+| `FREENODE_MAX_NODES` | `800` | 输出节点链接最大数量 |
+| `FREENODE_MAX_PROXIES` | `300` | 输出 HTTP(S)/SOCKS4/SOCKS5 代理最大数量 |
 | `FREENODE_ALLOWED_HOSTS` | `raw.githubusercontent.com,gitcode.com,api.gitcode.com` | 爬虫额外允许的域名 |
 | `FREENODE_CRAWL_WORKERS` | `min(16, enabled_sources)` | 并发抓取源数量 |
 | `FREENODE_GEO_ENABLED` | `false` | 是否启用 GeoIP 地区分组 |

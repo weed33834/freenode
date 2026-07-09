@@ -1,5 +1,6 @@
 // 管理后台 API 调用层
-// key 只存 localStorage，请求带 X-API-Key，只走同源
+// 登录态由 auth-store.ts 统一管理（setAdminKey / clearAdminKey / useAuth），
+// 请求带 X-API-Key（见下方 authHeaders），只走同源
 
 import type { Source } from "./api";
 
@@ -8,16 +9,6 @@ const ADMIN_KEY_STORAGE = "freenode_admin_key";
 export function getAdminKey(): string {
   if (typeof window === "undefined") return "";
   return localStorage.getItem(ADMIN_KEY_STORAGE) || "";
-}
-
-export function setAdminKey(key: string): void {
-  if (typeof window === "undefined") return;
-  if (key) localStorage.setItem(ADMIN_KEY_STORAGE, key);
-  else localStorage.removeItem(ADMIN_KEY_STORAGE);
-}
-
-export function isAuthed(): boolean {
-  return !!getAdminKey();
 }
 
 export interface TaskStatus {
@@ -152,28 +143,10 @@ export interface TrendResponse {
   days: TrendPoint[];
 }
 
-export interface SourceFetchLog {
-  id: number;
-  source_id: number | null;
-  source_name: string;
-  started_at: string;
-  finished_at: string | null;
-  status: string;
-  raw_count: number;
-  parsed_count: number;
-  new_count: number;
-  error: string | null;
-  duration_ms: number | null;
-}
-
 export function getMetrics(): Promise<MetricsResponse> {
   return adminFetch<MetricsResponse>("/metrics");
 }
 
 export function getTrend(): Promise<TrendResponse> {
   return adminFetch<TrendResponse>("/metrics/trend");
-}
-
-export function getSourceLogs(sourceId: number, limit = 20): Promise<SourceFetchLog[]> {
-  return adminFetch<SourceFetchLog[]>(`/sources/${sourceId}/logs?limit=${limit}`);
 }

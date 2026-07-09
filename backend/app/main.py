@@ -59,8 +59,8 @@ async def lifespan(app: FastAPI):  # type: ignore[no-untyped-def]
         logger.warning("alembic not found, falling back to create_all (dev only)")
         async with get_engine().begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-    except Exception as e:
-        logger.error("alembic upgrade failed: %s", e)
+    except Exception:
+        logger.exception("alembic upgrade failed")
         raise
 
     # Start the scheduler.
