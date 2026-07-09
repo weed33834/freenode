@@ -1,6 +1,3 @@
-import os
-import pathlib
-
 """Shared fixtures for backend tests.
 
 Covers env cleanup, settings-cache isolation, and a temp SQLite DB.
@@ -13,7 +10,7 @@ from pathlib import Path
 import pytest
 
 # Ensure test data directory exists
-_data_dir = pathlib.Path(__file__).resolve().parent.parent / 'backend' / 'data'
+_data_dir = Path(__file__).resolve().parent.parent / 'data'
 _data_dir.mkdir(parents=True, exist_ok=True)
 
 
