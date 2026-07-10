@@ -4,13 +4,11 @@ from __future__ import annotations
 
 import json
 import os
-import shutil
-import subprocess
 import time
-import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+import httpx
 from adapters import get_adapter
 
 from utils import (
@@ -21,7 +19,6 @@ from utils import (
     get_logger,
     load_sources,
     safe_b64decode,
-    ssl_context,
     validate_url,
 )
 
@@ -50,39 +47,34 @@ def _load_reliability_scores() -> dict[str, float]:
         return {}
 
 
-def _fetch_with_curl(url: str, timeout: int, max_bytes: int = 50 * 1024 * 1024) -> str:
-    """Fetch via curl with bounded size/time limits."""
-    cmd = [
-        "curl",
-        "-fsSL",
-        "--proto", "=https",
-        "--max-time", str(timeout),
-        "--max-filesize", str(max_bytes),
-        "-A", USER_AGENT,
-        url,
-    ]
+def _fetch_with_httpx(url: str, timeout: int, max_bytes: int) -> str:
+    """用 httpx 流式抓取，强制 max_bytes 上限。
+
+    httpx 已是项目依赖（discover_sources/publish_mirrors 也在用），统一走它，
+    替代早期 urllib + curl subprocess 的混用方案。
+    """
     try:
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            timeout=timeout + 5,
-        )
-    except subprocess.TimeoutExpired:
-        raise FetchError("curl timed out")
-    if result.returncode != 0:
-        err = result.stderr.decode("utf-8", errors="ignore")[:200]
-        if result.returncode == 63 or "filesize" in err.lower():
-            raise FetchError(f"curl filesize exceeded: {err}")
-        raise FetchError(f"curl failed: {err}")
-    data = result.stdout[:max_bytes]
-    return decode_bytes(data)
-
-
-def _fetch_with_urllib(url: str, timeout: int) -> str:
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(req, timeout=timeout, context=ssl_context()) as resp:
-        data = resp.read()
-        return decode_bytes(data)
+        with httpx.Client(
+            timeout=timeout,
+            follow_redirects=True,
+            headers={"User-Agent": USER_AGENT},
+        ) as client, client.stream("GET", url) as resp:
+            resp.raise_for_status()
+            # 流式读取并在超限时立即中断，避免大响应撑爆内存
+            chunks: list[bytes] = []
+            size = 0
+            for chunk in resp.iter_bytes():
+                size += len(chunk)
+                if size > max_bytes:
+                    raise FetchError(f"response too large (>{max_bytes} bytes): {url}")
+                chunks.append(chunk)
+            return decode_bytes(b"".join(chunks))
+    except httpx.TimeoutException as exc:
+        raise FetchError(f"timed out: {exc}") from exc
+    except httpx.HTTPStatusError as exc:
+        raise FetchError(f"http {exc.response.status_code}: {url}") from exc
+    except httpx.HTTPError as exc:
+        raise FetchError(f"fetch failed: {exc}") from exc
 
 
 def fetch(
@@ -91,35 +83,23 @@ def fetch(
     retries: int = 1,
     max_bytes: int = 10 * 1024 * 1024,
 ) -> str:
-    """Fetch URL with retries, preferring curl if available for better network tolerance.
+    """Fetch URL with retries.
 
-    If curl fails because the response is too large or too slow, we avoid falling
-    back to urllib with the same parameters to save time.
+    过大/超时是确定性失败（重试也是同样结果），直接抛；其它网络错误重试一次。
     """
     validate_url(url)
     last_error: Exception | None = None
     for attempt in range(retries + 1):
         try:
-            if shutil.which("curl"):
-                try:
-                    return _fetch_with_curl(url, timeout, max_bytes=max_bytes)
-                except FetchError as exc:
-                    err = str(exc).lower()
-                    # Don't waste another attempt with urllib on oversized/slow payloads.
-                    if "timed out" in err or "filesize" in err or "max-filesize" in err:
-                        raise
-                    last_error = exc
-            return _fetch_with_urllib(url, timeout)
-        except Exception as exc:
+            return _fetch_with_httpx(url, timeout, max_bytes)
+        except FetchError as exc:
             last_error = exc
-            # Don't waste another attempt on deterministic failures
-            # (oversized or already-timed-out payloads).
-            if isinstance(exc, FetchError):
-                err = str(exc).lower()
-                if "timed out" in err or "filesize" in err or "max-filesize" in err:
-                    raise
-            if attempt < retries:
-                continue
+            err = str(exc).lower()
+            # 过大/超时不重试
+            if "timed out" in err or "too large" in err:
+                raise
+            if attempt >= retries:
+                raise
     raise last_error or FetchError(f"failed to fetch {url}")
 
 

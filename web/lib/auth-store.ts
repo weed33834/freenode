@@ -25,6 +25,12 @@ export function getAuthedSnapshot(): boolean {
   return typeof window !== "undefined" && !!localStorage.getItem(STORAGE_KEY);
 }
 
+// 读取当前 Key，供 admin-api.ts 拼 X-API-Key 用，避免在两处各自维护 storage key
+export function getAdminKey(): string {
+  if (typeof window === "undefined") return "";
+  return localStorage.getItem(STORAGE_KEY) || "";
+}
+
 export function getAuthedServerSnapshot(): boolean {
   return false;
 }

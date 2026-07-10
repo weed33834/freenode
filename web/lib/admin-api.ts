@@ -2,15 +2,13 @@
 // 登录态由 auth-store.ts 统一管理（setAdminKey / clearAdminKey / useAuth），
 // 请求带 X-API-Key（见下方 authHeaders），只走同源
 
+import type { components } from "./api-types";
 import type { Source } from "./api";
+import { getAdminKey } from "./auth-store";
 
-const ADMIN_KEY_STORAGE = "freenode_admin_key";
+type Schema<K extends keyof components["schemas"]> = components["schemas"][K];
 
-export function getAdminKey(): string {
-  if (typeof window === "undefined") return "";
-  return localStorage.getItem(ADMIN_KEY_STORAGE) || "";
-}
-
+// GET /tasks/{id} 后端返回裸 dict（无 schema），手写保留
 export interface TaskStatus {
   task_id: string;
   status: "running" | "completed" | "failed";
@@ -24,12 +22,10 @@ export interface TaskStatus {
   elapsed_seconds?: number;
 }
 
-export interface RefreshResponse {
-  task_id: string;
-  status: string;
-  message: string;
-}
+// POST /refresh 返回 TaskResponse，复用生成类型避免手写结构漂移
+export type RefreshResponse = Schema<"TaskResponse">;
 
+// DELETE /nodes/{id} 后端返回裸 dict（无 schema），手写保留
 export interface DeleteNodeResponse {
   id: number;
   deleted: boolean;
@@ -118,30 +114,10 @@ export function deleteSource(id: number): Promise<{ id: number; deleted: boolean
   });
 }
 
-export interface MetricsResponse {
-  nodes: {
-    total: number;
-    alive: number;
-    by_protocol: Record<string, number>;
-    by_region_top5: { region: string; count: number }[];
-  };
-  sources: { total: number; enabled: number };
-  last_pipeline: {
-    status: string;
-    finished_at: string;
-    alive_nodes: number | null;
-  } | null;
-}
-
-export interface TrendPoint {
-  date: string;
-  checked: number;
-  alive: number;
-}
-
-export interface TrendResponse {
-  days: TrendPoint[];
-}
+// 复用后端 schema，避免手写结构漂移
+export type MetricsResponse = Schema<"MetricsResponse">;
+export type TrendPoint = Schema<"TrendPoint">;
+export type TrendResponse = Schema<"TrendResponse">;
 
 export function getMetrics(): Promise<MetricsResponse> {
   return adminFetch<MetricsResponse>("/metrics");
