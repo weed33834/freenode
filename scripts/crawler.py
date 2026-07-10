@@ -143,6 +143,11 @@ def _fetch_source_safe(source: dict, category: str) -> dict | None:
         elapsed = time.perf_counter() - start
         logger.info("fetched %s in %.2fs", name, elapsed)
         entry = {"name": name, "text": text, "category": category}
+        # 透传 sources.json 里的元信息（供后端同步到 proxy_sources 表展示用）
+        if "update_interval" in source:
+            entry["update_interval"] = source["update_interval"]
+        if "protocols" in source:
+            entry["protocols"] = source["protocols"]
         if "proxy_scheme" in source:
             entry["proxy_scheme"] = source["proxy_scheme"]
         return entry

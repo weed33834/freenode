@@ -106,12 +106,25 @@ class SourceOut(ORMModel):
     enabled: bool
     decode_base64: bool
     proxy_scheme: str
+    update_interval: str | None
+    # DB 存逗号分隔字符串，对外暴露为 list（空串→[]）
+    protocols: list[str] = []
     last_fetch_at: datetime | None
     last_fetch_status: str | None
     last_nodes_added: int
     last_error: str | None
     consecutive_failures: int
     updated_at: datetime
+
+    @field_validator("protocols", mode="before")
+    @classmethod
+    def _split_protocols(cls, v):
+        # ORM 侧是逗号分隔字符串（可能为 None），转成 list[str]
+        if isinstance(v, str):
+            return [p for p in v.split(",") if p]
+        if v is None:
+            return []
+        return v
 
 
 # --------------------------------------------------------------------------- #

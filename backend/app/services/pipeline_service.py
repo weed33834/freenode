@@ -31,7 +31,7 @@ from verifier import can_reach_public_internet, verify_nodes  # type: ignore[imp
 from app.config import get_settings
 from app.core.cache import invalidate_all
 from app.database import db_session
-from app.models import Node, NodeCheck
+from app.models import Node, NodeCheck, ProxySource
 from app.pipeline import _SCRIPTS_DIR  # noqa: F401  (ensures scripts/ on path)
 from utils import get_logger  # type: ignore[import-not-found]
 
@@ -40,6 +40,40 @@ logger = get_logger("pipeline")
 
 def _now() -> datetime:
     return datetime.now(UTC)
+
+
+async def _sync_source_meta(all_sources: list[dict]) -> None:
+    """把 crawl 结果里的 update_interval / protocols 同步到 proxy_sources 表。
+
+    crawl() 已从 sources.json 透传这两个字段到每个 entry；按 name 匹配 DB 行，
+    缺失的源不创建（proxy_sources 表由 create_source API 维护，这里只回填展示信息）。
+    """
+    meta = {
+        item["name"]: (
+            item.get("update_interval"),
+            ",".join(item["protocols"]) if item.get("protocols") else None,
+        )
+        for item in all_sources
+        if item.get("name")
+    }
+    if not meta:
+        return
+    async with db_session() as session:
+        rows = (
+            await session.scalars(
+                select(ProxySource).where(ProxySource.name.in_(meta))
+            )
+        ).all()
+        changed = False
+        for src in rows:
+            interval, protocols = meta[src.name]
+            if src.update_interval != interval or src.protocols != protocols:
+                src.update_interval = interval
+                src.protocols = protocols
+                src.updated_at = _now()
+                changed = True
+        if changed:
+            await session.commit()
 
 
 # In-memory task registry for manual refresh tracking.
@@ -159,6 +193,9 @@ async def run_full_pipeline(verify: bool | None = None, task_id: str | None = No
                 all_links, result_map, node_sources, skip_alive_state=True
             )
         logger.info("upserted %d nodes (%d refreshed)", upserted, refreshed)
+
+        # 5.5 回填 sources.json 的 update_interval/protocols 到 proxy_sources 表（展示用）
+        await _sync_source_meta(node_sources + proxy_sources)
 
         # 6. Publish flat files
         await asyncio.to_thread(_publish_files, alive_links, all_proxies, result_map)

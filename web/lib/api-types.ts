@@ -714,6 +714,10 @@ export interface components {
             decode_base64: boolean;
             /** Proxy Scheme */
             proxy_scheme: string;
+            /** Update Interval */
+            update_interval: string | null;
+            /** Protocols */
+            protocols: string[];
             /** Last Fetch At */
             last_fetch_at: string | null;
             /** Last Fetch Status */

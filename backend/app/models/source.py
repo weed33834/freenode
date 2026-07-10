@@ -25,6 +25,10 @@ class ProxySource(Base):
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, index=True)
     decode_base64: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     proxy_scheme: Mapped[str] = mapped_column(String(16), nullable=False, default="http")
+    # 数据源元信息（从 config/sources.json 同步，仅展示用）：
+    # update_interval: "hourly" / "daily" / "30min" 等；protocols: 逗号分隔协议列表
+    update_interval: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    protocols: Mapped[str | None] = mapped_column(String(128), nullable=True)
 
     # Runtime state.
     last_fetch_at: Mapped[datetime | None] = mapped_column(nullable=True)

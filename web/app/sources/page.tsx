@@ -50,8 +50,8 @@ export default async function SourcesPage() {
     enabled: s.enabled,
     decode_base64: s.decode_base64,
     note: s.last_error || s.last_fetch_status || undefined,
-    update_interval: undefined as string | undefined,
-    protocols: undefined as string[] | undefined,
+    update_interval: s.update_interval ?? undefined,
+    protocols: s.protocols,
   }));
 
   const stats = {
