@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { StatCard } from "@/components/stat-card";
 import {
   Star,
   ExternalLink,
@@ -230,28 +231,15 @@ export default function PlatformsPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-        <div className="border border-border bg-surface p-4">
-          <Sparkles className="w-4 h-4 text-primary mb-2" />
-          <div className="text-xl font-semibold font-mono">{platforms.length}</div>
-          <div className="text-[10px] text-muted">收录仓库</div>
-        </div>
-        <div className="border border-border bg-surface p-4">
-          <Star className="w-4 h-4 text-primary mb-2" />
-          <div className="text-xl font-semibold font-mono">{featuredCount}</div>
-          <div className="text-[10px] text-muted">推荐仓库</div>
-        </div>
-        <div className="border border-border bg-surface p-4">
-          <Clock className="w-4 h-4 text-secondary mb-2" />
-          <div className="text-xl font-semibold font-mono">每日</div>
-          <div className="text-[10px] text-muted">主流更新频率</div>
-        </div>
-        <div className="border border-border bg-surface p-4">
-          <Filter className="w-4 h-4 text-warning mb-2" />
-          <div className="text-xl font-semibold font-mono">
-            {Array.from(new Set(platforms.flatMap((p) => p.protocols))).length}
-          </div>
-          <div className="text-[10px] text-muted">覆盖协议</div>
-        </div>
+        <StatCard icon={Sparkles} value={platforms.length} label="收录仓库" iconClassName="text-primary" />
+        <StatCard icon={Star} value={featuredCount} label="推荐仓库" iconClassName="text-primary" />
+        <StatCard icon={Clock} value="每日" label="主流更新频率" iconClassName="text-secondary" />
+        <StatCard
+          icon={Filter}
+          value={Array.from(new Set(platforms.flatMap((p) => p.protocols))).length}
+          label="覆盖协议"
+          iconClassName="text-warning"
+        />
       </div>
 
       {/* Filters */}

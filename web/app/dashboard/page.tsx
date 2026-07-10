@@ -14,7 +14,6 @@ import {
   Activity,
   BarChart3,
   Globe,
-  LogIn,
   LogOut,
   Server,
   Database,
@@ -27,18 +26,12 @@ import {
   type TrendPoint,
   type TrendResponse,
 } from "@/lib/admin-api";
-import { useAuth, setAdminKey, clearAdminKey } from "@/lib/auth-store";
+import { useAuth, clearAdminKey } from "@/lib/auth-store";
+import { AdminLogin } from "@/components/admin-login";
+import { DistributionBars } from "@/components/distribution-bars";
 
 export default function DashboardPage() {
   const authed = useAuth();
-  const [keyInput, setKeyInput] = useState("");
-
-  const handleLogin = () => {
-    const key = keyInput.trim();
-    if (!key) return;
-    setAdminKey(key);
-    setKeyInput("");
-  };
 
   const handleLogout = () => {
     clearAdminKey();
@@ -46,42 +39,10 @@ export default function DashboardPage() {
 
   if (!authed) {
     return (
-      <div className="max-w-md mx-auto px-4 py-16">
-        <h1 className="text-2xl font-semibold mb-2">仪表盘</h1>
-        <p className="text-sm text-muted mb-6">
-          输入管理 API Key 登录。管理后台和仪表盘共用同一个 Key。
-        </p>
-        <div className="border border-border bg-surface p-5 space-y-3">
-          <input
-            type="password"
-            value={keyInput}
-            onChange={(e) => setKeyInput(e.target.value)}
-            placeholder="输入管理 API Key"
-            aria-label="管理 API Key"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleLogin();
-            }}
-            className="w-full bg-background border border-border px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/40"
-          />
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={handleLogin}
-              disabled={!keyInput.trim()}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary text-background text-sm font-medium hover:bg-primary-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <LogIn className="w-4 h-4" /> 登录
-            </button>
-            <button
-              type="button"
-              onClick={() => setKeyInput("")}
-              className="inline-flex items-center gap-1.5 px-4 py-2 border border-border text-sm text-muted hover:text-foreground hover:bg-surface-hover transition-colors"
-            >
-              取消
-            </button>
-          </div>
-        </div>
-      </div>
+      <AdminLogin
+        title="仪表盘"
+        description="输入管理 API Key 登录。管理后台和仪表盘共用同一个 Key。"
+      />
     );
   }
 
@@ -414,40 +375,5 @@ function RegionSection({
       </div>
       <DistributionBars items={items} total={total} emptyText="暂无地区数据" />
     </section>
-  );
-}
-
-function DistributionBars({
-  items,
-  total,
-  emptyText,
-}: {
-  items: { label: string; count: number }[];
-  total: number;
-  emptyText: string;
-}) {
-  if (items.length === 0 || total === 0) {
-    return <p className="text-xs text-muted">{emptyText}</p>;
-  }
-  return (
-    <div className="space-y-2">
-      {items.map((item) => (
-        <div key={item.label} className="flex items-center gap-3 text-xs">
-          <span
-            className="w-24 shrink-0 font-mono uppercase truncate"
-            title={item.label}
-          >
-            {item.label}
-          </span>
-          <div className="flex-1 h-2 bg-background border border-border overflow-hidden">
-            <div
-              className="h-full bg-primary"
-              style={{ width: `${(item.count / total) * 100}%` }}
-            />
-          </div>
-          <span className="w-12 text-right font-mono">{item.count}</span>
-        </div>
-      ))}
-    </div>
   );
 }

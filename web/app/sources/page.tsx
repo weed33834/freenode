@@ -9,6 +9,8 @@ export const metadata: Metadata = {
 import { SourceTable } from "@/components/source-table";
 import { ProtocolChart } from "@/components/protocol-chart";
 import { RegionCloud } from "@/components/region-cloud";
+import { StatCard } from "@/components/stat-card";
+import { DistributionBars } from "@/components/distribution-bars";
 import Link from "next/link";
 import {
   Shield,
@@ -106,28 +108,25 @@ export default async function SourcesPage() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-        <div className="border border-border bg-surface p-4">
-          <Database className="w-4 h-4 text-muted mb-2" />
-          <div className="text-xl font-semibold font-mono">{stats.totalSources}</div>
-          <div className="text-[10px] text-muted">数据源总数</div>
-        </div>
-        <div className="border border-border bg-surface p-4">
-          <CheckCircle2 className="w-4 h-4 text-success mb-2" />
-          <div className="text-xl font-semibold font-mono">{stats.enabledSources}</div>
-          <div className="text-[10px] text-muted">已启用源</div>
-        </div>
-        <div className="border border-border bg-surface p-4">
-          <RefreshCw className="w-4 h-4 text-secondary mb-2" />
-          <div className="text-xl font-semibold font-mono">
-            {Object.keys(stats.protocolCounts).length || 0}
-          </div>
-          <div className="text-[10px] text-muted">识别协议</div>
-        </div>
-        <div className="border border-border bg-surface p-4">
-          <Shield className="w-4 h-4 text-warning mb-2" />
-          <div className="text-xl font-semibold font-mono">{stats.totalNodes}</div>
-          <div className="text-[10px] text-muted">当前节点数</div>
-        </div>
+        <StatCard icon={Database} value={stats.totalSources} label="数据源总数" />
+        <StatCard
+          icon={CheckCircle2}
+          value={stats.enabledSources}
+          label="已启用源"
+          iconClassName="text-success"
+        />
+        <StatCard
+          icon={RefreshCw}
+          value={Object.keys(stats.protocolCounts).length || 0}
+          label="识别协议"
+          iconClassName="text-secondary"
+        />
+        <StatCard
+          icon={Shield}
+          value={stats.totalNodes}
+          label="当前节点数"
+          iconClassName="text-warning"
+        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
@@ -156,20 +155,13 @@ export default async function SourcesPage() {
             <Clock className="w-4 h-4 text-primary" />
             更新频率分布
           </h3>
-          <div className="space-y-2">
-            {intervalDistribution.map(([interval, count]) => (
-              <div key={interval} className="flex items-center gap-3 text-xs">
-                    <span className="w-20 shrink-0 text-muted">{interval}</span>
-                    <div className="flex-1 h-2 bg-background border border-border overflow-hidden">
-                      <div
-                        className="h-full bg-primary"
-                        style={{ width: `${(count / maxIntervalCount) * 100}%` }}
-                      />
-                    </div>
-                    <span className="w-8 text-right font-mono">{count}</span>
-                  </div>
-                ))}
-          </div>
+          <DistributionBars
+            items={intervalDistribution.map(([label, count]) => ({ label, count }))}
+            total={maxIntervalCount}
+            emptyText="暂无更新频率数据"
+            labelWidth="w-20"
+            countWidth="w-8"
+          />
         </div>
       </div>
 
@@ -184,26 +176,25 @@ export default async function SourcesPage() {
       <div className="mb-8">
         <h2 className="text-lg font-semibold mb-4">数据源健康度</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="border border-border bg-surface p-4">
-            <Database className="w-4 h-4 text-muted mb-2" />
-            <div className="text-xl font-semibold font-mono">{stats.totalSources}</div>
-            <div className="text-[10px] text-muted">总收录源数量</div>
-          </div>
-          <div className="border border-border bg-surface p-4">
-            <Activity className="w-4 h-4 text-success mb-2" />
-            <div className="text-xl font-semibold font-mono">{activeSources}</div>
-            <div className="text-[10px] text-muted">活跃源数量</div>
-          </div>
-          <div className="border border-border bg-surface p-4">
-            <BadgeCheck className="w-4 h-4 text-primary mb-2" />
-            <div className="text-xl font-semibold font-mono">{documentedSources}</div>
-            <div className="text-[10px] text-muted">已标注更新源</div>
-          </div>
-          <div className="border border-border bg-surface p-4">
-            <Layers className="w-4 h-4 text-secondary mb-2" />
-            <div className="text-xl font-semibold font-mono">{avgProtocolCoverage}</div>
-            <div className="text-[10px] text-muted">平均协议覆盖数</div>
-          </div>
+          <StatCard icon={Database} value={stats.totalSources} label="总收录源数量" />
+          <StatCard
+            icon={Activity}
+            value={activeSources}
+            label="活跃源数量"
+            iconClassName="text-success"
+          />
+          <StatCard
+            icon={BadgeCheck}
+            value={documentedSources}
+            label="已标注更新源"
+            iconClassName="text-primary"
+          />
+          <StatCard
+            icon={Layers}
+            value={avgProtocolCoverage}
+            label="平均协议覆盖数"
+            iconClassName="text-secondary"
+          />
         </div>
       </div>
 

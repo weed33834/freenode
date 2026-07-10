@@ -8,6 +8,8 @@ export const metadata: Metadata = {
     "查看 FreeNode 最近一次构建的节点数量、验证通过率、平均延迟、协议覆盖与地区分布。",
 };
 import { ProtocolChart } from "@/components/protocol-chart";
+import { StatCard } from "@/components/stat-card";
+import { DistributionBars } from "@/components/distribution-bars";
 import {
   Clock,
   Server,
@@ -135,59 +137,48 @@ export default async function StatusPage() {
         {cards.map((card) => {
           const Icon = card.icon;
           return (
-            <div key={card.label} className="border border-border bg-surface p-4">
-              <Icon className="w-4 h-4 text-muted mb-3" />
-              <div className="text-xl font-semibold font-mono mb-0.5">
-                {card.value}
-              </div>
-              <div className="text-xs text-muted">{card.label}</div>
-              <div className="mt-2 text-[10px] text-muted leading-relaxed">
-                {card.hint}
-              </div>
-            </div>
+            <StatCard
+              key={card.label}
+              value={card.value}
+              label={card.label}
+              icon={Icon}
+              hint={card.hint}
+            />
           );
         })}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="border border-border bg-surface p-4">
-          <Signal className="w-4 h-4 text-muted mb-3" />
-          <div className="text-xl font-semibold font-mono mb-0.5">
-            {quality ? `${quality.survivalRate.toFixed(1)}%` : "未启用"}
-          </div>
-          <div className="text-xs text-muted">验证通过率</div>
-          <div className="mt-2 text-[10px] text-muted leading-relaxed">
-            {quality
+        <StatCard
+          icon={Signal}
+          value={quality ? `${quality.survivalRate.toFixed(1)}%` : "未启用"}
+          label="验证通过率"
+          hint={
+            quality
               ? `${quality.alive}/${quality.total} 个节点通过 TCP 校验`
-              : "本次生成未启用验证，可在本地运行 --verify 启用"}
-          </div>
-        </div>
-        <div className="border border-border bg-surface p-4">
-          <Gauge className="w-4 h-4 text-muted mb-3" />
-          <div className="text-xl font-semibold font-mono mb-0.5">
-            {quality ? `${quality.avgLatency.toFixed(0)} ms` : "未启用"}
-          </div>
-          <div className="text-xs text-muted">平均延迟</div>
-          <div className="mt-2 text-[10px] text-muted leading-relaxed">
-            {quality
-              ? "通过验证节点的平均延迟"
-              : "未启用验证时无延迟数据"}
-          </div>
-        </div>
-        <div className="border border-border bg-surface p-4">
-          <TrendingUp className="w-4 h-4 text-muted mb-3" />
-          <div className="text-xl font-semibold font-mono mb-0.5">
-            {topRegions.length > 0
+              : "本次生成未启用验证，可在本地运行 --verify 启用"
+          }
+        />
+        <StatCard
+          icon={Gauge}
+          value={quality ? `${quality.avgLatency.toFixed(0)} ms` : "未启用"}
+          label="平均延迟"
+          hint={quality ? "通过验证节点的平均延迟" : "未启用验证时无延迟数据"}
+        />
+        <StatCard
+          icon={TrendingUp}
+          value={
+            topRegions.length > 0
               ? topRegions.map((r) => r.region.toUpperCase()).join(" / ")
-              : "暂无数据"}
-          </div>
-          <div className="text-xs text-muted">地区 TOP3</div>
-          <div className="mt-2 text-[10px] text-muted leading-relaxed">
-            {topRegions.length > 0
+              : "暂无数据"
+          }
+          label="地区 TOP3"
+          hint={
+            topRegions.length > 0
               ? topRegions.map((r) => `${r.region.toUpperCase()}: ${r.count}`).join(" · ")
-              : "未生成地区分布数据"}
-          </div>
-        </div>
+              : "未生成地区分布数据"
+          }
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -246,22 +237,12 @@ export default async function StatusPage() {
             地区数据暂未生成，可在本地启用 FREENODE_GEO_ENABLED=true 生成
           </p>
         ) : (
-          <div className="space-y-2">
-            {regionEntries.map(([region, count]) => (
-              <div key={region} className="flex items-center gap-3 text-xs">
-                <span className="w-24 shrink-0 text-muted font-mono uppercase">
-                  {region}
-                </span>
-                <div className="flex-1 h-2 bg-background border border-border overflow-hidden">
-                  <div
-                    className="h-full bg-primary"
-                    style={{ width: `${(count / maxRegionCount) * 100}%` }}
-                  />
-                </div>
-                <span className="w-10 text-right font-mono">{count}</span>
-              </div>
-            ))}
-          </div>
+          <DistributionBars
+            items={regionEntries.map(([label, count]) => ({ label, count }))}
+            total={maxRegionCount}
+            emptyText="暂无地区数据"
+            countWidth="w-10"
+          />
         )}
       </div>
 

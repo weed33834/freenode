@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { fetchNodes, type Node, type NodeQuery } from "@/lib/api";
 import { Pagination } from "@/components/pagination";
+import { StatusBadge } from "@/components/status-badge";
 
 const PAGE_SIZE = 20;
 
@@ -202,13 +203,9 @@ export function NodesExplorer({
                 </td>
                 <td className="px-4 py-2.5">
                   {node.is_alive ? (
-                    <span className="inline-flex items-center gap-1 text-success text-xs font-medium px-1.5 py-0.5 border border-success/20">
-                      可用
-                    </span>
+                    <StatusBadge tone="success">可用</StatusBadge>
                   ) : (
-                    <span className="inline-flex items-center gap-1 text-muted text-xs font-medium px-1.5 py-0.5 border border-border">
-                      失效
-                    </span>
+                    <StatusBadge tone="muted">失效</StatusBadge>
                   )}
                 </td>
               </tr>

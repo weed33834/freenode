@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Check, ExternalLink, X, Filter } from "lucide-react";
+import { StatusBadge } from "@/components/status-badge";
 
 interface Source {
   name: string;
@@ -133,13 +134,9 @@ export function SourceTable({ sources }: SourceTableProps) {
               <tr key={source.name} className="hover:bg-surface-hover/50 transition-colors">
                 <td className="px-4 py-2.5">
                   {source.enabled ? (
-                    <span className="inline-flex items-center gap-1 text-success text-xs font-medium px-1.5 py-0.5 border border-success/20">
-                      <Check className="w-3 h-3" /> 启用
-                    </span>
+                    <StatusBadge tone="success"><Check className="w-3 h-3" /> 启用</StatusBadge>
                   ) : (
-                    <span className="inline-flex items-center gap-1 text-muted text-xs font-medium px-1.5 py-0.5 border border-border">
-                      <X className="w-3 h-3" /> 禁用
-                    </span>
+                    <StatusBadge tone="muted"><X className="w-3 h-3" /> 禁用</StatusBadge>
                   )}
                 </td>
                 <td className="px-4 py-2.5 font-medium">{source.name}</td>
