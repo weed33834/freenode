@@ -22,11 +22,12 @@ async def get_stats(db: AsyncSession = Depends(get_db)) -> GlobalStats:
     cached = cache.get("stats:global")
     if cached is not None:
         return cached
-    base = select(Node).where(Node.is_deleted == False)  # noqa: E712
-    total = await db.scalar(select(func.count()).select_from(base.subquery())) or 0
+    total = await db.scalar(
+        select(func.count()).select_from(Node).where(Node.is_deleted == False)  # noqa: E712
+    ) or 0
     alive = await db.scalar(
-        select(func.count()).select_from(
-            base.where(Node.is_alive == True).subquery()  # noqa: E712
+        select(func.count()).select_from(Node).where(
+            Node.is_deleted == False, Node.is_alive == True  # noqa: E712
         )
     ) or 0
     avg_lat = await db.scalar(
@@ -40,7 +41,7 @@ async def get_stats(db: AsyncSession = Depends(get_db)) -> GlobalStats:
 
     total_sources = await db.scalar(select(func.count()).select_from(ProxySource)) or 0
     enabled_sources = await db.scalar(
-        select(func.count()).select_from(select(ProxySource).where(ProxySource.enabled == True).subquery())  # noqa: E712
+        select(func.count()).select_from(ProxySource).where(ProxySource.enabled == True)  # noqa: E712
     ) or 0
 
     result = GlobalStats(

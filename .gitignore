@@ -7,11 +7,11 @@ __pycache__/
 build/
 .venv/
 venv/
+.pytest_cache/
+.ruff_cache/
 
 # 工具缓存
-.ruff_cache/
 .mypy_cache/
-.pytest_cache/
 .cache/
 .turbo/
 
@@ -55,3 +55,4 @@ out/
 web/.next/
 web/dist/
 web/out/
+*.tsbuildinfo

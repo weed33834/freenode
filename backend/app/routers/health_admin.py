@@ -50,13 +50,11 @@ async def health(db: AsyncSession = Depends(get_db)) -> HealthOut:
     """Service health check. Returns ``degraded`` on error — details go to logs."""
     try:
         total = await db.scalar(
-            select(func.count()).select_from(
-                select(Node).where(Node.is_deleted == False).subquery()  # noqa: E712
-            )
+            select(func.count()).select_from(Node).where(Node.is_deleted == False)  # noqa: E712
         ) or 0
         alive = await db.scalar(
-            select(func.count()).select_from(
-                select(Node).where(Node.is_deleted == False, Node.is_alive == True).subquery()  # noqa: E712
+            select(func.count()).select_from(Node).where(
+                Node.is_deleted == False, Node.is_alive == True  # noqa: E712
             )
         ) or 0
         last_updated = await db.scalar(
@@ -243,13 +241,11 @@ async def get_metrics(db: AsyncSession = Depends(get_db)) -> MetricsResponse:
     """Aggregated metrics for the admin dashboard."""
     # 节点总数 / 存活数（不算软删的）。
     total = await db.scalar(
-        select(func.count()).select_from(
-            select(Node).where(Node.is_deleted == False).subquery()  # noqa: E712
-        )
+        select(func.count()).select_from(Node).where(Node.is_deleted == False)  # noqa: E712
     ) or 0
     alive = await db.scalar(
-        select(func.count()).select_from(
-            select(Node).where(Node.is_deleted == False, Node.is_alive == True).subquery()  # noqa: E712
+        select(func.count()).select_from(Node).where(
+            Node.is_deleted == False, Node.is_alive == True  # noqa: E712
         )
     ) or 0
 
@@ -278,9 +274,7 @@ async def get_metrics(db: AsyncSession = Depends(get_db)) -> MetricsResponse:
     # 数据源总数 / 启用数。
     src_total = await db.scalar(select(func.count()).select_from(ProxySource)) or 0
     src_enabled = await db.scalar(
-        select(func.count()).select_from(
-            select(ProxySource).where(ProxySource.enabled == True).subquery()  # noqa: E712
-        )
+        select(func.count()).select_from(ProxySource).where(ProxySource.enabled == True)  # noqa: E712
     ) or 0
 
     # 最近一次完成的流水线任务（completed / failed），按结束时间取最新。

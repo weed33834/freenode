@@ -91,6 +91,11 @@ export default async function SourcesPage() {
       ? Math.max(...intervalDistribution.map(([, count]) => count))
       : 0;
 
+  // 协议覆盖列表：去重 + 排序，下面标签与计数复用同一份
+  const coveredProtocols = Array.from(
+    new Set(stats.sources.flatMap((s) => s.protocols || []))
+  ).sort();
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
       <div className="mb-10">
@@ -132,21 +137,17 @@ export default async function SourcesPage() {
             协议覆盖
           </h3>
           <div className="flex flex-wrap gap-2">
-            {Array.from(
-              new Set(stats.sources.flatMap((s) => s.protocols || []))
-            )
-              .sort()
-              .map((protocol) => (
-                <span
-                  key={protocol}
-                  className="font-mono text-xs px-2 py-1 border border-border text-muted uppercase"
-                >
-                  {protocol}
-                </span>
-              ))}
+            {coveredProtocols.map((protocol) => (
+              <span
+                key={protocol}
+                className="font-mono text-xs px-2 py-1 border border-border text-muted uppercase"
+              >
+                {protocol}
+              </span>
+            ))}
           </div>
           <p className="mt-3 text-xs text-muted">
-            当前数据源声明覆盖 {new Set(stats.sources.flatMap((s) => s.protocols || [])).size} 种协议。
+            当前数据源声明覆盖 {coveredProtocols.length} 种协议。
           </p>
         </div>
 
