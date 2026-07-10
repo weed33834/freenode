@@ -92,14 +92,14 @@ flowchart LR
     D --> E[formatter.py<br/>多格式输出]
     E --> F[nodes/<br/>clash.yaml / v2ray.txt / proxies.txt]
     E --> G[web/<br/>前端数据展示]
-    H[GitHub Actions<br/>定时触发] --> B
+    H[GitHub Actions<br/>手动 / 本地] --> B
 ```
 
 1. `crawler.py` 读取 `config/sources.json`，并发抓取各个公开源。
 2. `parser.py` 从原始内容中提取 `ss://`、`vmess://`、`vless://`、`trojan://`、`hysteria://`、`hysteria2://`、`tuic://` 以及 `http(s)://`、`socks4://`、`socks5://` 等链接。
 3. `verifier.py` 在启用时对节点进行轻量级 TCP 连通与延迟测试。
 4. `formatter.py` 将解析后的节点生成 Clash、V2Ray 与 HTTP(S)/SOCKS4/SOCKS5 格式，并可选输出地区分组。
-5. GitHub Actions 每日 UTC 02:00 运行完整流水线，并将结果提交到 GitHub 与 GitCode 镜像。
+5. 流水线按需运行（本地 `scripts/update.py`、部署后后端调度、或手动触发 `Update Nodes` 工作流），生成的 `nodes/` 推送到 GitHub；GitCode 镜像相同内容。
 
 ---
 

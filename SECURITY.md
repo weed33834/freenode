@@ -30,7 +30,7 @@ This project follows these security practices:
 - All changes require Pull Request review before merging
 - CI pipeline includes security scanning (CodeQL, dependency review)
 - No secrets or credentials are committed to the repository
-- Dependencies are kept up to date via Dependabot
+- Dependencies are reviewed and updated manually by maintainers (Dependabot is disabled)
 
 ## Disclaimer
 

@@ -113,7 +113,7 @@ Run through this before every push. If anything is red, fix it — don't skip. O
 - [ ] GitHub Actions CI is green (check 1–2 min after push)
 - [ ] Open PRs and Issues are triaged or replied to
 - [ ] Both remotes (GitHub + GitCode) have the same HEAD
-- [ ] Dependabot PRs are either merged or closed — don't leave them hanging
+- [ ] Dependency updates are reviewed and applied as needed (no bot PRs to triage)
 - [ ] Commit messages follow Conventional Commits (feat / fix / docs / chore / refactor)
 
 ### Docs and code style

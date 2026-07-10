@@ -14,7 +14,7 @@
 
 ## 节点多久更新一次？
 
-GitHub Actions 每天 UTC 02:00 运行一次更新流程。你也可以在 Actions 标签页中手动触发。
+节点更新按需运行：在 Actions 标签页手动触发 `Update Nodes` 工作流，或本地跑 `python3 scripts/update.py`。部署后端后由后端调度自动更新。
 
 ## 如何添加新的数据源？
 

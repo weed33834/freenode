@@ -1,8 +1,8 @@
 name: Update Nodes
 
+# ⚠️ 自动调度已停用：节点更新改为人工触发（“自己来部署”）。
+# 需要更新节点时，在 Actions 页面手动 Run workflow，或在本地跑 `python3 scripts/update.py`。
 on:
-  schedule:
-    - cron: '0 2 * * *'
   workflow_dispatch:
 
 permissions:

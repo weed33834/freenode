@@ -85,12 +85,11 @@ vmess://uuid@example.com:443?...#Node_002
 
 ## GitHub Actions 运行频率
 
-### 每日自动更新
+### 节点更新
 
 - **工作流**：`.github/workflows/update-nodes.yml`
 - **触发条件**：
-  - 定时：每天 UTC 02:00（北京时间 10:00）
-  - 手动：仓库管理员可在 Actions 页面点击“Run workflow”
+  - 手动：仓库管理员在 Actions 页面点击“Run workflow”（自动定时调度已停用）
 - **执行内容**：
   1. 安装 Python 依赖。
   2. 运行 `python3 scripts/update.py --verify`（开启节点验证）。

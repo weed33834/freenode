@@ -117,7 +117,7 @@ flowchart LR
 
 | 文件/目录 | 说明 |
 |---|---|
-| `.github/workflows/update-nodes.yml` | 每日 UTC 02:00 触发更新流水线 |
+| `.github/workflows/update-nodes.yml` | 手动触发更新流水线（Run workflow） |
 | `.github/workflows/ci.yml` | push / PR 时执行 Python 与 Web 检查 |
 | `.github/workflows/deploy-docs.yml` | 构建 VitePress 文档站并部署到 GitHub Pages |
 | `backend/docker-compose.yml` | Docker 自托管编排（Caddy + FastAPI + Next.js） |

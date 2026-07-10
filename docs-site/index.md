@@ -27,8 +27,8 @@ features:
     title: 多格式订阅
     details: 同时提供 Clash、V2Ray 与 HTTP(S)/SOCKS4/SOCKS5 三种格式，覆盖主流客户端与使用场景。
   - icon: 🔄
-    title: 每日自动更新
-    details: GitHub Actions 每天 UTC 02:00 自动抓取、解析、校验并发布最新节点。
+    title: 按需更新
+    details: 流水线可本地运行、部署后由后端调度，或手动触发 GitHub Actions 抓取、解析、校验并发布最新节点。
   - icon: 🔍
     title: 数据源透明
     details: 所有公开数据源与更新频率均可在 config/sources.json 中审计与贡献。

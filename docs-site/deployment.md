@@ -179,11 +179,11 @@ GitHub Raw 和 GitCode Raw 地址是固定的，始终写入 `mirrors.json`。
 
 ## 文档站点（GitHub Pages）
 
-`docs-site/` 通过 `.github/workflows/deploy-docs.yml` 构建 VitePress 并部署到 GitHub Pages，触发条件为 `docs-site/**` 目录变更或手动运行。访问地址：`https://ms33834.github.io/freenode/`。
+`docs-site/` 通过 `.github/workflows/deploy-docs.yml` 构建 VitePress 并部署到 GitHub Pages，触发条件为手动运行（在 Actions 页面 Run workflow）。访问地址：`https://ms33834.github.io/freenode/`。
 
-## 节点自动更新（update-nodes.yml）
+## 节点更新（update-nodes.yml）
 
-每日 UTC 02:00 自动运行：
+手动触发（在 Actions 页面 Run workflow）后运行：
 
 1. 检出代码
 2. 安装 Python 依赖

@@ -1,11 +1,9 @@
 name: Source Health Check
 
+# ⚠️ 自动触发已停用：数据源健康检查改为人工运行（“自己来”）。
+# 在 Actions 页面手动 Run workflow 检查连续失败的源并开/关 issue。
+
 on:
-  workflow_run:
-    # 在 update-nodes 跑完后触发，避免重复跑流水线
-    workflows: ["Update Nodes"]
-    types:
-      - completed
   workflow_dispatch:
 
 permissions:
@@ -18,8 +16,6 @@ concurrency:
 
 jobs:
   report-failing-sources:
-    # 只在 upstream 成功时跑；失败时 update-nodes 自己会留日志
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

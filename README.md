@@ -25,7 +25,7 @@
 
 ## What is FreeNode?
 
-FreeNode runs a daily pipeline that fetches public proxy and node lists from the internet, parses them, optionally verifies connectivity, and writes out subscription files in three formats: Clash YAML, V2Ray, and a plain HTTP(S)/SOCKS4/SOCKS5 proxy list.
+FreeNode runs a pipeline that fetches public proxy and node lists from the internet, parses them, optionally verifies connectivity, and writes out subscription files in three formats: Clash YAML, V2Ray, and a plain HTTP(S)/SOCKS4/SOCKS5 proxy list. The pipeline runs on demand — locally via `scripts/update.py`, via the backend scheduler after deployment, or by manually triggering the `Update Nodes` workflow.
 
 The project itself **does not operate any proxy or VPN servers**. It only aggregates, parses, and reformats publicly available resources. All sources, scripts, and configs are open for community audit and contribution.
 
@@ -92,14 +92,14 @@ flowchart LR
     D --> E[formatter.py<br/>multi-format output]
     E --> F[nodes/<br/>clash.yaml / v2ray.txt / proxies.txt]
     E --> G[web/<br/>frontend + API]
-    H[GitHub Actions<br/>daily trigger] --> B
+    H[GitHub Actions<br/>manual / local] --> B
 ```
 
 1. `crawler.py` reads `config/sources.json` and fetches sources concurrently.
 2. `parser.py` extracts `ss://`, `vmess://`, `vless://`, `trojan://`, `hysteria://`, `hysteria2://`, `tuic://`, and `http(s)://`, `socks4://`, `socks5://` links.
 3. `verifier.py` does a lightweight TCP connect + latency test (when enabled).
 4. `formatter.py` writes Clash, V2Ray, and HTTP(S)/SOCKS4/SOCKS5 outputs, plus an optional regions.json.
-5. GitHub Actions runs the full pipeline daily at UTC 02:00 and pushes the regenerated `nodes/` to GitHub; GitCode mirrors the same content.
+5. The pipeline is run on demand (locally via `scripts/update.py`, the backend scheduler, or a manual `Update Nodes` workflow run) and the regenerated `nodes/` is pushed to GitHub; GitCode mirrors the same content.
 
 ---
 

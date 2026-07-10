@@ -4,15 +4,11 @@ name: Deploy Pages
 #   /          轻量展示页（landing/，纯静态 HTML，介绍项目并跳转仓库）
 #   /docs/     完整文档站（docs-site/，VitePress 构建）
 # 前端 web/ 是带后端的动态应用，生产走 Docker Compose + Caddy，不进 Pages。
+#
+# ⚠️ 自动部署已停用：改为人工触发（“自己来部署”）。
+# 文档/落地页更新后，在 Actions 页面手动 Run workflow 部署到 GitHub Pages。
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'landing/**'
-      - 'docs-site/**'
-      - '.github/workflows/deploy-docs.yml'
   workflow_dispatch:
 
 permissions:
