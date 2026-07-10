@@ -88,19 +88,16 @@ def fetch(
     过大/超时是确定性失败（重试也是同样结果），直接抛；其它网络错误重试一次。
     """
     validate_url(url)
-    last_error: Exception | None = None
     for attempt in range(retries + 1):
         try:
             return _fetch_with_httpx(url, timeout, max_bytes)
         except FetchError as exc:
-            last_error = exc
             err = str(exc).lower()
             # 过大/超时不重试
             if "timed out" in err or "too large" in err:
                 raise
             if attempt >= retries:
                 raise
-    raise last_error or FetchError(f"failed to fetch {url}")
 
 
 def maybe_decode_base64(text: str) -> str:

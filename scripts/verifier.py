@@ -8,12 +8,14 @@ import ssl
 import threading
 import time
 import urllib.request
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import urlparse
 
+from cachetools.func import ttl_cache
 from parser import decode_vmess, parse_ss_link, parse_trojan_link, parse_vless_link
 
-from utils import get_logger, is_private_host
+from utils import get_logger, is_private_host, protocol_of
 
 TIMEOUT = 5
 MAX_WORKERS = 50
@@ -35,7 +37,6 @@ def _to_valid_port(port_raw) -> int | None:
     return port if 1 <= port <= 65535 else None
 
 
-_geo_cache: dict[str, str] = {}
 _geo_lock = threading.Lock()
 _last_geo_request = 0.0
 
@@ -190,18 +191,15 @@ def _fetch_geo_data(ip: str) -> dict:
     return {}
 
 
+@ttl_cache(maxsize=4096, ttl=86400)
 def query_geo_api(ip: str) -> str:
-    """Return region for an IP, using cache and falling back to 'unknown'."""
+    """Return region for an IP, cached 24h; falls back to 'unknown'.
+
+    ttl_cache 自带线程安全 + 自动过期，替代原先手写无界 dict 缓存。
+    """
     if not ip or is_private_host(ip):
         return "private"
-    with _geo_lock:
-        cached = _geo_cache.get(ip)
-    if cached is not None:
-        return cached
-    region = _format_geo(_fetch_geo_data(ip))
-    with _geo_lock:
-        _geo_cache[ip] = region
-    return region
+    return _format_geo(_fetch_geo_data(ip))
 
 
 def verify_node(link: str, timeout: int = TIMEOUT, geo_enabled: bool = True) -> dict:
@@ -259,22 +257,16 @@ def verify_node(link: str, timeout: int = TIMEOUT, geo_enabled: bool = True) -> 
 
 
 def _protocol_scheme(link: str) -> str | None:
-    """从分享链接取协议名（小写），hy2 归一化成 hysteria2 方便统一处理。"""
-    if not link or "://" not in link:
-        return None
-    scheme = link.split("://", 1)[0].lower()
-    if scheme == "hy2":
-        return "hysteria2"
-    return scheme
+    """从分享链接取协议名（小写），hy2 归一化成 hysteria2。"""
+    return protocol_of(link)
+
+
+_VERIFY_METHODS = {"ss": "ss_probe", "trojan": "tls_handshake"}
 
 
 def _verify_method_for_scheme(scheme: str | None) -> str:
     """根据协议返回对应的 verify_method 标签，用于失败时也带上方法名。"""
-    if scheme == "ss":
-        return "ss_probe"
-    if scheme == "trojan":
-        return "tls_handshake"
-    return "tcp_only"
+    return _VERIFY_METHODS.get(scheme, "tcp_only")
 
 
 def verify_node_protocol(link: str, timeout: float = 5.0) -> dict:
@@ -505,16 +497,11 @@ def stats_summary(results: list[dict], verify_level: str = "tcp") -> dict:
     latencies = [r["latency_ms"] for r in alive if r.get("latency_ms") is not None]
     avg_latency = round(sum(latencies) / len(latencies), 1) if latencies else None
 
-    regions: dict[str, int] = {}
-    for r in alive:
-        region = r.get("region") or "unknown"
-        regions[region] = regions.get(region, 0) + 1
+    regions = Counter(r.get("region") or "unknown" for r in alive)
 
-    failure_reasons: dict[str, int] = {}
-    for r in results:
-        if not r.get("alive"):
-            reason = r.get("error") or "unknown"
-            failure_reasons[reason] = failure_reasons.get(reason, 0) + 1
+    failure_reasons = Counter(
+        r.get("error") or "unknown" for r in results if not r.get("alive")
+    )
 
     survival_rate = round(alive_count / total * 100, 1) if total else 0.0
     return {
@@ -523,8 +510,8 @@ def stats_summary(results: list[dict], verify_level: str = "tcp") -> dict:
         "failed": failed_count,
         "survival_rate": survival_rate,
         "avg_latency": avg_latency,
-        "regions": regions,
-        "failure_reasons": failure_reasons,
+        "regions": dict(regions),
+        "failure_reasons": dict(failure_reasons),
         "verify_level": verify_level,
     }
 

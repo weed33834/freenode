@@ -195,11 +195,9 @@ def extract_candidate_files(file_list: list[dict] | None) -> list[str]:
         name = item.get("name") or ""
         if not name:
             continue
-        lower = name.lower()
-        last_ext = ""
-        if "." in lower:
-            last_ext = "." + lower.rsplit(".", 1)[-1]
-        stem = lower[: -len(last_ext)] if last_ext else lower
+        p = Path(name.lower())
+        last_ext = p.suffix
+        stem = p.stem
         if last_ext in SUSPECT_EXTS or (not last_ext and stem in SUSPECT_NAMES):
             candidates.append(name)
     return candidates
@@ -207,9 +205,7 @@ def extract_candidate_files(file_list: list[dict] | None) -> list[str]:
 
 def _candidate_priority(name: str) -> int:
     """给候选文件排序：返回优先级（越小越优先）。"""
-    lower = name.lower()
-    last_ext = "." + lower.rsplit(".", 1)[-1] if "." in lower else ""
-    return _EXT_PRIORITY.get(last_ext, 99)
+    return _EXT_PRIORITY.get(Path(name.lower()).suffix, 99)
 
 
 def _pick_primary_file(candidate_files: list[str]) -> str | None:

@@ -151,7 +151,6 @@ def test_verify_node_region(monkeypatch):
     mp.setattr(verifier.socket, "create_connection", fake_create_connection)
     mp.setattr(verifier, "resolve_ip", lambda host: "8.8.8.8")
     mp.setattr(verifier, "query_geo_api", lambda ip: "US/California")
-    verifier._geo_cache.clear()
 
     link = "ss://YWVzLTI1Ni1nY206cGFzcw==@1.2.3.4:443#test"
     result = verify_node(link, timeout=2, geo_enabled=True)
@@ -227,7 +226,7 @@ def test_geo_cache(monkeypatch):
         return {"country": "JP", "regionName": "Tokyo"}
 
     mp.setattr(verifier, "_fetch_geo_data", fake_fetch)
-    verifier._geo_cache.clear()
+    verifier.query_geo_api.cache_clear()
 
     assert query_geo_api("9.9.9.9") == "JP/Tokyo"
     assert query_geo_api("9.9.9.9") == "JP/Tokyo"
@@ -353,7 +352,6 @@ def test_verify_nodes_protocol_level(monkeypatch):
     mp.setattr(verifier, "query_geo_api", lambda ip: "unknown")
     # 显式清掉环境变量，避免外部环境污染
     mp.setattr(verifier.os, "environ", {})
-    verifier._geo_cache.clear()
 
     called = []
 
@@ -381,7 +379,6 @@ def test_verify_nodes_tcp_level(monkeypatch):
     mp.setattr(verifier, "resolve_ip", lambda host: "1.2.3.4")
     mp.setattr(verifier, "query_geo_api", lambda ip: "unknown")
     mp.setattr(verifier.os, "environ", {})
-    verifier._geo_cache.clear()
 
     called = []
 

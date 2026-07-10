@@ -123,6 +123,17 @@ def allowed_hosts() -> set[str]:
     return hosts
 
 
+def protocol_of(link: str) -> str | None:
+    """从分享链接提取协议名（小写），hy2 归一化成 hysteria2。无 scheme 返回 None。
+
+    统一协议名提取，避免 dedup / verifier / formatter 各写各的导致指纹分桶不一致。
+    """
+    if not link or "://" not in link:
+        return None
+    scheme = link.split("://", 1)[0].lower()
+    return "hysteria2" if scheme == "hy2" else scheme
+
+
 def validate_url(url: str) -> None:
     """Reject non-HTTPS URLs and unexpected hosts to mitigate SSRF risks."""
     parsed = urlparse(url)

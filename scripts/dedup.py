@@ -11,7 +11,7 @@ import hashlib
 
 from parser import node_to_clash_config
 
-from utils import get_logger
+from utils import get_logger, protocol_of
 
 logger = get_logger("dedup")
 
@@ -27,7 +27,9 @@ def _extract_identity(link: str) -> tuple[str, str, int, str] | None:
     cfg = node_to_clash_config(link)
     if not cfg or not cfg.get("server") or not cfg.get("port"):
         return None
-    protocol = link.split("://", 1)[0].lower()
+    protocol = protocol_of(link)
+    if protocol is None:
+        return None
     try:
         port = int(cfg["port"])
     except (TypeError, ValueError):

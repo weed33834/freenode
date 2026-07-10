@@ -94,7 +94,7 @@ def create_app() -> FastAPI:
     )
 
     # CORS: explicit headers instead of "*" + credentials (unsafe combo).
-    origins = [o.strip() for o in settings.cors_origins.split(",") if o.strip()] if settings.cors_origins else []
+    origins = [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
     if origins:
         app.add_middleware(
             CORSMiddleware,

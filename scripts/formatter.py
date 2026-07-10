@@ -9,9 +9,9 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import yaml
-from parser import node_to_clash_config
+from parser import OUTPUT_SCHEMES, node_to_clash_config
 
-from utils import NODES_DIR, is_private_host
+from utils import NODES_DIR, is_private_host, protocol_of
 
 
 def _clean_name(name: str) -> str:
@@ -234,15 +234,9 @@ def to_proxy_list(proxies: list[str]) -> str:
 
 
 def _extract_protocol_from_link(link: str) -> str | None:
-    """从分享链接提取协议名（小写）。"""
-    if not link or "://" not in link:
-        return None
-    scheme = link.split("://", 1)[0].lower()
-    # 只认我们实际处理的协议，其他当作未知
-    # hy2 是 hysteria2 的简写，统一记成 hysteria2 方便统计
-    if scheme == "hy2":
-        return "hysteria2"
-    if scheme in {"vmess", "vless", "ss", "trojan", "hysteria", "hysteria2", "tuic"}:
+    """从分享链接提取协议名（小写），hy2 归一化成 hysteria2。"""
+    scheme = protocol_of(link)
+    if scheme in OUTPUT_SCHEMES:
         return scheme
     return None
 
@@ -280,27 +274,32 @@ def _compute_protocol_stats(items) -> dict[str, dict]:
     return result
 
 
+_FAILURE_REASON_MAP = (
+    ("timeout", "timeout"),
+    ("timed out", "timeout"),
+    ("refused", "connection_refused"),
+    ("unreachable", "network_unreachable"),
+    ("no route", "network_unreachable"),
+    ("reset", "connection_reset"),
+)
+
+
+def _classify_failure_reason(reason: str) -> str:
+    """把原始错误字符串归类成标准失败原因 key。"""
+    lower = str(reason).lower()
+    return next(
+        (key for sub, key in _FAILURE_REASON_MAP if sub in lower), "other"
+    )
+
+
 def _compute_failure_reasons(items) -> dict[str, int]:
     """统计验证失败原因分布（只有 verifier 跑过才有）。"""
     reasons: dict[str, int] = {}
     for item in items:
-        if not isinstance(item, dict):
-            continue
-        if item.get("alive"):
+        if not isinstance(item, dict) or item.get("alive"):
             continue
         reason = item.get("error") or item.get("reason") or "unknown"
-        # 归类常见原因
-        reason = str(reason).lower()
-        if "timeout" in reason or "timed out" in reason:
-            key = "timeout"
-        elif "refused" in reason or "connection refused" in reason:
-            key = "connection_refused"
-        elif "unreachable" in reason or "no route" in reason:
-            key = "network_unreachable"
-        elif "reset" in reason:
-            key = "connection_reset"
-        else:
-            key = "other"
+        key = _classify_failure_reason(reason)
         reasons[key] = reasons.get(key, 0) + 1
     return reasons
 
