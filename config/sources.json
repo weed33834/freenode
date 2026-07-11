@@ -775,6 +775,236 @@
         "trojan"
       ],
       "note": "Currently unavailable (404). Repository not found."
+    },
+    {
+      "name": "clashx-topfreeproxy",
+      "type": "github_raw",
+      "url": "https://raw.githubusercontent.com/VPN-Subcription-Links/ClashX-V2Ray-TopFreeProxy/main/subscription.txt",
+      "enabled": false,
+      "decode_base64": false,
+      "update_interval": "daily",
+      "protocols": [
+        "vmess",
+        "vless",
+        "ss",
+        "trojan"
+      ],
+      "note": "TopFreeProxy 聚合器，5.3k⭐，每日更新多协议订阅。"
+    },
+    {
+      "name": "crossxx-free-proxy",
+      "type": "github_raw",
+      "url": "https://raw.githubusercontent.com/crossxx-labs/free-proxy/main/tpl/readme.tpl.en.md",
+      "enabled": false,
+      "decode_base64": false,
+      "update_interval": "daily",
+      "protocols": [
+        "vmess",
+        "hysteria2",
+        "ssr"
+      ],
+      "note": "1.5k⭐ Clash subscription with ssr/vmess/hysteria2 support."
+    },
+    {
+      "name": "wrfree-v2",
+      "type": "github_raw",
+      "url": "https://raw.githubusercontent.com/wrfree/free/main/v2",
+      "enabled": false,
+      "decode_base64": true,
+      "update_interval": "daily",
+      "protocols": [
+        "vmess",
+        "vless"
+      ],
+      "note": "1.1k⭐ wrfree/free 经典免费 v2ray 节点库。"
+    },
+    {
+      "name": "wrfree-ssr",
+      "type": "github_raw",
+      "url": "https://raw.githubusercontent.com/wrfree/free/main/ssr",
+      "enabled": false,
+      "decode_base64": true,
+      "update_interval": "daily",
+      "protocols": [
+        "ss",
+        "ssr"
+      ],
+      "note": "1.1k⭐ wrfree/free SSR/SS 节点。"
+    },
+    {
+      "name": "xyfqzy-clash",
+      "type": "github_raw",
+      "url": "https://raw.githubusercontent.com/xyfqzy/free-nodes/main/nodes/clash.yaml",
+      "enabled": false,
+      "decode_base64": false,
+      "update_interval": "daily",
+      "protocols": [
+        "vmess",
+        "vless",
+        "ss",
+        "trojan"
+      ],
+      "note": "⭐132 免费代理节点大全 Clash 订阅。"
+    },
+    {
+      "name": "xyfqzy-v2ray",
+      "type": "github_raw",
+      "url": "https://raw.githubusercontent.com/xyfqzy/free-nodes/main/nodes/v2ray.txt",
+      "enabled": false,
+      "decode_base64": true,
+      "update_interval": "daily",
+      "protocols": [
+        "vmess",
+        "vless"
+      ],
+      "note": "⭐132 免费代理节点大全 V2Ray 订阅。"
+    },
+    {
+      "name": "snapdragon-systemproxy-clash",
+      "type": "github_raw",
+      "url": "https://raw.githubusercontent.com/SnapdragonLee/SystemProxy/main/dist/clash_config.yaml",
+      "enabled": false,
+      "decode_base64": false,
+      "update_interval": "daily",
+      "protocols": [
+        "vmess",
+        "vless",
+        "ss",
+        "trojan"
+      ],
+      "note": "⭐121 SnapdragonLee/SystemProxy Clash 订阅（多协议聚合）。"
+    },
+    {
+      "name": "littlebais-free-proxy-nodes",
+      "type": "github_raw",
+      "url": "https://raw.githubusercontent.com/littlebais/free-proxy-nodes/main/README.md",
+      "enabled": false,
+      "decode_base64": false,
+      "update_interval": "daily",
+      "protocols": [
+        "vmess",
+        "vless",
+        "ss",
+        "trojan"
+      ],
+      "note": "⭐113 littlebais 每日更新免费节点聚合。"
+    },
+    {
+      "name": "rtwo2-fastnodes-all",
+      "type": "github_raw",
+      "url": "https://raw.githubusercontent.com/rtwo2/FastNodes/main/sub/everything.txt",
+      "enabled": false,
+      "decode_base64": false,
+      "update_interval": "daily",
+      "protocols": [
+        "vmess",
+        "vless",
+        "ss",
+        "trojan",
+        "hysteria2"
+      ],
+      "note": "⭐47 rtwo2/FastNodes 聚合器 — 5万+ 活跃节点，每日自动更新。"
+    },
+    {
+      "name": "uiforfreedom-proxy-nodes",
+      "type": "github_raw",
+      "url": "https://raw.githubusercontent.com/UIforFreedom/Free_Proxy_Nodes/main/nodes.txt",
+      "enabled": false,
+      "decode_base64": false,
+      "update_interval": "daily",
+      "protocols": [
+        "vmess",
+        "vless",
+        "ss",
+        "trojan"
+      ],
+      "note": "⭐19 UIforFreedom 自动抓取合并互联网公开节点。"
+    },
+    {
+      "name": "zhuhaiuk-free-nodes-clash",
+      "type": "github_raw",
+      "url": "https://raw.githubusercontent.com/zhuhaiuk/free-nodes/main/nodes/clash.yaml",
+      "enabled": false,
+      "decode_base64": false,
+      "update_interval": "hourly",
+      "protocols": [
+        "vmess",
+        "vless",
+        "ss",
+        "trojan"
+      ],
+      "note": "⭐17 zhuhaiuk/free-nodes 每小时自动更新的 Clash 订阅。"
+    },
+    {
+      "name": "zhuhaiuk-free-nodes-v2ray",
+      "type": "github_raw",
+      "url": "https://raw.githubusercontent.com/zhuhaiuk/free-nodes/main/nodes/v2ray.txt",
+      "enabled": false,
+      "decode_base64": false,
+      "update_interval": "hourly",
+      "protocols": [
+        "vmess",
+        "vless"
+      ],
+      "note": "⭐17 zhuhaiuk/free-nodes 每小时自动更新的 V2Ray 订阅。"
+    },
+    {
+      "name": "configstream",
+      "type": "github_raw",
+      "url": "https://raw.githubusercontent.com/AmirrezaFarnamTaheri/ConfigStream/main/sub.txt",
+      "enabled": false,
+      "decode_base64": false,
+      "update_interval": "daily",
+      "protocols": [
+        "vmess",
+        "vless",
+        "ss",
+        "trojan"
+      ],
+      "note": "⭐8 ConfigStream — 收集、去重、测速并排序的免费 VPN/proxy 配置。"
+    },
+    {
+      "name": "alirewa-v2ray-configs",
+      "type": "github_raw",
+      "url": "https://raw.githubusercontent.com/Alirewa/V2ray-Configs/main/config.txt",
+      "enabled": false,
+      "decode_base64": true,
+      "update_interval": "daily",
+      "protocols": [
+        "vmess",
+        "vless"
+      ],
+      "note": "⭐6 Alirewa/V2ray-Configs — 1000+ configs auto-collected daily."
+    },
+    {
+      "name": "latinasub-raw",
+      "type": "github_raw",
+      "url": "https://raw.githubusercontent.com/LalatinaHub/LatinaSub/main/sub/nodes.txt",
+      "enabled": false,
+      "decode_base64": false,
+      "update_interval": "daily",
+      "protocols": [
+        "vmess",
+        "vless",
+        "ss",
+        "trojan"
+      ],
+      "note": "⭐11 LalatinaHub/LatinaSub — free raw subscription nodes."
+    },
+    {
+      "name": "freefolkson-abc-configs",
+      "type": "github_raw",
+      "url": "https://raw.githubusercontent.com/FreeFolksOn/abc-configs-free-vpn-proxy-list/main/All_Configs_Sub.txt",
+      "enabled": false,
+      "decode_base64": false,
+      "update_interval": "daily",
+      "protocols": [
+        "vmess",
+        "vless",
+        "ss",
+        "trojan"
+      ],
+      "note": "⭐53 FreeFolksOn — Free VPN & proxy configs list, daily update."
     }
   ],
   "free_proxy_apis": [
@@ -1068,6 +1298,63 @@
       ],
       "proxy_scheme": "http",
       "note": "Currently unavailable (404). Repository not found."
+    },
+    {
+      "name": "free-proxy-list-net",
+      "type": "html",
+      "url": "https://free-proxy-list.net/",
+      "enabled": false,
+      "decode_base64": false,
+      "update_interval": "daily",
+      "protocols": [
+        "http",
+        "https"
+      ],
+      "note": "Free HTTP/HTTPS proxy list website, updated daily."
+    },
+    {
+      "name": "spys-me",
+      "type": "html",
+      "url": "https://spys.me/proxy.txt",
+      "enabled": false,
+      "decode_base64": false,
+      "update_interval": "daily",
+      "protocols": [
+        "socks4",
+        "socks5",
+        "http"
+      ],
+      "note": "spys.me free SOCKS/HTTP proxy list, plain text."
+    },
+    {
+      "name": "geonode-free-proxy",
+      "type": "web_url",
+      "url": "https://proxylist.geonode.com/api/proxy-list?limit=100&page=1&sort_by=lastChecked&sort_type=desc",
+      "enabled": false,
+      "decode_base64": false,
+      "update_interval": "daily",
+      "protocols": [
+        "http",
+        "https",
+        "socks4",
+        "socks5"
+      ],
+      "note": "Geonode free proxy API with country/protocol filtering."
+    },
+    {
+      "name": "proxy-scrape",
+      "type": "web_url",
+      "url": "https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=10000&country=all",
+      "enabled": false,
+      "decode_base64": false,
+      "update_interval": "daily",
+      "protocols": [
+        "http",
+        "https",
+        "socks4",
+        "socks5"
+      ],
+      "note": "ProxyScrape free proxy API."
     }
   ]
 }
