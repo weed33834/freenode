@@ -102,7 +102,7 @@
       "name": "a2470982985-getNode-v2ray",
       "type": "github_raw",
       "url": "https://raw.githubusercontent.com/a2470982985/getNode/main/v2ray.txt",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": false,
       "update_interval": "hourly",
       "protocols": [
@@ -156,14 +156,14 @@
       "name": "freefq-free",
       "type": "github_raw",
       "url": "https://raw.githubusercontent.com/freefq/free/master/v2",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": true,
       "update_interval": "inactive",
       "protocols": [
         "vmess",
         "vless"
       ],
-      "note": "Historic free node list. Currently inactive (last update 2024-02)."
+      "note": "41k⭐ freefq/free 经典免费节点库。"
     },
     {
       "name": "nirevil-sstime",
@@ -280,7 +280,7 @@
       "name": "learnhard-cn-free-proxy-ss",
       "type": "github_raw",
       "url": "https://raw.githubusercontent.com/learnhard-cn/free_proxy_ss/main/free",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": true,
       "update_interval": "daily",
       "protocols": [
@@ -303,88 +303,6 @@
         "vless"
       ],
       "note": "Large mixed-protocol subscription from Epodonios v2ray-configs (Base64)."
-    },
-    {
-      "name": "epodonios-v2ray-sub3",
-      "type": "github_raw",
-      "url": "https://raw.githubusercontent.com/Epodonios/v2ray-configs/main/Base64/Sub3_base64.txt",
-      "enabled": false,
-      "decode_base64": true,
-      "update_interval": "daily",
-      "max_size": 2097152,
-      "protocols": [
-        "vless"
-      ],
-      "note": "Currently disabled: Large VLESS-only subscription from Epodonios v2ray-configs (Base64)."
-    },
-    {
-      "name": "epodonios-v2ray-sub4",
-      "type": "github_raw",
-      "url": "https://raw.githubusercontent.com/Epodonios/v2ray-configs/main/Base64/Sub4_base64.txt",
-      "enabled": false,
-      "decode_base64": true,
-      "update_interval": "daily",
-      "max_size": 2097152,
-      "protocols": [
-        "vless"
-      ],
-      "note": "Currently disabled: Large VLESS-only subscription from Epodonios v2ray-configs (Base64)."
-    },
-    {
-      "name": "epodonios-v2ray-sub5",
-      "type": "github_raw",
-      "url": "https://raw.githubusercontent.com/Epodonios/v2ray-configs/main/Base64/Sub5_base64.txt",
-      "enabled": false,
-      "decode_base64": true,
-      "update_interval": "daily",
-      "max_size": 2097152,
-      "protocols": [
-        "vmess",
-        "ss",
-        "trojan",
-        "vless"
-      ],
-      "note": "Currently disabled: Large mixed-protocol subscription from Epodonios v2ray-configs (Base64)."
-    },
-    {
-      "name": "epodonios-v2ray-sub6",
-      "type": "github_raw",
-      "url": "https://raw.githubusercontent.com/Epodonios/v2ray-configs/main/Base64/Sub6_base64.txt",
-      "enabled": false,
-      "decode_base64": true,
-      "update_interval": "daily",
-      "max_size": 2097152,
-      "protocols": [
-        "ss",
-        "vmess"
-      ],
-      "note": "Currently disabled: Large SS/VMess subscription from Epodonios v2ray-configs (Base64)."
-    },
-    {
-      "name": "epodonios-v2ray-sub8",
-      "type": "github_raw",
-      "url": "https://raw.githubusercontent.com/Epodonios/v2ray-configs/main/Base64/Sub8_base64.txt",
-      "enabled": false,
-      "decode_base64": true,
-      "update_interval": "daily",
-      "max_size": 2097152,
-      "protocols": [
-        "trojan"
-      ],
-      "note": "Currently disabled: Large Trojan-only subscription from Epodonios v2ray-configs (Base64)."
-    },
-    {
-      "name": "epodonios-v2ray-sub12",
-      "type": "github_raw",
-      "url": "https://raw.githubusercontent.com/Epodonios/v2ray-configs/main/Base64/Sub12_base64.txt",
-      "enabled": false,
-      "decode_base64": true,
-      "update_interval": "daily",
-      "max_size": 2097152,
-      "protocols": [
-        "vless"
-      ],
-      "note": "Currently disabled: Large VLESS-only subscription from Epodonios v2ray-configs (Base64)."
     },
     {
       "name": "awesome-vpn-all",
@@ -468,7 +386,7 @@
       "name": "0xRadikal-Free-v2ray-Configs",
       "type": "github_raw",
       "url": "https://raw.githubusercontent.com/0xRadikal/Free-v2ray-Configs/main/all/configs_base64.txt",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": true,
       "update_interval": "daily",
       "timeout": 60,
@@ -659,25 +577,10 @@
       "note": "Daily updated v2ray subscription from openproxylist (Base64)."
     },
     {
-      "name": "barry-far-v2ray-configs",
-      "type": "github_raw",
-      "url": "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub1.txt",
-      "enabled": false,
-      "decode_base64": true,
-      "update_interval": "inactive",
-      "protocols": [
-        "vmess",
-        "vless",
-        "ss",
-        "trojan"
-      ],
-      "note": "Currently unavailable (404). Repository disabled/removed (DMCA)."
-    },
-    {
       "name": "aiboboxx-v2rayfree",
       "type": "github_raw",
-      "url": "https://raw.githubusercontent.com/aiboboxx/v2rayfree/main/v2.txt",
-      "enabled": false,
+      "url": "https://raw.githubusercontent.com/aiboboxx/v2rayfree/main/v202607112",
+      "enabled": true,
       "decode_base64": true,
       "update_interval": "daily",
       "protocols": [
@@ -686,28 +589,13 @@
         "ss",
         "trojan"
       ],
-      "note": "Currently unavailable. Uses rotating daily filenames (e.g. v202606252), no stable raw URL."
-    },
-    {
-      "name": "mfbpn-treble",
-      "type": "github_raw",
-      "url": "https://raw.githubusercontent.com/mfbpn/treble/main/v2ray.txt",
-      "enabled": false,
-      "decode_base64": true,
-      "update_interval": "inactive",
-      "protocols": [
-        "vmess",
-        "vless",
-        "ss",
-        "trojan"
-      ],
-      "note": "Currently unavailable (404). Repository not found."
+      "note": "13k⭐ aiboboxx/v2rayfree 每日自动更新的免费 v2ray 配置。"
     },
     {
       "name": "openrunner-clash-freenode",
       "type": "github_raw",
       "url": "https://raw.githubusercontent.com/openrunner/clash-freenode/main/README.md",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": false,
       "update_interval": "inactive",
       "protocols": [
@@ -717,70 +605,10 @@
       "note": "Currently unavailable. Config served externally at free.datiya.com, no raw file in repo. Also Clash YAML format (not supported by parser)."
     },
     {
-      "name": "clowndoy-v2ray",
-      "type": "github_raw",
-      "url": "https://raw.githubusercontent.com/clowndoy/v2ray/main/v2ray",
-      "enabled": false,
-      "decode_base64": true,
-      "update_interval": "inactive",
-      "protocols": [
-        "vmess",
-        "vless",
-        "ss",
-        "trojan"
-      ],
-      "note": "Currently unavailable (404). Repository not found."
-    },
-    {
-      "name": "v2raycollector-v2ray",
-      "type": "github_raw",
-      "url": "https://raw.githubusercontent.com/V2rayCollector/v2ray/main/v2ray",
-      "enabled": false,
-      "decode_base64": true,
-      "update_interval": "inactive",
-      "protocols": [
-        "vmess",
-        "vless",
-        "ss",
-        "trojan"
-      ],
-      "note": "Currently unavailable (404). Repository not found."
-    },
-    {
-      "name": "soroushmirzaei-telegram-configs-collector",
-      "type": "github_raw",
-      "url": "https://raw.githubusercontent.com/soroushmirzaei/telegram-configs-collector/main/README.md",
-      "enabled": false,
-      "decode_base64": false,
-      "update_interval": "inactive",
-      "protocols": [
-        "vmess",
-        "vless",
-        "ss",
-        "trojan"
-      ],
-      "note": "Currently unavailable (404). Repository not found."
-    },
-    {
-      "name": "yebekhe-telegramv2raycollector",
-      "type": "github_raw",
-      "url": "https://raw.githubusercontent.com/yebekhe/TelegramV2rayCollector/main/sub/base64/mix",
-      "enabled": false,
-      "decode_base64": true,
-      "update_interval": "inactive",
-      "protocols": [
-        "vmess",
-        "vless",
-        "ss",
-        "trojan"
-      ],
-      "note": "Currently unavailable (404). Repository not found."
-    },
-    {
       "name": "clashx-topfreeproxy",
       "type": "github_raw",
       "url": "https://raw.githubusercontent.com/VPN-Subcription-Links/ClashX-V2Ray-TopFreeProxy/main/subscription.txt",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": false,
       "update_interval": "daily",
       "protocols": [
@@ -795,7 +623,7 @@
       "name": "crossxx-free-proxy",
       "type": "github_raw",
       "url": "https://raw.githubusercontent.com/crossxx-labs/free-proxy/main/tpl/readme.tpl.en.md",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": false,
       "update_interval": "daily",
       "protocols": [
@@ -809,7 +637,7 @@
       "name": "wrfree-v2",
       "type": "github_raw",
       "url": "https://raw.githubusercontent.com/wrfree/free/main/v2",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": true,
       "update_interval": "daily",
       "protocols": [
@@ -822,7 +650,7 @@
       "name": "wrfree-ssr",
       "type": "github_raw",
       "url": "https://raw.githubusercontent.com/wrfree/free/main/ssr",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": true,
       "update_interval": "daily",
       "protocols": [
@@ -835,7 +663,7 @@
       "name": "xyfqzy-clash",
       "type": "github_raw",
       "url": "https://raw.githubusercontent.com/xyfqzy/free-nodes/main/nodes/clash.yaml",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": false,
       "update_interval": "daily",
       "protocols": [
@@ -850,7 +678,7 @@
       "name": "xyfqzy-v2ray",
       "type": "github_raw",
       "url": "https://raw.githubusercontent.com/xyfqzy/free-nodes/main/nodes/v2ray.txt",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": true,
       "update_interval": "daily",
       "protocols": [
@@ -863,7 +691,7 @@
       "name": "snapdragon-systemproxy-clash",
       "type": "github_raw",
       "url": "https://raw.githubusercontent.com/SnapdragonLee/SystemProxy/main/dist/clash_config.yaml",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": false,
       "update_interval": "daily",
       "protocols": [
@@ -878,7 +706,7 @@
       "name": "littlebais-free-proxy-nodes",
       "type": "github_raw",
       "url": "https://raw.githubusercontent.com/littlebais/free-proxy-nodes/main/README.md",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": false,
       "update_interval": "daily",
       "protocols": [
@@ -893,7 +721,7 @@
       "name": "rtwo2-fastnodes-all",
       "type": "github_raw",
       "url": "https://raw.githubusercontent.com/rtwo2/FastNodes/main/sub/everything.txt",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": false,
       "update_interval": "daily",
       "protocols": [
@@ -909,7 +737,7 @@
       "name": "uiforfreedom-proxy-nodes",
       "type": "github_raw",
       "url": "https://raw.githubusercontent.com/UIforFreedom/Free_Proxy_Nodes/main/nodes.txt",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": false,
       "update_interval": "daily",
       "protocols": [
@@ -924,7 +752,7 @@
       "name": "zhuhaiuk-free-nodes-clash",
       "type": "github_raw",
       "url": "https://raw.githubusercontent.com/zhuhaiuk/free-nodes/main/nodes/clash.yaml",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": false,
       "update_interval": "hourly",
       "protocols": [
@@ -939,7 +767,7 @@
       "name": "zhuhaiuk-free-nodes-v2ray",
       "type": "github_raw",
       "url": "https://raw.githubusercontent.com/zhuhaiuk/free-nodes/main/nodes/v2ray.txt",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": false,
       "update_interval": "hourly",
       "protocols": [
@@ -952,7 +780,7 @@
       "name": "configstream",
       "type": "github_raw",
       "url": "https://raw.githubusercontent.com/AmirrezaFarnamTaheri/ConfigStream/main/sub.txt",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": false,
       "update_interval": "daily",
       "protocols": [
@@ -967,7 +795,7 @@
       "name": "alirewa-v2ray-configs",
       "type": "github_raw",
       "url": "https://raw.githubusercontent.com/Alirewa/V2ray-Configs/main/config.txt",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": true,
       "update_interval": "daily",
       "protocols": [
@@ -977,25 +805,10 @@
       "note": "⭐6 Alirewa/V2ray-Configs — 1000+ configs auto-collected daily."
     },
     {
-      "name": "latinasub-raw",
-      "type": "github_raw",
-      "url": "https://raw.githubusercontent.com/LalatinaHub/LatinaSub/main/sub/nodes.txt",
-      "enabled": false,
-      "decode_base64": false,
-      "update_interval": "daily",
-      "protocols": [
-        "vmess",
-        "vless",
-        "ss",
-        "trojan"
-      ],
-      "note": "⭐11 LalatinaHub/LatinaSub — free raw subscription nodes."
-    },
-    {
       "name": "freefolkson-abc-configs",
       "type": "github_raw",
       "url": "https://raw.githubusercontent.com/FreeFolksOn/abc-configs-free-vpn-proxy-list/main/All_Configs_Sub.txt",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": false,
       "update_interval": "daily",
       "protocols": [
@@ -1286,20 +1099,6 @@
       "note": "SOCKS5 proxy list (ip:port) from roosterkid/openproxylist."
     },
     {
-      "name": "sanjusss-free-proxy-list",
-      "type": "github_raw",
-      "url": "https://raw.githubusercontent.com/sanjusss/free-proxy-list/master/proxy.txt",
-      "enabled": false,
-      "decode_base64": false,
-      "update_interval": "inactive",
-      "protocols": [
-        "http",
-        "https"
-      ],
-      "proxy_scheme": "http",
-      "note": "Currently unavailable (404). Repository not found."
-    },
-    {
       "name": "free-proxy-list-net",
       "type": "html",
       "url": "https://free-proxy-list.net/",
@@ -1316,7 +1115,7 @@
       "name": "spys-me",
       "type": "html",
       "url": "https://spys.me/proxy.txt",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": false,
       "update_interval": "daily",
       "protocols": [
@@ -1330,7 +1129,7 @@
       "name": "geonode-free-proxy",
       "type": "web_url",
       "url": "https://proxylist.geonode.com/api/proxy-list?limit=100&page=1&sort_by=lastChecked&sort_type=desc",
-      "enabled": false,
+      "enabled": true,
       "decode_base64": false,
       "update_interval": "daily",
       "protocols": [
