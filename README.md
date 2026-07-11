@@ -1,226 +1,77 @@
 # FreeNode
 
-> A community-maintained aggregator of public proxy and node lists. For learning and research only.
+收集公开免费节点的仓库。流水线从 `config/sources.json` 里列出的公开源抓取节点订阅，解析、去重、可选做连通性验证，输出成三种能直接订阅的格式，提交回本仓库。
 
-[![Update Nodes](https://github.com/MS33834/freenode/actions/workflows/update-nodes.yml/badge.svg)](https://github.com/MS33834/freenode/actions/workflows/update-nodes.yml)
-[![Deploy Docs](https://github.com/MS33834/freenode/actions/workflows/deploy-docs.yml/badge.svg)](https://github.com/MS33834/freenode/actions/workflows/deploy-docs.yml)
-[![CI](https://github.com/MS33834/freenode/actions/workflows/ci.yml/badge.svg)](https://github.com/MS33834/freenode/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/MS33834/freenode/actions/workflows/codeql.yml/badge.svg)](https://github.com/MS33834/freenode/actions/workflows/codeql.yml)
-[![License](https://img.shields.io/badge/license-CNCL-red.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.4.0-blue)](VERSION)
+> **免责声明**：本项目仅供网络协议学习、安全测试与隐私技术研究。所有节点来自第三方公开渠道，不保证可用性与安全性，请勿用其登录任何银行账户、支付或社交等敏感账号。请遵守你所在地的法律法规。
 
-**English** | [简体中文](README.zh-CN.md)
+## 直接用：订阅链接
 
----
+把下面任一链接填进客户端的订阅地址（Clash / Clash Verge / Stash / v2rayN / v2rayNG / Shadowrocket / Karing 等），仓库每天自动更新：
 
-## Disclaimer
-
-1. This project is for network protocol learning, security testing, and privacy research only.
-2. All nodes and proxies come from public sources. We do not guarantee their availability, security, or privacy.
-3. Never log into sensitive accounts (banking, payments, social media) over free proxies.
-4. Follow the laws of your country or region.
-5. Maintainers are not liable for any direct or indirect damages from using this project.
-
----
-
-## What is FreeNode?
-
-FreeNode runs a pipeline that fetches public proxy and node lists from the internet, parses them, optionally verifies connectivity, and writes out subscription files in three formats: Clash YAML, V2Ray, and a plain HTTP(S)/SOCKS4/SOCKS5 proxy list. The pipeline runs on demand — locally via `scripts/update.py`, via the backend scheduler after deployment, or by manually triggering the `Update Nodes` workflow.
-
-The project itself **does not operate any proxy or VPN servers**. It only aggregates, parses, and reformats publicly available resources. All sources, scripts, and configs are open for community audit and contribution.
-
----
-
-## Quick Start
-
-### 1. Subscribe to the daily output
-
-| Format | GitHub Raw | GitCode Raw |
+| 格式 | 适用客户端 | 订阅链接 |
 |---|---|---|
-| Clash | `https://raw.githubusercontent.com/MS33834/freenode/main/nodes/clash.yaml` | `https://api.gitcode.com/api/v5/repos/badhope/freenode/raw/nodes/clash.yaml?ref=main` |
-| V2Ray | `https://raw.githubusercontent.com/MS33834/freenode/main/nodes/v2ray.txt` | `https://api.gitcode.com/api/v5/repos/badhope/freenode/raw/nodes/v2ray.txt?ref=main` |
-| HTTP(S)/SOCKS4/SOCKS5 | `https://raw.githubusercontent.com/MS33834/freenode/main/nodes/proxies.txt` | `https://api.gitcode.com/api/v5/repos/badhope/freenode/raw/nodes/proxies.txt?ref=main` |
+| Clash | Clash / Clash Verge / Stash | `https://raw.githubusercontent.com/MS33834/freenode/main/nodes/clash.yaml` |
+| V2Ray | v2rayN / v2rayNG / Karing | `https://raw.githubusercontent.com/MS33834/freenode/main/nodes/v2ray.txt` |
+| 代理列表 | HTTP(S) / SOCKS4 / SOCKS5 客户端 | `https://raw.githubusercontent.com/MS33834/freenode/main/nodes/proxies.txt` |
 
-Copy a link into your client's subscription URL field and it will pull the daily-updated list.
+公开节点有时效性，用订阅链接比复制文件内容更稳。
 
-### 2. Run it locally
+## 自己跑流水线
 
 ```bash
 git clone https://github.com/MS33834/freenode.git
 cd freenode
-pip3 install -r requirements.txt -r backend/requirements.txt
-make test              # run unit tests
-python3 scripts/update.py
+pip install -r requirements.txt
+
+python scripts/update.py                              # 不验证，快
+FREENODE_VERIFY_NODES=true python scripts/update.py --verify   # 验证连通性，过滤失效节点
 ```
 
-With node verification (slower, filters dead nodes):
+结果写到 `nodes/`：
 
-```bash
-FREENODE_VERIFY_NODES=true python3 scripts/update.py --verify
-```
+- `clash.yaml` / `v2ray.txt` / `proxies.txt` —— 三种订阅格式
+- `regions.json` —— 按协议 / 地区统计
+- `quality.json` —— 当天的质量快照（总数、存活率、平均延迟、失败原因）
+- `sources-report.json` —— 每个源近 14 天的可靠性评分
 
-With GeoIP region grouping:
+## 配置
 
-```bash
-FREENODE_GEO_ENABLED=true python3 scripts/update.py
-```
+数据源在 `config/sources.json` 维护，是一个 JSON 数组，每项是一个公开源。支持的类型：`github_raw` / `web_url` / `html` / `git_repo` / `rss`；可配 Base64 解码、更新频率、协议过滤。
 
-### 3. Run the web app
+流水线行为用环境变量调，详见 `.env.example`：
 
-The `web/` directory is a Next.js app served together with `backend/`'s FastAPI. Local preview:
-
-```bash
-cd backend && uvicorn app.main:app --reload   # API on :8000
-cd web && npm run dev                          # frontend proxies /api to backend
-```
-
-Production deployment uses `backend/docker-compose.yml` (Caddy auto-HTTPS, reverse-proxying Next.js and `/api`):
-
-```bash
-cd backend && docker compose up -d
-```
-
----
-
-## How it works
-
-```mermaid
-flowchart LR
-    A[config/sources.json<br/>public sources] --> B[crawler.py<br/>concurrent fetch]
-    B --> C[parser.py<br/>link extraction]
-    C --> D[verifier.py<br/>connectivity check]
-    D --> E[formatter.py<br/>multi-format output]
-    E --> F[nodes/<br/>clash.yaml / v2ray.txt / proxies.txt]
-    E --> G[web/<br/>frontend + API]
-    H[GitHub Actions<br/>manual / local] --> B
-```
-
-1. `crawler.py` reads `config/sources.json` and fetches sources concurrently.
-2. `parser.py` extracts `ss://`, `vmess://`, `vless://`, `trojan://`, `hysteria://`, `hysteria2://`, `tuic://`, and `http(s)://`, `socks4://`, `socks5://` links.
-3. `verifier.py` does a lightweight TCP connect + latency test (when enabled).
-4. `formatter.py` writes Clash, V2Ray, and HTTP(S)/SOCKS4/SOCKS5 outputs, plus an optional regions.json.
-5. The pipeline is run on demand (locally via `scripts/update.py`, the backend scheduler, or a manual `Update Nodes` workflow run) and the regenerated `nodes/` is pushed to GitHub; GitCode mirrors the same content.
-
----
-
-## Output files
-
-Files in `nodes/` are regenerated by the pipeline each day:
-
-| File | Format | Use |
+| 变量 | 默认 | 说明 |
 |---|---|---|
-| `clash.yaml` | Clash / Clash Verge / Stash | Multi-protocol Clash config |
-| `v2ray.txt` | V2Ray / Nekoray / v2rayN / v2rayNG | One share link per line |
-| `proxies.txt` | HTTP(S)/SOCKS4/SOCKS5 | One `host:port` per line |
-| `regions.json` | JSON | Node counts by protocol and region |
+| `FREENODE_VERIFY_NODES` | `true` | 是否做 TCP 连通性校验 |
+| `FREENODE_MAX_NODES` | `800` | 输出保留的最大节点数 |
+| `FREENODE_MAX_PROXIES` | `300` | 输出保留的最大代理数 |
+| `FREENODE_CRAWL_WORKERS` | `16` | 并发抓取数 |
+| `FREENODE_VERIFY_TIMEOUT` | `5` | 单节点连接超时（秒） |
+| `FREENODE_GEO_ENABLED` | `false` | 是否按地区分组（需 GeoIP 数据） |
+| `FREENODE_ALLOWED_HOSTS` | 见 `.env.example` | crawler 域名白名单，防 SSRF |
 
-Public nodes are short-lived by nature. Subscribe via the raw URLs rather than copying file contents.
+## 自动发现新源
 
----
+`scripts/discover_sources.py` 用 GitHub Search API 找潜在的免费节点仓库，把候选写到 `nodes/discovered-sources.json`（`enabled=false`，等你人工审核后再加进 `sources.json`）：
 
-## Configuration
-
-Pipeline behavior is controlled via environment variables. Copy `.env.example` to `.env` and adjust.
-
-| Variable | Default | Description |
-|---|---|---|
-| `FREENODE_VERIFY_NODES` | `true` | Enable TCP connectivity check during update |
-| `FREENODE_MAX_NODES` | `800` | Max node links kept in output |
-| `FREENODE_MAX_PROXIES` | `300` | Max HTTP(S)/SOCKS4/SOCKS5 proxies kept |
-| `FREENODE_CRAWL_WORKERS` | `16` | Concurrent source fetches |
-| `FREENODE_VERIFY_TIMEOUT` | `5` | Per-node TCP connect timeout (seconds) |
-| `FREENODE_VERIFY_WORKERS` | `50` | Concurrent verification threads |
-| `FREENODE_GEO_ENABLED` | `false` | Enable GeoIP region grouping |
-| `FREENODE_ALLOWED_HOSTS` | `raw.githubusercontent.com,gitcode.com,api.gitcode.com` | SSRF allowlist for crawler |
-
-Backend API config lives in `backend/.env.example`.
-
----
-
-## Project structure
-
-```text
-FreeNode/
-├── .github/              # Issue/PR templates, Actions workflows, governance
-├── config/
-│   └── sources.json      # public data source config
-├── docs-site/            # VitePress documentation site (GitHub Pages)
-├── nodes/                # auto-generated output files
-├── scripts/              # pipeline: crawler / parser / verifier / formatter / update
-├── tests/                # pipeline unit tests
-├── backend/              # FastAPI service (API, DB, scheduler)
-│   └── tests/            # backend unit tests
-├── web/                  # Next.js frontend (server-rendered)
-├── landing/              # static landing page (GitHub Pages root)
-├── tools/                # per-platform client recommendations
-├── Makefile              # common dev commands
-├── pyproject.toml        # ruff / pytest / coverage / mypy config
-├── requirements.txt      # Python deps
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── SECURITY.md
-├── SUPPORT.md
-├── CODE_OF_CONDUCT.md
-├── AUTHORS.md
-├── DEVELOPMENT.md
-└── LICENSE
+```bash
+GITHUB_TOKEN=xxx python scripts/discover_sources.py --min-stars 50
 ```
 
----
+## 每日自动更新
 
-## Documentation
+`.github/workflows/update-nodes.yml` 每天 UTC 02:00 自动跑一遍流水线，把 `nodes/` 的新结果提交回仓库。也可以到仓库的 Actions 页面手动触发。
 
-**In-repo (English):**
+如果 CI 环境对出站端口有限制导致验证全失败、输出为空，把工作流里的 `python scripts/update.py --verify` 改成 `python scripts/update.py --no-verify` 即可。
 
-- [Deployment guide](DEPLOYMENT.md) — self-host the full stack with Docker Compose
-- [Configuration reference](CONFIGURATION.md) — every env variable and sources.json schema
-- [Development guide](DEVELOPMENT.md) — local setup, project structure, testing
-- [Contributing](CONTRIBUTING.md) — bug reports, data sources, code PRs
-- [Security policy](SECURITY.md) — vulnerability reporting
-- [Changelog](CHANGELOG.md)
+## 开发
 
-**Docs site (中文, VitePress):** <https://ms33834.github.io/freenode/docs/>
+```bash
+make test    # 跑 tests/ 单元测试
+make lint    # ruff 检查
+make update  # 等价于 python scripts/update.py
+```
 
-- [新手指南](https://ms33834.github.io/freenode/docs/beginner-guide)
-- [客户端配置](https://ms33834.github.io/freenode/docs/client-setup/clash-verge-rev) (Clash Verge Rev, v2rayN, v2rayNG, Shadowrocket)
-- [数据源说明](https://ms33834.github.io/freenode/docs/data-sources)
-- [项目架构](https://ms33834.github.io/freenode/docs/architecture)
-- [安全与合规](https://ms33834.github.io/freenode/docs/security)
-- [部署说明](https://ms33834.github.io/freenode/docs/deployment)
-- [常见问题](https://ms33834.github.io/freenode/docs/faq)
+## 许可证
 
----
-
-## Contributing
-
-Contributions are welcome — bug fixes, new public data sources, docs improvements, client tutorials.
-
-- Report a dead source: use the [source report](https://github.com/MS33834/freenode/issues/new?template=source_report.md) template.
-- Add a data source: read [docs-site/data-source-guide.md](docs-site/data-source-guide.md) first.
-- Improve code or docs: fork → branch → PR, ensure `make test` and `make lint` pass.
-- Security issues: follow [SECURITY.md](SECURITY.md). Do not disclose in public issues.
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for the full guide.
-
----
-
-## Useful links
-
-- **Landing page**: <https://ms33834.github.io/freenode/>
-- **Docs site**: <https://ms33834.github.io/freenode/docs/>
-- **GitHub Issues**: <https://github.com/MS33834/freenode/issues>
-- **GitCode mirror**: <https://gitcode.com/badhope/freenode>
-
----
-
-## Star history
-
-If this project helps you, a star helps others find it.
-
-[![Star history](https://api.star-history.com/svg?repos=MS33834/freenode&type=Date)](https://star-history.com/#MS33834/freenode&Date)
-
----
-
-## License
-
-[CNCL](LICENSE). FreeNode doesn't own or operate any of the aggregated sources — credit goes to the community maintainers listed in `config/sources.json`.
+节点与代理均来自公开渠道，本项目不拥有也不运营它们。许可证见 `LICENSE`。

@@ -1,1 +1,0 @@
-"""FreeNode backend application package."""

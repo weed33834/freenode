@@ -1,148 +1,43 @@
-# 项目元数据与工具配置。ruff/pytest/mypy 都从这里读配置。
-[build-system]
-requires = ["setuptools>=68"]
-build-backend = "setuptools.build_meta"
+# 仅保留 ruff / pytest / mypy 配置，去掉了原仓库的打包与后端配置。
 
-[project]
-name = "freenode"
-version = "1.4.0"
-description = "Community-curated aggregator of public network node lists. Daily pipeline fetches, parses, verifies, and outputs multi-format subscription files."
-readme = "README.md"
-requires-python = ">=3.12"
-license = { text = "Custom Non-Commercial License (CNCL) v1.0" }
-authors = [{ name = "FreeNode Contributors" }]
-keywords = ["freenode", "aggregator", "subscription", "clash", "v2ray"]
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.12",
-    "License :: Other/Proprietary License",
-    "Operating System :: OS Independent",
-    "Topic :: Internet :: Proxy Servers",
-]
-
-# 运行时依赖与 requirements.txt 保持一致，方便 pip install . 安装。
-dependencies = [
-    "PyYAML>=6.0",
-    "cryptography>=43.0.0",
-    "cachetools>=5.5.0",
-]
-
-[project.optional-dependencies]
-dev = [
-    "ruff>=0.15.20",
-    "httpx>=0.27.0",
-    "pytest>=8.0.0",
-]
-backend = [
-    # backend/requirements.txt 的依赖，方便 pip install ".[backend]" 一键装齐
-    "fastapi>=0.115.0",
-    "uvicorn[standard]>=0.30.0",
-    "gunicorn>=23.0.0",
-    "pydantic>=2.9.0",
-    "pydantic-settings>=2.5.0",
-    "sqlalchemy[asyncio]>=2.0.35",
-    "aiosqlite>=0.20.0",
-    "alembic>=1.13.0",
-    "apscheduler>=3.10.0",
-    "httpx>=0.27.0",
-]
-
-[project.urls]
-Homepage = "https://github.com/MS33834/freenode"
-Documentation = "https://ms33834.github.io/freenode/"
-Repository = "https://github.com/MS33834/freenode"
-Issues = "https://github.com/MS33834/freenode/issues"
-Changelog = "https://github.com/MS33834/freenode/blob/main/CHANGELOG.md"
-
-# 官方 CLI 入口：pip install freenode 后可直接 freenode-update 跑流水线
-[project.scripts]
-freenode-update = "update:main"
-
-# 让 setuptools 把 scripts/ 下的扁平模块作为顶层 py-module 安装，
-# 这样 `pipx install freenode` 后 freenode-update 能 import 到 update/crawler 等。
-# update.py 的 import 闭包：update → {crawler, dedup, formatter, parser, verifier, utils}，
-# crawler → adapters 包，因此 dedup 与 adapters 都必须在此声明，否则 freenode-update 会 ImportError。
-[tool.setuptools]
-package-dir = {"" = "scripts"}
-py-modules = ["update", "crawler", "dedup", "parser", "verifier", "formatter", "utils"]
-packages = ["adapters"]
-
-# ─── ruff：lint + format 配置 ─────────────────────────────────────────
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-extend-exclude = [
-    "web/node_modules",
-    "docs-site/node_modules",
-    "backend/alembic/versions",
-]
 
 [tool.ruff.lint]
-# 选一组务实规则：pycodestyle + pyflakes + isort + 简化 + 习惯用法 + bugbear。
 select = ["E", "F", "I", "UP", "SIM", "B"]
-# 项目里有些函数签名带 Optional/Union 老写法，先不强制升级以避免大面积改动。
 ignore = [
-    "E501",   # 行长由 formatter 管，不单独报错
-    "E402",   # 测试文件里 sys.path.insert 后再 import 是常见模式
-    "B008",   # FastAPI Depends() 在默认参数里是正常用法
-    "B011",   # 测试里 assert False 当占位符是常见模式
-    "B904",   # 现有代码 raise 不带 from，逐个改风险大，先放行
-    "SIM105", # contextlib.suppress 风格不强制
-    "SIM108", # 三元表达式不强制，if-else 更可读
-    "UP046",  # PEP 695 泛型新语法不强制升级
+    "E501",   # 行长由 formatter 管
+    "E402",   # 测试里 sys.path.insert 后 import 是常见模式
+    "B011",   # 测试里 assert False 占位
+    "UP046",  # PEP 695 泛型不强制
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["utils", "app"]
+known-first-party = ["utils"]
 
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
 
-# ─── pytest 配置 ──────────────────────────────────────────────────────
 [tool.pytest.ini_options]
 minversion = "7.0"
-testpaths = ["tests", "backend/tests"]
-pythonpath = ["scripts", "backend"]
-addopts = [
-    "-q",
-    "--strict-markers",
-]
+testpaths = ["tests"]
+pythonpath = ["scripts"]
+addopts = ["-q", "--strict-markers"]
 asyncio_mode = "auto"
-filterwarnings = [
-    "ignore::DeprecationWarning",
-    "ignore::PendingDeprecationWarning",
-]
+filterwarnings = ["ignore::DeprecationWarning", "ignore::PendingDeprecationWarning"]
 
-# ─── mypy：可选静态检查 ───────────────────────────────────────────────
 [tool.mypy]
 python_version = "3.12"
 warn_unused_ignores = true
 warn_redundant_casts = true
-# 不强制全量检查，只跑显式标注过的模块；CI 不 gate。
 ignore_missing_imports = true
 
-# ─── coverage：覆盖率配置 ────────────────────────────────────────────
 [tool.coverage.run]
-source = ["scripts", "backend/app"]
+source = ["scripts"]
 branch = true
-omit = [
-    # 测试代码本身不计入覆盖率
-    "*/tests/*",
-    "backend/alembic/*",
-    "backend/app/alembic/*",
-    # 生成的迁移文件
-    "**/versions/*.py",
-]
+omit = ["*/tests/*"]
 
 [tool.coverage.report]
-# 低于 60% 的文件单独标出来
-fail_under = 0
 show_missing = true
-exclude_lines = [
-    "pragma: no cover",
-    "if __name__ == .__main__.:",
-    "raise NotImplementedError",
-    "if TYPE_CHECKING:",
-    "\\.\\.\\.",
-]
