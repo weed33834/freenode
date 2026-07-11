@@ -33,6 +33,7 @@ repository is updated every day by GitHub Actions — no server, no database.
   - [Environment variables](#environment-variables)
 - [Output Files](#output-files)
 - [Automated Daily Update](#automated-daily-update)
+- [Guides](#guides)
 - [Development](#development)
 - [License](#license)
 - [Other Languages](#other-languages)
@@ -309,6 +310,16 @@ make test    # run the tests/ suite
 make lint    # ruff checks
 make update  # same as `python scripts/update.py`
 ```
+
+## Guides
+
+- [Protocols Explained](guides/PROTOCOLS.md) — What each proxy protocol is
+  and how they compare (SS / VMess / VLESS / Trojan / Hysteria / TUIC / HTTP
+  / SOCKS).
+- [Client Setup](guides/CLIENTS.md) — How to subscribe in Clash, v2rayN,
+  Shadowrocket, Stash, sing-box, and more.
+- [Source Catalog](guides/SOURCES.md) — Every source this repo collects from,
+  ranked by quality and star count.
 
 ## License
 
