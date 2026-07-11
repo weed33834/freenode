@@ -1,5 +1,7 @@
 # FreeNode
 
+> **English** · [中文](README.zh-CN.md) · [日本語](README.ja.md)
+
 A collection repository of **public, free proxy / node sources**. An automated
 pipeline fetches, parses, verifies, and formats node lists from community
 sources into subscription files that you can load directly into a client. The
