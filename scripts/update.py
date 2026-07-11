@@ -31,7 +31,6 @@ def _get_int_env(name: str, default: int) -> int:
 
 
 # Limits are configurable via environment variables for future scaling.
-# 默认值与 backend/app/config.py 的 Settings 保持一致，避免两套默认值造成困惑。
 MAX_NODES = _get_int_env("FREENODE_MAX_NODES", 800)
 MAX_PROXIES = _get_int_env("FREENODE_MAX_PROXIES", 300)
 VERIFY_NODES = os.environ.get("FREENODE_VERIFY_NODES", "true").lower() in ("1", "true", "yes")

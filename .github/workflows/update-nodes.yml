@@ -33,6 +33,20 @@ jobs:
         # 把 --verify 改成 --no-verify 即可。
         run: python scripts/update.py --verify
 
+      - name: Validate output
+        # 节点文件只有头部没有实际节点时，不提交（所有源都失败了）
+        run: |
+          for f in nodes/clash.yaml nodes/v2ray.txt nodes/proxies.txt; do
+            if [ ! -f "$f" ]; then
+              echo "ERROR: $f not found"; exit 1
+            fi
+            line_count=$(wc -l < "$f")
+            if [ "$line_count" -lt 5 ]; then
+              echo "ERROR: $f has only $line_count lines (likely all sources failed)"; exit 1
+            fi
+          done
+          echo "Output validation passed"
+
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"

@@ -22,8 +22,6 @@ USER_AGENT = "FreeNode-Crawler/1.0 (+https://github.com/MS33834/freenode)"
 ALLOWED_SCHEMES = {"https"}
 DEFAULT_ALLOWED_HOSTS = {
     "raw.githubusercontent.com",
-    "gitcode.com",
-    "api.gitcode.com",
 }
 
 
