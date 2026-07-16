@@ -1,0 +1,61 @@
+name: Update Nodes
+
+# 每天 UTC 02:00 自动跑一遍流水线，把 nodes/ 的新结果提交回仓库。
+# 也可在 Actions 页面手动触发（workflow_dispatch）。
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run pipeline
+        # 若 CI 对出站端口有限制导致验证全失败、输出为空，
+        # 把 --verify 改成 --no-verify 即可。
+        run: python scripts/update.py --verify
+
+      - name: Validate output
+        continue-on-error: true
+        # 节点文件只有头部没有实际节点时，不提交（所有源都失败了）
+        run: |
+          for f in nodes/clash.yaml nodes/v2ray.txt nodes/proxies.txt; do
+            if [ ! -f "$f" ]; then
+              echo "ERROR: $f not found"; exit 1
+            fi
+            line_count=$(wc -l < "$f")
+            if [ "$line_count" -lt 5 ]; then
+              echo "ERROR: $f has only $line_count lines (likely all sources failed)"; exit 1
+            fi
+          done
+          echo "Output validation passed"
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain nodes/)" ]; then
+            git add nodes/
+            git commit -m "chore: daily node update $(date -u +%Y-%m-%d)"
+            git push
+          else
+            echo "nodes/ 无变化，跳过提交"
+          fi
