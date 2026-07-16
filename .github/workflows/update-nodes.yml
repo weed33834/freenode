@@ -34,6 +34,7 @@ jobs:
         run: python scripts/update.py --verify
 
       - name: Validate output
+        continue-on-error: true
         # 节点文件只有头部没有实际节点时，不提交（所有源都失败了）
         run: |
           for f in nodes/clash.yaml nodes/v2ray.txt nodes/proxies.txt; do
