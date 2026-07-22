@@ -32,12 +32,14 @@ DOCS_DATA_DIR = PROJECT_ROOT / "docs" / "_data"
 # ============================================================
 SITE_CONFIG = {
     # 订阅文件 raw 地址。同时配置主仓库与镜像，前端按可达性选择
-    # 主仓库 GitCode（代码托管处），镜像 GitHub（用于 GitHub Pages 部署）
+    # 主仓库 GitCode (代码托管处, corrected raw path without raw. subdomain),
+    # 镜像: GitHub raw (Pages 部署) + jsDelivr CDN (全球加速,国内友好)
     "raw_base_urls": [
-        "https://raw.gitcode.com/badhope/freenode/raw/main/nodes",
+        "https://gitcode.com/badhope/freenode/raw/main/nodes",
         "https://raw.githubusercontent.com/weed33834/freenode/main/nodes",
+        "https://cdn.jsdelivr.net/gh/weed33834/freenode@main/nodes",
     ],
-    "primary_raw_base": "https://raw.gitcode.com/badhope/freenode/raw/main/nodes",
+    "primary_raw_base": "https://gitcode.com/badhope/freenode/raw/main/nodes",
     # 仓库链接（用于 GitHub icon、PR、Issue 等）
     "repo_urls": {
         "gitcode": "https://gitcode.com/badhope/freenode",

@@ -5,9 +5,10 @@
     "title": "Clash 订阅",
     "clients": "Clash / Clash Verge / Stash / Karing",
     "format": "clash.yaml",
-    "url": "https://raw.gitcode.com/badhope/freenode/raw/main/nodes/clash.yaml",
+    "url": "https://gitcode.com/badhope/freenode/raw/main/nodes/clash.yaml",
     "mirrors": [
-      "https://raw.githubusercontent.com/weed33834/freenode/main/nodes/clash.yaml"
+      "https://raw.githubusercontent.com/weed33834/freenode/main/nodes/clash.yaml",
+      "https://cdn.jsdelivr.net/gh/weed33834/freenode@main/nodes/clash.yaml"
     ],
     "docs_url": "https://clash.wiki/"
   },
@@ -17,9 +18,10 @@
     "title": "V2Ray 订阅",
     "clients": "v2rayN / v2rayNG / Karing",
     "format": "v2ray.txt",
-    "url": "https://raw.gitcode.com/badhope/freenode/raw/main/nodes/v2ray.txt",
+    "url": "https://gitcode.com/badhope/freenode/raw/main/nodes/v2ray.txt",
     "mirrors": [
-      "https://raw.githubusercontent.com/weed33834/freenode/main/nodes/v2ray.txt"
+      "https://raw.githubusercontent.com/weed33834/freenode/main/nodes/v2ray.txt",
+      "https://cdn.jsdelivr.net/gh/weed33834/freenode@main/nodes/v2ray.txt"
     ],
     "docs_url": "https://www.v2fly.org/"
   },
@@ -29,9 +31,10 @@
     "title": "代理列表",
     "clients": "HTTP(S) / SOCKS4 / SOCKS5 客户端",
     "format": "proxies.txt",
-    "url": "https://raw.gitcode.com/badhope/freenode/raw/main/nodes/proxies.txt",
+    "url": "https://gitcode.com/badhope/freenode/raw/main/nodes/proxies.txt",
     "mirrors": [
-      "https://raw.githubusercontent.com/weed33834/freenode/main/nodes/proxies.txt"
+      "https://raw.githubusercontent.com/weed33834/freenode/main/nodes/proxies.txt",
+      "https://cdn.jsdelivr.net/gh/weed33834/freenode@main/nodes/proxies.txt"
     ],
     "docs_url": null
   }
