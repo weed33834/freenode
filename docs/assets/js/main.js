@@ -486,75 +486,28 @@
   }
 
   // ============================================================
-  // 订阅发布状态检测
-  //   跨源 raw 文件无法读 status,且部分源 (GitCode) 在浏览器 no-cors 下会 abort,
-  //   直接探主链接会误报"不可达"。改为探 no-cors 友好的镜像 (GitHub raw / jsDelivr):
-  //   - 任一镜像 resolve(opaque) → 文件已发布 → 标 "✓ 已发布"
-  //   - 全部 reject → 可能未生成 → 标 "⚠ 未知" 并展开镜像供用户手动验证
-  //   主链接 (GitCode) 是否可达由用户点击"打开"时自验,不在前端强判定。
+  // 订阅状态标记
+  //   跨源 raw 文件无法可靠探测可达性 (no-cors 读不到 status,部分源在浏览器 abort),
+  //   且探测结果不稳定 (不同视口/网络环境抖动),给用户造成"不连贯"观感。
+  //   文件由仓库提交即视为已发布,直接标静态 "✓ 已生成" 徽标,
+  //   镜像列表折叠保留,用户按需展开。不再做易误报的 fetch 探活。
   // ============================================================
-  function checkSubscriptions() {
+  function markSubscriptions() {
     var subCards = document.querySelectorAll('.sub-card');
     if (!subCards.length) return;
     subCards.forEach(function (card) {
-      // 收集所有镜像 URL (来自 .mirror-link 的 data-copy)
-      var mirrorEls = card.querySelectorAll('.mirror-link[data-copy]');
-      var mirrors = [];
-      mirrorEls.forEach(function (el) {
-        var u = el.getAttribute('data-copy');
-        if (u) mirrors.push(u);
-      });
-      // 优先探 no-cors 友好的源:GitHub raw, jsDelivr (这两个在浏览器下不 abort)
-      var probeCandidates = mirrors.filter(function (u) {
-        return u.indexOf('raw.githubusercontent.com') !== -1
-            || u.indexOf('cdn.jsdelivr.net') !== -1;
-      });
-      if (!probeCandidates.length) probeCandidates = mirrors.slice(0, 1);
-      if (!probeCandidates.length) return;
-
-      var controller = ('AbortController' in window) ? new AbortController() : null;
-      var timeoutId = setTimeout(function () {
-        if (controller) controller.abort();
-      }, 6000);
-      var signal = controller ? controller.signal : undefined;
-
-      // 串行探候选源,任一 resolve 即"已发布";全部 reject 才"未知"
-      function probeNext(i) {
-        if (i >= probeCandidates.length) {
-          markSubStatus(card, 'unknown');
-          return;
-        }
-        fetch(probeCandidates[i], { method: 'GET', mode: 'no-cors', cache: 'no-store', signal: signal })
-          .then(function () { markSubStatus(card, 'ok'); })
-          .catch(function () { probeNext(i + 1); });
-      }
-      probeNext(0);
-      // 超时兜底
-      setTimeout(function () { /* controller 已 abort,fetch 会 reject 走 probeNext */ }, 6500);
+      markSubStatus(card, 'ok');
     });
   }
 
   function markSubStatus(card, status) {
     var linkEl = card.querySelector('.sub-card-link');
-    var mirrorsEl = card.querySelector('.sub-card-mirrors');
-    // 避免重复标记 (探活串行可能多次回调)
-    if (linkEl && linkEl.querySelector('.sub-status')) return;
+    if (!linkEl || linkEl.querySelector('.sub-status')) return;
     var statusDot = document.createElement('span');
     statusDot.className = 'sub-status';
-    if (status === 'ok') {
-      statusDot.style.cssText = 'color: var(--color-success); font-size: 11px; margin-left: 6px;';
-      statusDot.textContent = '✓ 已发布';
-      if (linkEl) linkEl.appendChild(statusDot);
-    } else if (status === 'unknown') {
-      statusDot.style.cssText = 'color: var(--color-warn); font-size: 11px; margin-left: 6px;';
-      statusDot.textContent = '⚠ 状态未知';
-      if (linkEl) linkEl.appendChild(statusDot);
-      // 未知时展开镜像供用户手动选择
-      if (mirrorsEl && !mirrorsEl.hasAttribute('open')) {
-        mirrorsEl.setAttribute('open', '');
-        mirrorsEl.style.borderColor = 'rgba(210, 153, 34, 0.3)';
-      }
-    }
+    statusDot.style.cssText = 'color: var(--color-success); font-size: 11px; margin-left: 6px;';
+    statusDot.textContent = '✓ 已生成';
+    linkEl.appendChild(statusDot);
   }
 
   // ============================================================
@@ -567,7 +520,7 @@
     initProtoRings();
     initSearch();
     initSourceFilter();
-    checkSubscriptions();
+    markSubscriptions();
   }
 
   if (document.readyState === 'loading') {
