@@ -68,10 +68,23 @@
     if (!target) return;
     e.preventDefault();
     var text = target.getAttribute('data-copy');
+    // 视觉反馈:按钮短暂切到"已复制"状态,与 toast 互补,提升连贯感
+    var origHTML = target.innerHTML;
+    var origWidth = target.style.width;
+    target.style.width = target.offsetWidth + 'px'; // 锁宽避免抖动
+    target.classList.add('is-copied');
     copyToClipboard(text).then(function () {
+      target.innerHTML = '✓ 已复制';
       showToast('已复制到剪贴板');
     }).catch(function () {
+      target.innerHTML = '✕ 失败';
       showToast('复制失败,请手动选择', 'error');
+    }).then(function () {
+      setTimeout(function () {
+        target.innerHTML = origHTML;
+        target.classList.remove('is-copied');
+        target.style.width = origWidth;
+      }, 1300);
     });
     addRipple(e, target);
   });
@@ -304,8 +317,7 @@
     return items;
   }
 
-  function renderSearchResults(query) {
-    var container = document.getElementById('search-results');
+  function renderSearchResults(query, container) {
     if (!container) return;
     if (!query.trim()) {
       container.hidden = true;
@@ -347,35 +359,92 @@
     container.hidden = false;
   }
 
-  function initSearch() {
-    var input = document.getElementById('search-input');
+  // 绑定单个搜索 input + 其结果容器
+  function bindSearchInput(input, resultsEl) {
     if (!input) return;
     var timer = null;
     input.addEventListener('input', function () {
       clearTimeout(timer);
       var q = input.value;
-      timer = setTimeout(function () { renderSearchResults(q); }, 120);
+      timer = setTimeout(function () { renderSearchResults(q, resultsEl); }, 120);
     });
     input.addEventListener('focus', function () {
-      if (input.value) renderSearchResults(input.value);
+      if (input.value) renderSearchResults(input.value, resultsEl);
     });
+  }
+
+  // 移动端搜索浮层开关
+  function openMobileSearch() {
+    var overlay = document.getElementById('nav-search-overlay');
+    var toggle = document.getElementById('nav-search-toggle');
+    var input = document.getElementById('search-input-mobile');
+    if (!overlay) return;
+    overlay.classList.add('is-open');
+    overlay.setAttribute('aria-hidden', 'false');
+    if (toggle) { toggle.classList.add('is-open'); toggle.setAttribute('aria-expanded', 'true'); }
+    if (input) setTimeout(function () { input.focus(); }, 50);
+  }
+  function closeMobileSearch() {
+    var overlay = document.getElementById('nav-search-overlay');
+    var toggle = document.getElementById('nav-search-toggle');
+    if (!overlay) return;
+    overlay.classList.remove('is-open');
+    overlay.setAttribute('aria-hidden', 'true');
+    if (toggle) { toggle.classList.remove('is-open'); toggle.setAttribute('aria-expanded', 'false'); }
+  }
+
+  function initSearch() {
+    // 桌面行内搜索
+    var desktopInput = document.getElementById('search-input');
+    var desktopResults = document.getElementById('search-results');
+    bindSearchInput(desktopInput, desktopResults);
+
+    // 移动端浮层搜索
+    var mobileInput = document.getElementById('search-input-mobile');
+    var mobileResults = document.getElementById('search-results-mobile');
+    bindSearchInput(mobileInput, mobileResults);
+
+    // 移动端 toggle 按钮
+    var toggle = document.getElementById('nav-search-toggle');
+    if (toggle) {
+      toggle.addEventListener('click', function () {
+        var overlay = document.getElementById('nav-search-overlay');
+        if (overlay && overlay.classList.contains('is-open')) closeMobileSearch();
+        else openMobileSearch();
+      });
+    }
+
+    // 点击外部关闭对应结果/浮层
     document.addEventListener('click', function (e) {
       if (!e.target.closest('#nav-search')) {
-        var r = document.getElementById('search-results');
-        if (r) r.hidden = true;
+        if (desktopResults) desktopResults.hidden = true;
+      }
+      if (!e.target.closest('#nav-search-overlay') && !e.target.closest('#nav-search-toggle')) {
+        closeMobileSearch();
       }
     });
-    // 快捷键 / 聚焦搜索
+
+    // 快捷键:桌面聚焦行内,移动端打开浮层
     document.addEventListener('keydown', function (e) {
-      if (e.key === '/' && document.activeElement !== input && !e.ctrlKey && !e.metaKey) {
+      var active = document.activeElement;
+      var inDesktop = active === desktopInput;
+      var inMobile = active === mobileInput;
+      if (e.key === '/' && !inDesktop && !inMobile && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
-        input.focus();
+        // 视口宽度判断走哪个入口
+        if (window.innerWidth <= 980) openMobileSearch();
+        else if (desktopInput) desktopInput.focus();
       }
-      if (e.key === 'Escape' && document.activeElement === input) {
-        input.value = '';
-        input.blur();
-        var r = document.getElementById('search-results');
-        if (r) r.hidden = true;
+      if (e.key === 'Escape') {
+        if (inDesktop && desktopInput) {
+          desktopInput.value = '';
+          desktopInput.blur();
+          if (desktopResults) desktopResults.hidden = true;
+        }
+        if (inMobile) closeMobileSearch();
+        // 浮层打开时 Esc 也关
+        var overlay = document.getElementById('nav-search-overlay');
+        if (overlay && overlay.classList.contains('is-open') && !inMobile) closeMobileSearch();
       }
     });
   }
@@ -417,7 +486,10 @@
   }
 
   // ============================================================
-  // 订阅可达性检测 (HEAD 探活,失败自动展开镜像列表)
+  // 订阅可达性检测 (no-cors GET 探活,失败自动展开镜像列表)
+  //   说明:跨源 raw 文件无法读 status,no-cors GET 会以 opaque 响应 resolve;
+  //   仅当请求被网络层拒绝(超时/DNS/连接拒绝)才视为不可达。
+  //   不用 HEAD:部分 raw CDN 对 HEAD 返回 405/abort,误报为不可达。
   // ============================================================
   function checkSubscriptions() {
     var subCards = document.querySelectorAll('.sub-card');
@@ -426,12 +498,11 @@
       var primaryUrl = card.querySelector('[data-copy]');
       if (!primaryUrl) return;
       var url = primaryUrl.getAttribute('data-copy');
-      // 用 fetch HEAD 探活,5s 超时
       var controller = ('AbortController' in window) ? new AbortController() : null;
       var timeoutId = setTimeout(function () {
         if (controller) controller.abort();
-      }, 5000);
-      fetch(url, { method: 'HEAD', mode: 'no-cors', signal: controller ? controller.signal : undefined })
+      }, 6000);
+      fetch(url, { method: 'GET', mode: 'no-cors', cache: 'no-store', signal: controller ? controller.signal : undefined })
         .then(function () {
           markSubStatus(card, 'ok');
         })

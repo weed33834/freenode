@@ -45,13 +45,17 @@
         <span class="logo-text">FreeNode</span>
       </a>
 
-      <!-- 站内搜索框 -->
+      <!-- 站内搜索框 (桌面端行内) -->
       <div class="nav-search" id="nav-search">
         <input type="search" id="search-input" placeholder="搜索数据源 / 协议 / 客户端…"
                autocomplete="off" aria-label="站内搜索">
         <span class="search-kbd">/</span>
         <div class="search-results" id="search-results" hidden></div>
       </div>
+
+      <!-- 移动端搜索切换按钮 (≤980px 显示) -->
+      <button class="nav-search-toggle" id="nav-search-toggle" type="button"
+              aria-label="搜索" aria-expanded="false">🔍</button>
 
       <nav class="site-nav" id="site-nav">
         <a href="{{ '/' | relative_url }}" data-nav="/">首页</a>
@@ -60,6 +64,16 @@
         <a href="{{ '/about.html' | relative_url }}" data-nav="/about.html">关于</a>
         <a href="{{ site.data.site.repo_urls.gitcode }}" target="_blank" rel="noopener">GitCode ↗</a>
       </nav>
+    </div>
+
+    <!-- 移动端搜索浮层 (≤980px 由 toggle 按钮展开) -->
+    <div class="nav-search-overlay" id="nav-search-overlay" aria-hidden="true">
+      <div class="overlay-input-wrap">
+        <input type="search" id="search-input-mobile"
+               placeholder="搜索数据源 / 协议 / 客户端…"
+               autocomplete="off" aria-label="站内搜索">
+        <div class="search-results" id="search-results-mobile" hidden></div>
+      </div>
     </div>
   </header>
 

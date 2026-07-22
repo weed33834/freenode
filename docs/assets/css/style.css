@@ -63,7 +63,11 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  /* 与 body overflow-x:hidden 双保险,杜绝任何元素溢出导致横向滚动 */
+  overflow-x: hidden;
+}
 
 body {
   font-family: var(--font-sans);
@@ -578,6 +582,13 @@ body {
   box-shadow: 0 0 12px var(--accent-glow);
   color: var(--text-bright);
 }
+/* 复制成功瞬间的视觉反馈 (JS 切 .is-copied 类 + 改文案) */
+.btn.is-copied {
+  background: rgba(63, 185, 80, 0.16) !important;
+  border-color: rgba(63, 185, 80, 0.5) !important;
+  color: var(--color-success) !important;
+  box-shadow: 0 0 12px rgba(63, 185, 80, 0.3) !important;
+}
 .btn .ripple {
   position: absolute;
   border-radius: 50%;
@@ -848,10 +859,13 @@ body {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  /* 横向滚动:移动端窄屏表格列多时,允许滑动查看,不溢出文档 */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .source-table {
   width: 100%;
+  min-width: 420px; /* 移动端保证列可读,超出由 wrap 横向滚动 */
   border-collapse: collapse;
 }
 .source-table th, .source-table td {
@@ -1320,13 +1334,78 @@ body {
 ::-webkit-scrollbar-thumb:hover { background: var(--border-bright); }
 
 /* === 响应式 === */
+
+/* 移动端搜索切换按钮:≤980px 显示图标,点击展开搜索浮层 */
+.nav-search-toggle {
+  display: none;
+  width: 36px; height: 36px;
+  align-items: center; justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 15px;
+  flex-shrink: 0;
+  transition: border-color 0.2s, color 0.2s;
+}
+.nav-search-toggle:hover { color: var(--accent); border-color: var(--border-bright); }
+.nav-search-toggle.is-open { color: var(--accent); border-color: var(--border-bright); }
+
+/* 移动端搜索浮层:从顶栏下拉,全宽 */
+.nav-search-overlay {
+  display: none;
+  position: absolute;
+  top: 100%; left: 0; right: 0;
+  padding: 12px 16px 14px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid var(--border);
+  z-index: 150;
+}
+.nav-search-overlay.is-open { display: block; }
+.nav-search-overlay .overlay-input-wrap {
+  position: relative;
+}
+.nav-search-overlay input {
+  width: 100%;
+  height: 40px;
+  padding: 0 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 14px;
+  font-family: var(--font-sans);
+}
+.nav-search-overlay input:focus { outline: none; }
+.nav-search-overlay .search-results {
+  position: static;
+  max-height: 60vh;
+  margin-top: 8px;
+  box-shadow: none;
+  border: 1px solid var(--border);
+}
+
 @media (max-width: 980px) {
-  .nav-search { display: none; } /* 中等屏隐藏搜索,留给桌面 */
+  /* 中等屏:隐藏行内搜索框,改为图标按钮 + 浮层 */
+  .nav-search { display: none; }
+  .nav-search-toggle { display: inline-flex; }
 }
 @media (max-width: 768px) {
-  .site-header .container { padding: 0 16px; height: 56px; gap: 12px; }
-  .site-nav { gap: 0; }
-  .site-nav a { padding: 6px 10px; font-size: 12.5px; }
+  .site-header .container { padding: 0 16px; height: 56px; gap: 10px; }
+  .site-header { position: relative; } /* 为搜索浮层定位 */
+  /* 导航横向滚动,不换行不溢出 */
+  .site-nav {
+    gap: 0;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .site-nav::-webkit-scrollbar { display: none; }
+  .site-nav a { padding: 6px 10px; font-size: 12.5px; white-space: nowrap; flex-shrink: 0; }
   .container { padding: 0 16px; }
   .site-main { padding: 32px 0 60px; }
   .hero { padding: 16px 0 40px; }
