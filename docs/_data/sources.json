@@ -151,21 +151,6 @@
     "note": "VMess nodes from MegaV Public."
   },
   {
-    "name": "Ruk1ng001-freeSub-v2ray",
-    "type": "github_raw",
-    "category": "nodes",
-    "status": "active",
-    "reliability": 100.0,
-    "protocols": [
-      "vmess",
-      "vless",
-      "ss"
-    ],
-    "update_interval": "daily",
-    "url": "https://raw.githubusercontent.com/Ruk1ng001/freeSub/main/v2ray",
-    "note": "Continuously updated free clash/v2ray subscription (Base64)."
-  },
-  {
     "name": "ShiftyTR-proxy-list-http",
     "type": "github_raw",
     "category": "proxies",
@@ -246,22 +231,6 @@
     "note": "⭐6 Alirewa/V2ray-Configs — 1000+ configs auto-collected daily."
   },
   {
-    "name": "awesome-vpn-all",
-    "type": "github_raw",
-    "category": "nodes",
-    "status": "active",
-    "reliability": 100.0,
-    "protocols": [
-      "vmess",
-      "vless",
-      "ss",
-      "trojan"
-    ],
-    "update_interval": "daily",
-    "url": "https://raw.githubusercontent.com/awesome-vpn/awesome-vpn/master/all",
-    "note": "High-star community project (5.6k+ stars) providing daily mixed-protocol subscription (Base64)."
-  },
-  {
     "name": "caijh-free-proxies-scraper",
     "type": "github_raw",
     "category": "nodes",
@@ -335,22 +304,6 @@
     "note": "Large mixed-protocol subscription from Epodonios v2ray-configs (Base64)."
   },
   {
-    "name": "ermaozi-get-subscribe-v2ray",
-    "type": "github_raw",
-    "category": "nodes",
-    "status": "active",
-    "reliability": 100.0,
-    "protocols": [
-      "trojan",
-      "vmess",
-      "ss",
-      "vless"
-    ],
-    "update_interval": "daily",
-    "url": "https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/v2ray.txt",
-    "note": "Daily updated mixed-protocol subscription (Base64)."
-  },
-  {
     "name": "ermaozi01-free-clash-vpn",
     "type": "github_raw",
     "category": "nodes",
@@ -380,20 +333,6 @@
     "note": "Daily updated v2ray subscription from free18/v2ray (Base64)."
   },
   {
-    "name": "freefq-free",
-    "type": "github_raw",
-    "category": "nodes",
-    "status": "active",
-    "reliability": 100.0,
-    "protocols": [
-      "vmess",
-      "vless"
-    ],
-    "update_interval": "inactive",
-    "url": "https://raw.githubusercontent.com/freefq/free/master/v2",
-    "note": "41k⭐ freefq/free 经典免费节点库。"
-  },
-  {
     "name": "hamedp-openproxylist-v2ray",
     "type": "github_raw",
     "category": "nodes",
@@ -408,19 +347,6 @@
     "update_interval": "daily",
     "url": "https://raw.githubusercontent.com/hamedp-71/openproxylist/main/V2RAY.txt",
     "note": "Daily updated mixed v2ray nodes from openproxylist (plain text)."
-  },
-  {
-    "name": "jetkai-http",
-    "type": "github_raw",
-    "category": "proxies",
-    "status": "active",
-    "reliability": 100.0,
-    "protocols": [
-      "http"
-    ],
-    "update_interval": "hourly",
-    "url": "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-http.txt",
-    "note": "Hourly tested online HTTP proxies (ip:port) from jetkai/proxy-list."
   },
   {
     "name": "jetkai-socks4",
@@ -688,22 +614,6 @@
     "note": "Currently unavailable. Config served externally at free.datiya.com, no raw file in repo. Also Clash YAML format (not supported by parser)."
   },
   {
-    "name": "pawdroid-free-servers",
-    "type": "github_raw",
-    "category": "nodes",
-    "status": "active",
-    "reliability": 100.0,
-    "protocols": [
-      "vmess",
-      "vless",
-      "ss",
-      "trojan"
-    ],
-    "update_interval": "daily",
-    "url": "https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub",
-    "note": "Daily updated mixed-protocol subscription (Base64)."
-  },
-  {
     "name": "peasoft-NoMoreWalls-list",
     "type": "github_raw",
     "category": "nodes",
@@ -941,6 +851,96 @@
     "note": "⭐132 免费代理节点大全 V2Ray 订阅。"
   },
   {
+    "name": "Ruk1ng001-freeSub-v2ray",
+    "type": "github_raw",
+    "category": "nodes",
+    "status": "active",
+    "reliability": 87.5,
+    "protocols": [
+      "vmess",
+      "vless",
+      "ss"
+    ],
+    "update_interval": "daily",
+    "url": "https://raw.githubusercontent.com/Ruk1ng001/freeSub/main/v2ray",
+    "note": "Continuously updated free clash/v2ray subscription (Base64)."
+  },
+  {
+    "name": "awesome-vpn-all",
+    "type": "github_raw",
+    "category": "nodes",
+    "status": "active",
+    "reliability": 87.5,
+    "protocols": [
+      "vmess",
+      "vless",
+      "ss",
+      "trojan"
+    ],
+    "update_interval": "daily",
+    "url": "https://raw.githubusercontent.com/awesome-vpn/awesome-vpn/master/all",
+    "note": "High-star community project (5.6k+ stars) providing daily mixed-protocol subscription (Base64)."
+  },
+  {
+    "name": "ermaozi-get-subscribe-v2ray",
+    "type": "github_raw",
+    "category": "nodes",
+    "status": "active",
+    "reliability": 87.5,
+    "protocols": [
+      "trojan",
+      "vmess",
+      "ss",
+      "vless"
+    ],
+    "update_interval": "daily",
+    "url": "https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/v2ray.txt",
+    "note": "Daily updated mixed-protocol subscription (Base64)."
+  },
+  {
+    "name": "jetkai-http",
+    "type": "github_raw",
+    "category": "proxies",
+    "status": "active",
+    "reliability": 87.5,
+    "protocols": [
+      "http"
+    ],
+    "update_interval": "hourly",
+    "url": "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-http.txt",
+    "note": "Hourly tested online HTTP proxies (ip:port) from jetkai/proxy-list."
+  },
+  {
+    "name": "pawdroid-free-servers",
+    "type": "github_raw",
+    "category": "nodes",
+    "status": "active",
+    "reliability": 87.5,
+    "protocols": [
+      "vmess",
+      "vless",
+      "ss",
+      "trojan"
+    ],
+    "update_interval": "daily",
+    "url": "https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub",
+    "note": "Daily updated mixed-protocol subscription (Base64)."
+  },
+  {
+    "name": "freefq-free",
+    "type": "github_raw",
+    "category": "nodes",
+    "status": "active",
+    "reliability": 50.0,
+    "protocols": [
+      "vmess",
+      "vless"
+    ],
+    "update_interval": "inactive",
+    "url": "https://raw.githubusercontent.com/freefq/free/master/v2",
+    "note": "41k⭐ freefq/free 经典免费节点库。"
+  },
+  {
     "name": "aiboboxx-v2rayfree",
     "type": "github_raw",
     "category": "nodes",
@@ -992,7 +992,7 @@
     "name": "epodonios-v2ray-sub11",
     "type": "github_raw",
     "category": "nodes",
-    "status": "active",
+    "status": "observing",
     "reliability": 0.0,
     "protocols": [
       "vless"
@@ -1005,7 +1005,7 @@
     "name": "epodonios-v2ray-sub20",
     "type": "github_raw",
     "category": "nodes",
-    "status": "active",
+    "status": "observing",
     "reliability": 0.0,
     "protocols": [
       "vless"
@@ -1078,7 +1078,7 @@
     "name": "mmpx12-proxy-list-http",
     "type": "github_raw",
     "category": "proxies",
-    "status": "active",
+    "status": "observing",
     "reliability": 0.0,
     "protocols": [
       "http"
@@ -1091,7 +1091,7 @@
     "name": "mmpx12-proxy-list-socks5",
     "type": "github_raw",
     "category": "proxies",
-    "status": "active",
+    "status": "observing",
     "reliability": 0.0,
     "protocols": [
       "socks5"

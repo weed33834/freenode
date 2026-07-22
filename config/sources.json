@@ -188,7 +188,8 @@
       "protocols": [
         "vless"
       ],
-      "note": "VLESS subscription Sub11 from Epodonios v2ray-configs (Base64)."
+      "note": "VLESS subscription Sub11 from Epodonios v2ray-configs (Base64).",
+      "status": "observing"
     },
     {
       "name": "epodonios-v2ray-sub20",
@@ -200,7 +201,8 @@
       "protocols": [
         "vless"
       ],
-      "note": "VLESS subscription Sub20 from Epodonios v2ray-configs (Base64)."
+      "note": "VLESS subscription Sub20 from Epodonios v2ray-configs (Base64).",
+      "status": "observing"
     },
     {
       "name": "mahdibland-shadowsocks-eternity",
@@ -1044,7 +1046,8 @@
         "http"
       ],
       "proxy_scheme": "http",
-      "note": "HTTP proxy list (ip:port) from mmpx12/proxy-list."
+      "note": "HTTP proxy list (ip:port) from mmpx12/proxy-list.",
+      "status": "observing"
     },
     {
       "name": "mmpx12-proxy-list-socks5",
@@ -1057,7 +1060,8 @@
         "socks5"
       ],
       "proxy_scheme": "socks5",
-      "note": "SOCKS5 proxy list (ip:port) from mmpx12/proxy-list."
+      "note": "SOCKS5 proxy list (ip:port) from mmpx12/proxy-list.",
+      "status": "observing"
     },
     {
       "name": "roosterkid-openproxylist-https",

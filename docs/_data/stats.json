@@ -1,63 +1,47 @@
 {
-  "last_updated": "2026-07-16T01:13:23Z",
+  "last_updated": "2026-07-22T18:29:11Z",
   "freshness": {
-    "level": "outdated",
-    "hours_ago": 160.8,
-    "label": "严重过期"
+    "level": "fresh",
+    "hours_ago": 0.0,
+    "label": "新鲜"
   },
   "total_nodes": 800,
-  "alive_nodes": 800,
-  "survival_rate": 100.0,
-  "avg_latency_ms": 114.0,
+  "alive_nodes": null,
+  "survival_rate": null,
+  "avg_latency_ms": null,
   "total_sources": 81,
   "by_protocol": [
     {
       "name": "vless",
-      "total": 341,
-      "alive": 341,
-      "survival_rate": 100.0,
-      "avg_latency": 98.8,
-      "percentage": 42.6
-    },
-    {
-      "name": "trojan",
-      "total": 195,
-      "alive": 195,
-      "survival_rate": 100.0,
-      "avg_latency": 137.2,
-      "percentage": 24.4
+      "total": 348,
+      "alive": null,
+      "survival_rate": null,
+      "avg_latency": null,
+      "percentage": 43.5
     },
     {
       "name": "ss",
-      "total": 166,
-      "alive": 166,
-      "survival_rate": 100.0,
-      "avg_latency": 120.6,
-      "percentage": 20.8
+      "total": 173,
+      "alive": null,
+      "survival_rate": null,
+      "avg_latency": null,
+      "percentage": 21.6
     },
     {
       "name": "vmess",
-      "total": 92,
-      "alive": 92,
-      "survival_rate": 100.0,
-      "avg_latency": 103.8,
-      "percentage": 11.5
+      "total": 146,
+      "alive": null,
+      "survival_rate": null,
+      "avg_latency": null,
+      "percentage": 18.2
     },
     {
-      "name": "hysteria2",
-      "total": 5,
-      "alive": 5,
-      "survival_rate": 100.0,
-      "avg_latency": 168.4,
-      "percentage": 0.6
-    },
-    {
-      "name": "tuic",
-      "total": 1,
-      "alive": 1,
-      "survival_rate": 100.0,
-      "avg_latency": 369.0,
-      "percentage": 0.1
+      "name": "trojan",
+      "total": 133,
+      "alive": null,
+      "survival_rate": null,
+      "avg_latency": null,
+      "percentage": 16.6
     }
   ]
 }
