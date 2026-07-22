@@ -153,8 +153,13 @@
   function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
   function countUp(el) {
-    var target = parseFloat(el.getAttribute('data-countup'));
-    if (isNaN(target)) return;
+    var raw = el.getAttribute('data-countup');
+    var target = parseFloat(raw);
+    if (isNaN(target)) {
+      // 目标为空 (如验证未跑时 alive_nodes=null),显示 — 而非误导性的 0
+      el.textContent = raw && raw.trim() ? raw : '—';
+      return;
+    }
     var decimal = parseInt(el.getAttribute('data-decimal') || '0', 10);
     if (REDUCED) {
       el.textContent = formatNum(target, decimal);
