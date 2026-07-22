@@ -1335,10 +1335,17 @@ body {
 
 /* === 响应式 === */
 
-/* 移动端搜索切换按钮:≤980px 显示图标,点击展开搜索浮层 */
-.nav-search-toggle {
+/* 移动端工具按钮组:≤980px 显示 */
+.nav-actions {
   display: none;
-  width: 36px; height: 36px;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.nav-icon-btn {
+  width: 38px; height: 38px;
+  display: inline-flex;
   align-items: center; justify-content: center;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border);
@@ -1346,11 +1353,38 @@ body {
   color: var(--text);
   cursor: pointer;
   font-size: 15px;
-  flex-shrink: 0;
-  transition: border-color 0.2s, color 0.2s;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
 }
-.nav-search-toggle:hover { color: var(--accent); border-color: var(--border-bright); }
-.nav-search-toggle.is-open { color: var(--accent); border-color: var(--border-bright); }
+.nav-icon-btn:hover { color: var(--accent); border-color: var(--border-bright); }
+.nav-icon-btn.is-open {
+  color: var(--accent);
+  border-color: var(--border-bright);
+  background: var(--accent-dim);
+}
+
+/* 汉堡图标 (三横线,带 open 变 × 的动画) */
+.menu-icon {
+  position: relative;
+  width: 16px; height: 12px;
+}
+.menu-icon span {
+  position: absolute;
+  left: 0; right: 0;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  transition: transform 0.25s var(--ease-out), opacity 0.2s;
+}
+.menu-icon span:nth-child(1) { top: 0; }
+.menu-icon span:nth-child(2) { top: 5px; }
+.menu-icon span:nth-child(3) { top: 10px; }
+.nav-menu-toggle.is-open .menu-icon span:nth-child(1) {
+  transform: translateY(5px) rotate(45deg);
+}
+.nav-menu-toggle.is-open .menu-icon span:nth-child(2) { opacity: 0; }
+.nav-menu-toggle.is-open .menu-icon span:nth-child(3) {
+  transform: translateY(-5px) rotate(-45deg);
+}
 
 /* 移动端搜索浮层:从顶栏下拉,全宽 */
 .nav-search-overlay {
@@ -1388,24 +1422,60 @@ body {
   border: 1px solid var(--border);
 }
 
+/* 移动端导航菜单面板:从顶栏下拉,纵向堆叠 */
+.nav-menu-panel {
+  display: none;
+  position: absolute;
+  top: 100%; left: 0; right: 0;
+  flex-direction: column;
+  background: var(--bg-glass);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  z-index: 150;
+  padding: 8px 0;
+}
+.nav-menu-panel.is-open {
+  display: flex;
+  animation: menu-slide-down 0.18s var(--ease-out);
+}
+@keyframes menu-slide-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.nav-menu-panel a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.nav-menu-panel a:hover,
+.nav-menu-panel a.is-active {
+  color: var(--accent);
+  background: var(--accent-dim);
+  border-left-color: var(--accent);
+}
+.nav-menu-panel a.external {
+  color: var(--text-muted);
+}
+.nav-menu-panel a.external:hover { color: var(--accent-secondary); }
+
 @media (max-width: 980px) {
-  /* 中等屏:隐藏行内搜索框,改为图标按钮 + 浮层 */
+  /* 中等屏:隐藏行内搜索框和行内导航,改为图标按钮 + 浮层/面板 */
   .nav-search { display: none; }
-  .nav-search-toggle { display: inline-flex; }
+  .site-nav { display: none; }
+  .nav-actions { display: flex; }
 }
 @media (max-width: 768px) {
   .site-header .container { padding: 0 16px; height: 56px; gap: 10px; }
-  .site-header { position: relative; } /* 为搜索浮层定位 */
-  /* 导航横向滚动,不换行不溢出 */
-  .site-nav {
-    gap: 0;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .site-nav::-webkit-scrollbar { display: none; }
-  .site-nav a { padding: 6px 10px; font-size: 12.5px; white-space: nowrap; flex-shrink: 0; }
+  .site-header { position: relative; }
   .container { padding: 0 16px; }
   .site-main { padding: 32px 0 60px; }
   .hero { padding: 16px 0 40px; }
