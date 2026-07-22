@@ -16,12 +16,14 @@ PROJECT_ROOT = Path(__file__).parent.parent
 CONFIG_PATH = PROJECT_ROOT / "config" / "sources.json"
 NODES_DIR = PROJECT_ROOT / "nodes"
 
-USER_AGENT = "FreeNode-Crawler/1.0 (+https://github.com/MS33834/freenode)"
+USER_AGENT = "FreeNode-Crawler/1.0 (+https://github.com/weed33834/freenode)"
 
 # Only HTTPS URLs from well-known public hosts are allowed as data sources.
 ALLOWED_SCHEMES = {"https"}
 DEFAULT_ALLOWED_HOSTS = {
     "raw.githubusercontent.com",
+    "gitcode.com",
+    "api.gitcode.com",
 }
 
 
@@ -200,6 +202,40 @@ def _is_risky_ip(ip) -> bool:
         or ip.is_unspecified
         or not ip.is_global  # 兜底拦截 CGNAT(100.64/10)、TEST-NET 等非全局地址
     )
+
+
+# 可疑网段黑名单：已知蜜罐、Tor exit、扫描器常用网段。
+# 这只是兜底防护，不能替代正经威胁情报；可通过 FREENODE_SUSPICIOUS_NETS 扩展。
+# 默认保守：只列确定性的研究用蜜罐网段（如 T-Pot 等开源蜜罐常用 10.0.0.0/8 子集
+# 已被 is_private 覆盖，这里只补公网研究网段）。
+_SUSPICIOUS_NETS: list[ipaddress.IPv4Network | ipaddress.IPv6Network] = []
+_SUSPICIOUS_NETS_ENV = os.environ.get("FREENODE_SUSPICIOUS_NETS", "")
+if _SUSPICIOUS_NETS_ENV:
+    for _cidr in _SUSPICIOUS_NETS_ENV.split(","):
+        _cidr = _cidr.strip()
+        if not _cidr:
+            continue
+        try:
+            _SUSPICIOUS_NETS.append(ipaddress.ip_network(_cidr, strict=False))
+        except ValueError:
+            logger.warning("invalid CIDR in FREENODE_SUSPICIOUS_NETS: %s", _cidr)
+
+
+def is_suspicious_ip(ip_str: str | None) -> bool:
+    """判断 IP 是否属于用户配置的可疑网段黑名单（蜜罐 / Tor exit / 已知攻击源）。
+
+    与 is_private_host 区别：is_private_host 拦的是 RFC 1918 私网；
+    is_suspicious_ip 拦的是公网里的已知可疑网段。
+    默认空（不拦任何公网 IP），需要时通过 FREENODE_SUSPICIOUS_NETS 环境变量配置，
+    例如：FREENODE_SUSPICIOUS_NETS=198.51.100.0/24,203.0.113.0/24
+    """
+    if not ip_str or not _SUSPICIOUS_NETS:
+        return False
+    try:
+        ip = ipaddress.ip_address(ip_str)
+    except ValueError:
+        return False
+    return any(ip in net for net in _SUSPICIOUS_NETS)
 
 
 def load_sources(config_path: Path | None = None) -> dict:

@@ -1,0 +1,154 @@
+name: Manual Update & PR
+
+# 不再有 schedule 自动触发，避免 bot 污染 main 历史与分支。
+# 用户在 GitHub Actions 页面手动点 "Run workflow" 触发，跑完会自动创建 PR。
+# 用户 review 后点 Merge，main 永远是真人审核后的提交。
+#
+# 三重防 PR 堆积机制：
+# 1. 固定分支名 auto/pending-update（不再用 timestamp 后缀）
+# 2. 创建 PR 前自动关闭同分支的旧 PR
+# 3. concurrency group 串行化，避免并发触发
+on:
+  workflow_dispatch:
+    inputs:
+      verify_nodes:
+        description: '验证节点连通性（耗时增加但节点质量更高）'
+        required: false
+        default: 'true'
+        type: choice
+        options: ['true', 'false']
+      verify_level:
+        description: '验证级别：tcp（仅 TCP connect，快） / protocol（TCP + 协议握手，慢但更准）'
+        required: false
+        default: 'tcp'
+        type: choice
+        options: ['tcp', 'protocol']
+
+permissions:
+  contents: write        # push 到 PR 分支
+  pull-requests: write   # 创建 / 关闭 PR
+
+concurrency:
+  group: manual-update
+  cancel-in-progress: false  # 不取消正在跑的，避免半成品 PR
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 1
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: requirements.txt
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Run pipeline
+        env:
+          FREENODE_VERIFY_NODES: ${{ inputs.verify_nodes }}
+          FREENODE_VERIFY_TIMEOUT: '5'
+          FREENODE_VERIFY_WORKERS: '50'
+          FREENODE_VERIFY_LEVEL: ${{ inputs.verify_level }}
+          FREENODE_VERIFY_CAP: '2500'   # 节点激增预截断，避免 5000+ 验证耗时爆炸
+          FREENODE_MAX_NODES: '800'
+          FREENODE_MAX_PROXIES: '300'
+          FREENODE_ARCHIVE_RETENTION: '30'
+        run: python scripts/update.py ${{ inputs.verify_nodes == 'true' && '--verify' || '' }}
+
+      - name: Build site data
+        run: python scripts/site_builder.py
+
+      - name: Setup Ruby for Jekyll
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: false
+
+      - name: Install Jekyll
+        run: gem install jekyll --no-document
+
+      - name: Verify Jekyll build
+        # 关键防线：在创建 PR 前先跑 jekyll build 验证 Liquid 模板语法
+        # 如果 _data JSON 损坏或 HTML 改坏，这一步会失败并中止 workflow，不会创建半成品 PR
+        run: |
+          cd docs
+          # 移除 Gemfile（GitHub Pages 用 github-pages gem，本地用纯 jekyll）
+          mv Gemfile Gemfile.bak 2>/dev/null || true
+          jekyll build --destination ../_site_preview --trace
+          mv Gemfile.bak Gemfile 2>/dev/null || true
+          echo "✅ Jekyll build passed"
+
+      - name: Close stale PRs
+        # 创建新 PR 前，自动关闭同分支的旧 PR，避免 PR 堆积
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: `${context.repo.owner}:auto/pending-update`,
+            });
+            for (const pr of pulls) {
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                state: 'closed',
+              });
+              core.info(`Closed stale PR #${pr.number}`);
+            }
+
+      - name: Create PR
+        # 用 peter-evans/create-pull-request：固定分支 auto/pending-update
+        # 不用 branch-suffix: timestamp，避免每次都建新分支
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: |
+            chore: manual node update $(date -u +%Y-%m-%d)
+
+            - 跑 update.py 流水线（crawler/parser/dedup/verifier/formatter）
+            - 跑 site_builder.py 生成 docs/_data/*.json
+            - 跑 jekyll build 验证模板语法通过
+            - 由人工触发，等待真人 review & merge
+          branch: auto/pending-update
+          delete-branch: true
+          title: 'chore: node update $(date -u +%Y-%m-%d)'
+          body: |
+            ## 本次更新
+
+            由 GitHub Actions 手动触发，等待 owner review。
+
+            ### 改动内容
+            - `nodes/*.json` 节点数据（quality / clash / v2ray / proxies / sources-report）
+            - `nodes/archive/YYYY-MMDD/` 数据快照（保留 30 天，便于回滚）
+            - `docs/_data/*.json` 网站数据 JSON
+            - 可能含 `config/sources.json` 的 status 字段升降级（灰度准入）
+
+            ### 验证清单
+            - [x] jekyll build 通过（模板语法 OK）
+            - [ ] 检查 `nodes/quality.json` 的 `summary.survival_rate` 合理（>50%）
+            - [ ] 检查 `nodes/sources-report.json` 的 `promotion_log` 是否有异常升降级
+            - [ ] 部署后访问 https://weed33834.github.io/freenode/ 确认数据正确
+
+            ### 合并后
+            合并到 main 即触发 GitHub Pages 自动部署，1-2 分钟后网站刷新。
+
+            ### 回滚
+            若合并后数据异常，可从 `nodes/archive/YYYY-MMDD/` 恢复上一份可用数据。
+          labels: |
+            automated-update
+            data-only
+          assignees: weed33834
+          reviewers: weed33834

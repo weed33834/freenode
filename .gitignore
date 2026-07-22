@@ -17,15 +17,39 @@ htmlcov/
 .vscode/
 .idea/
 *.swp
+*.swo
+*~
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Secrets
+# Secrets — 永远不要提交
 *.env
 .env.*
 !/.env.example
+*.pem
+*.key
+secrets/
+.secrets
+
+# Trae IDE / AI 助手规则文件（本地开发辅助，不入公开仓库）
+.trae/
+AGENTS.md
 
 # 流水线临时产物
 nodes/*.tmp
+nodes/*.bak
+# 数据快照归档（本地保留用于回滚，不入 git，避免仓库膨胀）
+# 回滚请用 git revert PR 或 git checkout 老版本的 nodes/ 目录
+nodes/archive/
+
+# Jekyll 本地构建产物
+docs/_site/
+docs/.jekyll-cache/
+docs/.jekyll-metadata
+docs/.sass-cache/
+
+# 本地工具临时
+*.log
+nohup.out

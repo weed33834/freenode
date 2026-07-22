@@ -5,7 +5,7 @@
 If you discover a security vulnerability in this project, please report it
 privately by opening a security advisory at:
 
-https://github.com/MS33834/freenode/security/advisories/new
+https://github.com/weed33834/freenode/security/advisories/new
 
 We will respond within a reasonable timeframe and work with you to resolve the
 issue before any public disclosure.

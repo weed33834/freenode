@@ -1,0 +1,29 @@
+<!-- 可复用订阅卡片
+     参数 sub: 订阅数据对象 (来自 site.data.subscriptions)
+-->
+<div class="sub-card" data-tilt>
+  <div class="sub-card-header">
+    <span class="sub-card-icon">{{ sub.icon }}</span>
+    <div>
+      <div class="sub-card-title">{{ sub.title }}</div>
+      <div class="sub-card-clients">{{ sub.clients }}</div>
+    </div>
+  </div>
+  <div class="sub-card-link" title="{{ sub.url }}">{{ sub.url }}</div>
+  {% if sub.mirrors and sub.mirrors.size > 0 %}
+  <details class="sub-card-mirrors">
+    <summary>镜像地址 ({{ sub.mirrors.size }})</summary>
+    {% for m in sub.mirrors %}
+    <div class="mirror-link" data-copy="{{ m | escape }}">{{ m }}</div>
+    {% endfor %}
+  </details>
+  {% endif %}
+  <div class="sub-card-actions">
+    <button class="btn btn-primary" data-copy="{{ sub.url | escape }}">📋 复制链接</button>
+    <a class="btn" href="{{ sub.url }}" target="_blank" rel="noopener">🔗 打开</a>
+    {% if sub.docs_url %}
+    <a class="btn" href="{{ sub.docs_url }}" target="_blank" rel="noopener">📖 文档</a>
+    {% endif %}
+    <button class="btn" data-qr="{{ sub.url | escape }}" data-qr-title="{{ sub.title | escape }}">📱 二维码</button>
+  </div>
+</div>

@@ -1,0 +1,146 @@
+---
+layout: default
+title: FreeNode
+description: 免费公开节点 / 代理订阅源聚合导航
+---
+
+<!-- Hero 区 -->
+<section class="hero">
+  <div class="hero-tagline">
+    <span class="dot"></span>
+    <span>社区公开节点 · 集成验证</span>
+  </div>
+  <h1>免费节点 · 聚合导航</h1>
+  <p class="hero-subtitle">
+    从 80+ 个社区公开数据源采集、解析、去重、验证后,
+    输出 Clash / V2Ray / 代理列表三种订阅格式。
+    所有数据按 PR 流程手动审核后部署。
+  </p>
+  <div class="hero-meta">
+    <span class="kv"><span class="k">SOURCES</span> <span class="v">{{ site.data.stats.total_sources }}</span></span>
+    <span class="kv"><span class="k">NODES</span> <span class="v">{{ site.data.stats.total_nodes }}</span></span>
+    <span class="kv"><span class="k">ALIVE</span> <span class="v">{{ site.data.stats.alive_nodes }}</span></span>
+    {% if site.data.stats.freshness %}
+    <span class="kv">
+      <span class="k">DATA</span>
+      <span class="freshness-badge" data-level="{{ site.data.stats.freshness.level }}">
+        {{ site.data.stats.freshness.label }}
+      </span>
+    </span>
+    {% endif %}
+  </div>
+</section>
+
+<!-- 空状态:节点数为 0 时显示 -->
+{% if site.data.stats.total_nodes == 0 or site.data.stats.alive_nodes == 0 %}
+<section class="section">
+  <div class="card" style="padding: 32px; text-align: center; border-color: rgba(248, 81, 73, 0.3);">
+    <div style="font-size: 48px; margin-bottom: 16px;">🚨</div>
+    <h3 style="color: var(--color-danger); margin-bottom: 10px; font-size: 18px;">暂无可用节点</h3>
+    <p style="color: var(--text-muted); margin-bottom: 18px; max-width: 560px; margin-left: auto; margin-right: auto;">
+      当前数据快照里没有存活的节点。可能是所有源暂时失效,或上次更新后节点全部过期。
+      请稍后访问,或到仓库提 Issue 反馈。
+    </p>
+    <a href="{{ site.data.site.repo_urls.gitcode }}/issues/new" target="_blank" rel="noopener" class="btn btn-primary">
+      📮 提 Issue 反馈
+    </a>
+  </div>
+</section>
+{% endif %}
+
+<!-- 订阅卡片 -->
+<section class="section">
+  {% include section-title.html title="订阅链接" meta="三种格式 · 一键复制 · 镜像回退" %}
+  <div class="sub-grid">
+    {% for sub in site.data.subscriptions %}
+      {% assign tmp = sub %}
+      {% include sub-card.html sub=tmp %}
+    {% endfor %}
+  </div>
+</section>
+
+<!-- 实时数据快照 -->
+<section class="section">
+  {% include section-title.html title="数据快照" meta="最近一次同步的数据概览" %}
+  <div class="stats-grid">
+    {% include stat-card.html tone="cyan"   label="节点总数" value=site.data.stats.total_nodes %}
+    {% include stat-card.html tone="green"  label="存活节点" value=site.data.stats.alive_nodes trend="↑ 100% 存活率" trend_class="up" %}
+    {% include stat-card.html tone="purple" label="平均延迟" value=site.data.stats.avg_latency_ms unit="ms" %}
+    {% include stat-card.html tone="pink"   label="数据源" value=site.data.stats.total_sources %}
+  </div>
+
+  <!-- 协议分布环形 -->
+  <div class="protocol-rings">
+    <div class="protocol-rings-title">协议分布 · 环形可视化</div>
+    <div class="protocol-rings-grid">
+      {% for proto in site.data.stats.by_protocol %}
+      <div class="proto-ring" data-proto-name="{{ proto.name }}">
+        <div class="proto-ring-svg">
+          <svg viewBox="0 0 100 100">
+            <circle class="ring-bg" cx="50" cy="50" r="42"></circle>
+            <circle class="ring-fg" cx="50" cy="50" r="42"></circle>
+          </svg>
+          <div class="proto-ring-center">
+            <div class="proto-ring-pct" data-ring-pct="{{ proto.percentage }}">
+              {{ proto.percentage }}<span class="pct-sign">%</span>
+            </div>
+            <div class="proto-ring-count">{{ proto.alive }}/{{ proto.total }}</div>
+          </div>
+        </div>
+        <div class="proto-ring-name">{{ proto.name }}</div>
+        {% if proto.avg_latency %}
+        <div class="proto-ring-latency">{{ proto.avg_latency }}ms avg</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Top 10 高可靠源 -->
+<section class="section">
+  {% include section-title.html title="高可靠数据源 Top 10" meta="按 14 天可靠性排序" link="/sources.html" link_text="查看全部 →" %}
+  <div class="source-table-wrap">
+    <table class="source-table top-sources">
+      <thead>
+        <tr><th>#</th><th>名称</th><th>类型</th><th>可靠性</th><th>协议</th></tr>
+      </thead>
+      <tbody>
+        {% assign top_sources = site.data.sources | slice: 0, 10 %}
+        {% for src in top_sources %}
+        <tr>
+          <td><span class="rank">{{ forloop.index }}</span></td>
+          <td><strong>{{ src.name }}</strong></td>
+          <td><code class="mono" style="font-size:11.5px;color:var(--text-muted)">{{ src.type }}</code></td>
+          <td>
+            <span class="reliability-bar" style="display:inline-flex;width:80px;vertical-align:middle">
+              <span class="reliability-fill" style="width:{{ src.reliability }}%;background:{% if src.reliability >= 80 %}var(--color-success){% elsif src.reliability >= 50 %}var(--color-warn){% else %}var(--color-danger){% endif %};"></span>
+            </span>
+            <span class="reliability-value">{{ src.reliability }}%</span>
+          </td>
+          <td>
+            {% for p in src.protocols %}
+            <span class="proto-chip">{{ p }}</span>
+            {% endfor %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 快速开始 -->
+<section class="section">
+  {% include section-title.html title="快速开始" meta="从订阅到连接 · 8 步" %}
+  <div class="timeline">
+    <div class="timeline-step"><h4>选择订阅</h4><p>从上方选 Clash / V2Ray / 代理列表其中一种格式,复制链接。</p></div>
+    <div class="timeline-step"><h4>安装客户端</h4><p>根据操作系统在 <a href="{{ '/guides.html' | relative_url }}">指南页</a>选一个客户端。</p></div>
+    <div class="timeline-step"><h4>导入订阅</h4><p>在客户端「订阅 / Profile」设置里粘贴订阅链接。</p></div>
+    <div class="timeline-step"><h4>更新订阅</h4><p>客户端会自动按间隔更新,也可手动触发。</p></div>
+    <div class="timeline-step"><h4>选择节点</h4><p>从节点列表里选一个延迟较低的节点连接。</p></div>
+    <div class="timeline-step"><h4>开启代理</h4><p>客户端通常自带系统代理开关,打开即可。</p></div>
+    <div class="timeline-step"><h4>定期更新</h4><p>节点过期很快,建议客户端每隔几小时自动更新订阅。</p></div>
+    <div class="timeline-step"><h4>订阅失效</h4><p>等下一次数据同步后恢复,或访问仓库提 Issue 反馈。</p></div>
+  </div>
+</section>

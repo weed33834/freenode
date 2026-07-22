@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% if page.title %}{{ page.title }} · {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
+  <meta name="description" content="{{ page.description | default: site.description }}">
+
+  <!-- SEO: Open Graph + Twitter Card -->
+  {% include meta-seo.html %}
+
+  <meta name="theme-color" content="#08090d">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛰️</text></svg>">
+
+  <!-- 字体: Inter (UI) + JetBrains Mono (数据), 跨设备一致
+       用 media="print" onload 技巧异步加载,避免阻塞首屏渲染
+       onerror 回退:若 Google Fonts 被墙(国内常见),CSS 变量已在 :root 兜底系统字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        media="print" onload="this.media='all'"
+        onerror="this.media='all';this.remove()">
+  <noscript>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap">
+  </noscript>
+
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+</head>
+<body>
+  <!-- 动态背景层: 渐变 mesh + 网格 + 扫描线 + 噪声 -->
+  <div class="bg-layer" aria-hidden="true">
+    <div class="bg-mesh"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-scanlines"></div>
+    <div class="bg-noise"></div>
+  </div>
+
+  <!-- 玻璃态顶栏 -->
+  <header class="site-header">
+    <div class="container">
+      <a href="{{ '/' | relative_url }}" class="logo">
+        <span class="logo-icon">🛰️</span>
+        <span class="logo-text">FreeNode</span>
+      </a>
+
+      <!-- 站内搜索框 -->
+      <div class="nav-search" id="nav-search">
+        <input type="search" id="search-input" placeholder="搜索数据源 / 协议 / 客户端…"
+               autocomplete="off" aria-label="站内搜索">
+        <span class="search-kbd">/</span>
+        <div class="search-results" id="search-results" hidden></div>
+      </div>
+
+      <nav class="site-nav" id="site-nav">
+        <a href="{{ '/' | relative_url }}" data-nav="/">首页</a>
+        <a href="{{ '/sources.html' | relative_url }}" data-nav="/sources.html">数据源</a>
+        <a href="{{ '/guides.html' | relative_url }}" data-nav="/guides.html">指南</a>
+        <a href="{{ '/about.html' | relative_url }}" data-nav="/about.html">关于</a>
+        <a href="{{ site.data.site.repo_urls.gitcode }}" target="_blank" rel="noopener">GitCode ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="site-main">
+    <div class="container">
+      {{ content }}
+    </div>
+  </main>
+
+  <!-- 底部 -->
+  <footer class="site-footer">
+    <div class="container">
+      <p class="footer-meta">
+        <span class="status-dot" data-freshness="{{ site.data.stats.freshness.level | default: 'unknown' }}"></span>
+        数据更新方式: {{ site.data.site.update_description }}
+        ·
+        <a href="{{ site.data.site.repo_urls.gitcode }}" target="_blank" rel="noopener">查看仓库</a>
+        {% if site.data.stats.last_updated %}
+        ·
+        <span class="mono">最后同步: {{ site.data.stats.last_updated | date: "%Y-%m-%d %H:%M UTC" }}</span>
+        {% endif %}
+      </p>
+      <p class="disclaimer">
+        ⚠️ 节点仅供网络协议学习、安全测试与隐私技术研究。切勿用于银行、支付或敏感登录。遵守当地法律。
+      </p>
+      <p class="footer-meta" style="opacity: 0.6;">
+        © {{ site.time | date: "%Y" }} FreeNode · MIT License · Built with Jekyll
+      </p>
+    </div>
+  </footer>
+
+  <!-- 二维码 Modal (由 JS 动态填充内容) -->
+  <div class="qr-modal" id="qr-modal" aria-hidden="true" role="dialog">
+    <div class="qr-modal-content">
+      <button class="qr-modal-close" id="qr-modal-close" aria-label="关闭">✕</button>
+      <div class="qr-modal-title" id="qr-modal-title">订阅二维码</div>
+      <div class="qr-modal-subtitle">扫码导入客户端</div>
+      <div class="qr-modal-img">
+        <img id="qr-modal-img" src="" alt="QR Code">
+      </div>
+      <div class="qr-modal-url" id="qr-modal-url"></div>
+    </div>
+  </div>
+
+  <!-- Toast 通知容器 -->
+  <div class="toast-stack" id="toast-stack" aria-live="polite"></div>
+
+  <!-- 搜索索引:把 Jekyll 数据注入到 window.SITE_DATA,供 main.js 使用 -->
+  <script>
+    window.SITE_DATA = {
+      sources: {{ site.data.sources | jsonify }},
+      protocols: {{ site.data.protocols | jsonify }},
+      clients: {{ site.data.clients | jsonify }},
+      subscriptions: {{ site.data.subscriptions | jsonify }}
+    };
+  </script>
+  <script src="{{ '/assets/js/qr.js' | relative_url }}"></script>
+  <script src="{{ '/assets/js/main.js' | relative_url }}"></script>
+</body>
+</html>

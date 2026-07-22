@@ -359,6 +359,21 @@ def verify_node_protocol(link: str, timeout: float = 5.0) -> dict:
         _safe_close(probe_sock)
 
 
+# 哪些错误值得重试（网络抖动类）；connection refused / private host 这类确定性失败不重试
+_RETRYABLE_ERRORS = ("timeout", "timed out", "network unreachable", "temporary failure")
+
+# 抖动重试次数：首次失败且错误属于抖动类时，再试这么多次
+RETRY_ON_FLAKY = int(os.environ.get("FREENODE_VERIFY_RETRIES", "2"))
+
+
+def _is_flaky_error(error: str | None) -> bool:
+    """判断是否属于网络抖动类错误（值得重试）。"""
+    if not error:
+        return False
+    err_lower = error.lower()
+    return any(kw in err_lower for kw in _RETRYABLE_ERRORS)
+
+
 def verify_nodes(
     links: list[str],
     max_workers: int = MAX_WORKERS,
@@ -372,34 +387,23 @@ def verify_nodes(
         verify_level = env_level
 
     results = []
+    # 第一轮：所有节点各验证一次
+    pending_retries: list[str] = []  # 第一轮抖动失败的，需要重试
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_link = {
             executor.submit(verify_node, link, timeout, geo_enabled): link for link in links
         }
         for future in as_completed(future_to_link):
+            link = future_to_link[future]
             try:
                 result = future.result()
-                # 二段协议验证：TCP 成功的节点再跑协议握手
-                if verify_level == "protocol" and result.get("alive"):
-                    proto_result = verify_node_protocol(result["link"], timeout=float(timeout))
-                    result["verify_method"] = proto_result.get("verify_method")
-                    if not proto_result.get("alive"):
-                        result["alive"] = False
-                        result["latency_ms"] = None
-                        result["latency"] = None
-                        result["error"] = proto_result.get("error") or "protocol verify failed"
-                    else:
-                        # 协议验证成功的，更新延迟（含握手时间，更准）
-                        if proto_result.get("latency_ms") is not None:
-                            result["latency_ms"] = proto_result["latency_ms"]
-                            result["latency"] = round(proto_result["latency_ms"] / 1000, 3)
-                        if proto_result.get("tls_verified"):
-                            result["tls_verified"] = True
-                else:
-                    result["verify_method"] = "tcp_only"
+                # 抖动重试：TCP 失败但错误属于抖动类（timeout/network unreachable），重试以减少假阴性
+                if not result.get("alive") and _is_flaky_error(result.get("error")) and RETRY_ON_FLAKY > 0:
+                    pending_retries.append(link)
+                    continue  # 稍后重试，先不记入结果
+                result = _apply_protocol_verify(result, verify_level, timeout)
                 results.append(result)
             except Exception as exc:
-                link = future_to_link[future]
                 logger.warning("verification failed for %s: %s", link, exc)
                 results.append(
                     {
@@ -412,7 +416,74 @@ def verify_nodes(
                         "verify_method": "tcp_only",
                     }
                 )
+
+    # 第二轮：对抖动失败的节点重试，最多 RETRY_ON_FLAKY 次（仍抖动才判死）
+    if pending_retries:
+        logger.info("retrying %d flaky nodes (up to %d times)", len(pending_retries), RETRY_ON_FLAKY)
+        for attempt in range(RETRY_ON_FLAKY):
+            if not pending_retries:
+                break
+            current_batch = pending_retries
+            pending_retries = []
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                future_to_link = {
+                    executor.submit(verify_node, link, timeout, geo_enabled): link
+                    for link in current_batch
+                }
+                for future in as_completed(future_to_link):
+                    link = future_to_link[future]
+                    try:
+                        result = future.result()
+                        if result.get("alive"):
+                            result = _apply_protocol_verify(result, verify_level, timeout)
+                            result["retried"] = True
+                            result["retry_attempts"] = attempt + 1
+                            results.append(result)
+                        elif _is_flaky_error(result.get("error")) and attempt < RETRY_ON_FLAKY - 1:
+                            pending_retries.append(link)
+                        else:
+                            # 仍失败但非抖动错误，或重试次数用尽，最终判死
+                            result = _apply_protocol_verify(result, verify_level, timeout)
+                            result["retried"] = True
+                            result["retry_attempts"] = attempt + 1
+                            results.append(result)
+                    except Exception as exc:
+                        logger.warning("retry failed for %s: %s", link, exc)
+                        results.append({
+                            "link": link,
+                            "alive": False,
+                            "latency": None,
+                            "latency_ms": None,
+                            "region": "unknown",
+                            "error": f"error: {type(exc).__name__}",
+                            "verify_method": "tcp_only",
+                            "retried": True,
+                            "retry_attempts": attempt + 1,
+                        })
+
     return results
+
+
+def _apply_protocol_verify(result: dict, verify_level: str, timeout: int) -> dict:
+    """二段协议验证：TCP 成功的节点再跑协议握手（仅 verify_level=protocol 时启用）。"""
+    if verify_level == "protocol" and result.get("alive"):
+        proto_result = verify_node_protocol(result["link"], timeout=float(timeout))
+        result["verify_method"] = proto_result.get("verify_method")
+        if not proto_result.get("alive"):
+            result["alive"] = False
+            result["latency_ms"] = None
+            result["latency"] = None
+            result["error"] = proto_result.get("error") or "protocol verify failed"
+        else:
+            # 协议验证成功的，更新延迟（含握手时间，更准）
+            if proto_result.get("latency_ms") is not None:
+                result["latency_ms"] = proto_result["latency_ms"]
+                result["latency"] = round(proto_result["latency_ms"] / 1000, 3)
+            if proto_result.get("tls_verified"):
+                result["tls_verified"] = True
+    else:
+        result["verify_method"] = "tcp_only"
+    return result
 
 
 def stats_summary(results: list[dict], verify_level: str = "tcp") -> dict:

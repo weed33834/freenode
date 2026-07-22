@@ -1,0 +1,38 @@
+# Jekyll 配置 — FreeNode 导航站
+# GitHub Pages 自动构建，无需 CI 构建步骤
+
+title: FreeNode
+description: 免费公开节点/代理订阅源聚合导航
+url: "https://weed33834.github.io"
+baseurl: "/freenode"
+repository: weed33834/freenode
+
+# 主题：使用 GitHub Pages 默认支持的 minima 衍生样式（自定义 CSS 覆盖）
+# 不指定 theme，使用纯自定义 layout，避免主题依赖
+markdown: kramdown
+highlighter: rouge
+
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# 排除构建产物与脚本目录
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - README.md
+
+# 默认 front matter
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+
+# 自定义数据文件（由 scripts/site_builder.py 生成）
+# 通过 site.data.subscriptions / site.data.stats / site.data.sources / site.data.protocols 访问
+
+# GitHub Pages 强制启用
+github: [metadata]

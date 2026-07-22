@@ -1,4 +1,10 @@
-"""Concurrent crawler for free node/proxy sources."""
+"""Concurrent crawler for free node/proxy sources.
+
+抓取策略升级：
+- 智能重试 + 指数退避（5xx / 网络错误重试，4xx / 过大 / 超时不重试）
+- URL → 响应文本 24h TTL 缓存（同一进程内重复抓取直接命中）
+- 并发分级调度：按源 reliability 分 tier，高可靠性源多给 worker，差源慢抓
+"""
 
 from __future__ import annotations
 
@@ -10,6 +16,7 @@ from pathlib import Path
 
 import httpx
 from adapters import get_adapter
+from cachetools import TTLCache
 
 from utils import (
     NODES_DIR,
@@ -24,6 +31,13 @@ from utils import (
 
 logger = get_logger("crawler")
 
+# 24h TTL 缓存：同进程内重复抓同一 URL 直接命中，避免 workflow 重试时浪费带宽。
+# maxsize=256 足够覆盖所有源；超过时按 LRU 淘汰最旧的。
+_RESPONSE_CACHE: TTLCache = TTLCache(maxsize=256, ttl=24 * 3600)
+
+# 同进程内 reliability scores 只读一次磁盘，避免重复 IO
+_SCORES_CACHE: TTLCache = TTLCache(maxsize=2, ttl=3600)
+
 
 def _reliability_floor() -> float:
     """读环境变量 FREENODE_RELIABILITY_FLOOR，返回最低可接受的 reliability 百分比。"""
@@ -35,16 +49,26 @@ def _reliability_floor() -> float:
 
 
 def _load_reliability_scores() -> dict[str, float]:
-    """读 nodes/sources-report.json 的 reliability_score，读不到返回空 dict。"""
+    """读 nodes/sources-report.json 的 reliability_score，读不到返回空 dict。
+
+    用 1h TTL 缓存避免同进程内重复读盘（_collect_sources 与分级调度都会查）。
+    """
+    cached = _SCORES_CACHE.get("scores")
+    if cached is not None:
+        return cached
+
     report_path = NODES_DIR / "sources-report.json"
     if not report_path.exists():
         return {}
+
     try:
         data = json.loads(report_path.read_text(encoding="utf-8"))
-        scores = data.get("reliability_score", {})
-        return {name: float(score) for name, score in scores.items()}
+        scores = {name: float(score) for name, score in data.get("reliability_score", {}).items()}
     except (OSError, ValueError, TypeError):
         return {}
+
+    _SCORES_CACHE["scores"] = scores
+    return scores
 
 
 def _fetch_with_httpx(url: str, timeout: int, max_bytes: int) -> str:
@@ -72,7 +96,12 @@ def _fetch_with_httpx(url: str, timeout: int, max_bytes: int) -> str:
     except httpx.TimeoutException as exc:
         raise FetchError(f"timed out: {exc}") from exc
     except httpx.HTTPStatusError as exc:
-        raise FetchError(f"http {exc.response.status_code}: {url}") from exc
+        status = exc.response.status_code
+        # 429 Too Many Requests: 透传 Retry-After 让上层按它退避
+        if status == 429:
+            retry_after = exc.response.headers.get("Retry-After")
+            raise FetchError(f"http 429: {url}|retry_after={retry_after or ''}") from exc
+        raise FetchError(f"http {status}: {url}") from exc
     except httpx.HTTPError as exc:
         raise FetchError(f"fetch failed: {exc}") from exc
 
@@ -80,24 +109,74 @@ def _fetch_with_httpx(url: str, timeout: int, max_bytes: int) -> str:
 def fetch(
     url: str,
     timeout: int = 20,
-    retries: int = 1,
+    retries: int = 3,
     max_bytes: int = 10 * 1024 * 1024,
 ) -> str:
-    """Fetch URL with retries.
+    """Fetch URL with exponential backoff retry.
 
-    过大/超时是确定性失败（重试也是同样结果），直接抛；其它网络错误重试一次。
+    重试策略（P2-A 智能重试）：
+    - 5xx / 网络错误 / 连接重置 → 指数退避重试（base=1s, 2^attempt）
+    - 429 Too Many Requests → 按 Retry-After 头退避，无头则指数退避
+    - 4xx 其他客户端错误 → 不重试，请求本身有问题
+    - 超时 / 响应过大 → 不重试，确定性失败
+    - 24h TTL 缓存命中 → 直接返回，不发请求（P2-B 增量抓取）
     """
     validate_url(url)
+
+    cached = _RESPONSE_CACHE.get(url)
+    if cached is not None:
+        logger.debug("cache hit: %s", url)
+        return cached
+
+    last_exc: FetchError | None = None
     for attempt in range(retries + 1):
         try:
-            return _fetch_with_httpx(url, timeout, max_bytes)
+            text = _fetch_with_httpx(url, timeout, max_bytes)
+            _RESPONSE_CACHE[url] = text
+            return text
         except FetchError as exc:
+            last_exc = exc
             err = str(exc).lower()
-            # 过大/超时不重试
+            # 确定性失败：不重试
             if "timed out" in err or "too large" in err:
                 raise
+            # 429 限流：按 Retry-After 退避后重试（特殊处理）
+            if "http 429" in err:
+                if attempt >= retries:
+                    raise
+                # 解析 Retry-After（可能是秒数或 HTTP 日期，这里只处理秒数）
+                retry_after_str = ""
+                if "retry_after=" in err:
+                    retry_after_str = err.split("retry_after=")[1].split("|")[0].strip()
+                backoff: float
+                if retry_after_str.isdigit():
+                    backoff = min(int(retry_after_str), 60)  # 上限 60s 避免阻塞太久
+                else:
+                    backoff = 2 ** attempt  # 无 Retry-After 头则指数退避
+                logger.warning(
+                    "rate limited (429), retry %d/%d for %s in %gs",
+                    attempt + 1, retries, url, backoff,
+                )
+                time.sleep(backoff)
+                continue
+            # 其他 4xx 客户端错误：重试无意义
+            if "http 4" in err:
+                raise
+            # 最后一次尝试失败直接抛
             if attempt >= retries:
                 raise
+            # 指数退避：1s, 2s, 4s, ...
+            backoff = 2 ** attempt
+            logger.warning(
+                "retry %d/%d for %s in %ds: %s",
+                attempt + 1, retries, url, backoff, exc,
+            )
+            time.sleep(backoff)
+
+    # 理论上不会到这；防御性兜底
+    if last_exc:
+        raise last_exc
+    raise FetchError(f"unexpected fetch failure: {url}")
 
 
 def maybe_decode_base64(text: str) -> str:
@@ -166,13 +245,35 @@ def _collect_sources(config, key, category, floor, scores, skipped, sources):
         sources.append((source, category))
 
 
+def _tier_of(score: float | None) -> int:
+    """按 reliability 分配并发 tier：
+    - tier 1 (>=80%): 高并发，给最多 worker
+    - tier 2 (50%-80%): 中并发
+    - tier 3 (<50% 或无记录): 低并发，避免被差源拖垮整体
+
+    返回值用于查 _TIER_WORKERS 表。
+    """
+    if score is None:
+        return 3
+    if score >= 80:
+        return 1
+    if score >= 50:
+        return 2
+    return 3
+
+
+# 各 tier 对应的并发上限：tier1 多给、tier3 限流
+_TIER_WORKERS = {1: 12, 2: 6, 3: 2}
+
+
 def crawl(config_path: Path | None = None, max_workers: int | None = None) -> dict:
-    """Fetch all enabled sources concurrently.
+    """Fetch all enabled sources concurrently with tiered scheduling (P2-C).
 
-    max_workers defaults to FREENODE_CRAWL_WORKERS or the number of enabled sources.
-
+    按 reliability 分 tier 调度：高可靠性源多给 worker，差源慢抓，避免被差源拖垮整体。
     reliability 低于 FREENODE_RELIABILITY_FLOOR 的源会被自动跳过，
     除非在 sources.json 里标了 ``"force_enabled": true``。
+
+    max_workers 仅作为 tier1 的全局上限覆盖；其它 tier 用固定值。
     """
     config = load_sources(config_path)
 
@@ -190,23 +291,40 @@ def crawl(config_path: Path | None = None, max_workers: int | None = None) -> di
 
     raw: dict[str, list[dict]] = {"nodes": [], "proxies": []}
 
-    if max_workers is None:
-        env_workers = os.environ.get("FREENODE_CRAWL_WORKERS", "")
-        if env_workers.isdigit():
-            max_workers = max(1, int(env_workers))
-        else:
-            max_workers = min(16, max(1, len(sources)))
+    # 分 tier 分组：每个 tier 一个独立的 executor，按 tier 顺序跑
+    tier_buckets: dict[int, list[tuple[dict, str]]] = {1: [], 2: [], 3: []}
+    for source, category in sources:
+        name = source.get("name", "unknown")
+        score = scores.get(name)
+        tier = _tier_of(score)
+        tier_buckets[tier].append((source, category))
 
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        future_to_source = {
-            executor.submit(_fetch_source_safe, source, category): source
-            for source, category in sources
-        }
-        for future in as_completed(future_to_source):
-            result = future.result()
-            if result:
-                category = result.pop("category")
-                raw[category].append(result)
+    # 环境变量优先覆盖 tier1 worker 数
+    env_workers = os.environ.get("FREENODE_CRAWL_WORKERS", "")
+    if env_workers.isdigit():
+        _TIER_WORKERS[1] = max(1, int(env_workers))
+    elif max_workers is not None:
+        _TIER_WORKERS[1] = max(1, max_workers)
+
+    for tier in (1, 2, 3):
+        bucket = tier_buckets[tier]
+        if not bucket:
+            continue
+        workers = min(_TIER_WORKERS[tier], len(bucket))
+        logger.info(
+            "tier %d: %d sources, %d workers",
+            tier, len(bucket), workers,
+        )
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            future_to_source = {
+                executor.submit(_fetch_source_safe, source, category): source
+                for source, category in bucket
+            }
+            for future in as_completed(future_to_source):
+                result = future.result()
+                if result:
+                    category = result.pop("category")
+                    raw[category].append(result)
 
     return raw
 

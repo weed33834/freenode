@@ -1,0 +1,63 @@
+{
+  "last_updated": "2026-07-16T01:13:23Z",
+  "freshness": {
+    "level": "outdated",
+    "hours_ago": 160.3,
+    "label": "严重过期"
+  },
+  "total_nodes": 800,
+  "alive_nodes": 800,
+  "survival_rate": 100.0,
+  "avg_latency_ms": 114.0,
+  "total_sources": 81,
+  "by_protocol": [
+    {
+      "name": "vless",
+      "total": 341,
+      "alive": 341,
+      "survival_rate": 100.0,
+      "avg_latency": 98.8,
+      "percentage": 42.6
+    },
+    {
+      "name": "trojan",
+      "total": 195,
+      "alive": 195,
+      "survival_rate": 100.0,
+      "avg_latency": 137.2,
+      "percentage": 24.4
+    },
+    {
+      "name": "ss",
+      "total": 166,
+      "alive": 166,
+      "survival_rate": 100.0,
+      "avg_latency": 120.6,
+      "percentage": 20.8
+    },
+    {
+      "name": "vmess",
+      "total": 92,
+      "alive": 92,
+      "survival_rate": 100.0,
+      "avg_latency": 103.8,
+      "percentage": 11.5
+    },
+    {
+      "name": "hysteria2",
+      "total": 5,
+      "alive": 5,
+      "survival_rate": 100.0,
+      "avg_latency": 168.4,
+      "percentage": 0.6
+    },
+    {
+      "name": "tuic",
+      "total": 1,
+      "alive": 1,
+      "survival_rate": 100.0,
+      "avg_latency": 369.0,
+      "percentage": 0.1
+    }
+  ]
+}

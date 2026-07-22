@@ -1,0 +1,11 @@
+# CODEOWNERS — 强制真人 review，包括自动创建的 PR
+# 任何文件改动都需要 owner approve，杜绝 bot 直接 merge
+# 详见 https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+* @weed33834
+
+# 配置文件改动需要更严格 review
+/.github/             @weed33834
+/config/              @weed33834
+/scripts/             @weed33834
+/docs/                @weed33834
