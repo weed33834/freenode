@@ -486,54 +486,73 @@
   }
 
   // ============================================================
-  // 订阅可达性检测 (no-cors GET 探活,失败自动展开镜像列表)
-  //   说明:跨源 raw 文件无法读 status,no-cors GET 会以 opaque 响应 resolve;
-  //   仅当请求被网络层拒绝(超时/DNS/连接拒绝)才视为不可达。
-  //   不用 HEAD:部分 raw CDN 对 HEAD 返回 405/abort,误报为不可达。
+  // 订阅发布状态检测
+  //   跨源 raw 文件无法读 status,且部分源 (GitCode) 在浏览器 no-cors 下会 abort,
+  //   直接探主链接会误报"不可达"。改为探 no-cors 友好的镜像 (GitHub raw / jsDelivr):
+  //   - 任一镜像 resolve(opaque) → 文件已发布 → 标 "✓ 已发布"
+  //   - 全部 reject → 可能未生成 → 标 "⚠ 未知" 并展开镜像供用户手动验证
+  //   主链接 (GitCode) 是否可达由用户点击"打开"时自验,不在前端强判定。
   // ============================================================
   function checkSubscriptions() {
     var subCards = document.querySelectorAll('.sub-card');
     if (!subCards.length) return;
     subCards.forEach(function (card) {
-      // 只取主操作区的复制按钮 (button[data-copy]),不能取镜像 div
-      // 卡片内 .mirror-link 也有 data-copy,querySelector('[data-copy]')
-      // 会先命中镜像地址,导致探活对象错误。
-      var primaryBtn = card.querySelector('.sub-card-actions button[data-copy]')
-                    || card.querySelector('button[data-copy]');
-      if (!primaryBtn) return;
-      var url = primaryBtn.getAttribute('data-copy');
+      // 收集所有镜像 URL (来自 .mirror-link 的 data-copy)
+      var mirrorEls = card.querySelectorAll('.mirror-link[data-copy]');
+      var mirrors = [];
+      mirrorEls.forEach(function (el) {
+        var u = el.getAttribute('data-copy');
+        if (u) mirrors.push(u);
+      });
+      // 优先探 no-cors 友好的源:GitHub raw, jsDelivr (这两个在浏览器下不 abort)
+      var probeCandidates = mirrors.filter(function (u) {
+        return u.indexOf('raw.githubusercontent.com') !== -1
+            || u.indexOf('cdn.jsdelivr.net') !== -1;
+      });
+      if (!probeCandidates.length) probeCandidates = mirrors.slice(0, 1);
+      if (!probeCandidates.length) return;
+
       var controller = ('AbortController' in window) ? new AbortController() : null;
       var timeoutId = setTimeout(function () {
         if (controller) controller.abort();
       }, 6000);
-      fetch(url, { method: 'GET', mode: 'no-cors', cache: 'no-store', signal: controller ? controller.signal : undefined })
-        .then(function () {
-          markSubStatus(card, 'ok');
-        })
-        .catch(function () {
-          markSubStatus(card, 'down');
-        })
-        .finally(function () { clearTimeout(timeoutId); });
+      var signal = controller ? controller.signal : undefined;
+
+      // 串行探候选源,任一 resolve 即"已发布";全部 reject 才"未知"
+      function probeNext(i) {
+        if (i >= probeCandidates.length) {
+          markSubStatus(card, 'unknown');
+          return;
+        }
+        fetch(probeCandidates[i], { method: 'GET', mode: 'no-cors', cache: 'no-store', signal: signal })
+          .then(function () { markSubStatus(card, 'ok'); })
+          .catch(function () { probeNext(i + 1); });
+      }
+      probeNext(0);
+      // 超时兜底
+      setTimeout(function () { /* controller 已 abort,fetch 会 reject 走 probeNext */ }, 6500);
     });
   }
 
   function markSubStatus(card, status) {
     var linkEl = card.querySelector('.sub-card-link');
     var mirrorsEl = card.querySelector('.sub-card-mirrors');
+    // 避免重复标记 (探活串行可能多次回调)
+    if (linkEl && linkEl.querySelector('.sub-status')) return;
     var statusDot = document.createElement('span');
     statusDot.className = 'sub-status';
     if (status === 'ok') {
       statusDot.style.cssText = 'color: var(--color-success); font-size: 11px; margin-left: 6px;';
-      statusDot.textContent = '✓ 在线';
+      statusDot.textContent = '✓ 已发布';
       if (linkEl) linkEl.appendChild(statusDot);
-    } else {
-      statusDot.style.cssText = 'color: var(--color-danger); font-size: 11px; margin-left: 6px;';
-      statusDot.textContent = '✕ 不可达,请用镜像';
+    } else if (status === 'unknown') {
+      statusDot.style.cssText = 'color: var(--color-warn); font-size: 11px; margin-left: 6px;';
+      statusDot.textContent = '⚠ 状态未知';
       if (linkEl) linkEl.appendChild(statusDot);
-      // 自动展开镜像列表
-      if (mirrorsEl && mirrorsEl.hasAttribute('open') === false) {
+      // 未知时展开镜像供用户手动选择
+      if (mirrorsEl && !mirrorsEl.hasAttribute('open')) {
         mirrorsEl.setAttribute('open', '');
-        mirrorsEl.style.borderColor = 'rgba(248, 81, 73, 0.3)';
+        mirrorsEl.style.borderColor = 'rgba(210, 153, 34, 0.3)';
       }
     }
   }
