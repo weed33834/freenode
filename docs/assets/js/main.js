@@ -495,9 +495,13 @@
     var subCards = document.querySelectorAll('.sub-card');
     if (!subCards.length) return;
     subCards.forEach(function (card) {
-      var primaryUrl = card.querySelector('[data-copy]');
-      if (!primaryUrl) return;
-      var url = primaryUrl.getAttribute('data-copy');
+      // 只取主操作区的复制按钮 (button[data-copy]),不能取镜像 div
+      // 卡片内 .mirror-link 也有 data-copy,querySelector('[data-copy]')
+      // 会先命中镜像地址,导致探活对象错误。
+      var primaryBtn = card.querySelector('.sub-card-actions button[data-copy]')
+                    || card.querySelector('button[data-copy]');
+      if (!primaryBtn) return;
+      var url = primaryBtn.getAttribute('data-copy');
       var controller = ('AbortController' in window) ? new AbortController() : null;
       var timeoutId = setTimeout(function () {
         if (controller) controller.abort();
