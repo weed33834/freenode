@@ -74,11 +74,11 @@
     target.style.width = target.offsetWidth + 'px'; // 锁宽避免抖动
     target.classList.add('is-copied');
     copyToClipboard(text).then(function () {
-      target.innerHTML = '✓ 已复制';
-      showToast('已复制到剪贴板');
+      target.innerHTML = '✓ Copied';
+      showToast('Copied to clipboard');
     }).catch(function () {
-      target.innerHTML = '✕ 失败';
-      showToast('复制失败,请手动选择', 'error');
+      target.innerHTML = '✕ Failed';
+      showToast('Copy failed — please select manually', 'error');
     }).then(function () {
       setTimeout(function () {
         target.innerHTML = origHTML;
@@ -119,9 +119,9 @@
     if (!trigger) return;
     e.preventDefault();
     var url = trigger.getAttribute('data-qr');
-    var title = trigger.getAttribute('data-qr-title') || '二维码';
+    var title = trigger.getAttribute('data-qr-title') || 'QR Code';
     if (typeof QR === 'undefined' || !QR.svgString) {
-      showToast('二维码库未加载', 'error');
+      showToast('QR library not loaded', 'error');
       return;
     }
     QR.renderTo(qrImg, url, { ecl: 'M', margin: 4, alt: title });
@@ -329,38 +329,38 @@
 
   function collectSearchIndex() {
     var items = [];
-    // 数据源
+    // Sources
     (window.SITE_DATA && window.SITE_DATA.sources || []).forEach(function (s) {
       items.push({
-        icon: '📡', name: s.name, meta: '数据源 · ' + (s.reliability || 0) + '%',
-        url: '/sources.html', group: '数据源'
+        icon: '📡', name: s.name, meta: 'Source · ' + (s.reliability || 0) + '%',
+        url: '/sources.html', group: 'Sources'
       });
     });
-    // 协议
+    // Protocols
     (window.SITE_DATA && window.SITE_DATA.protocols || []).forEach(function (p) {
       items.push({
-        icon: p.icon, name: p.name, meta: '协议',
-        url: '/guides.html', group: '协议'
+        icon: p.icon, name: p.name, meta: 'Protocol',
+        url: '/guides.html', group: 'Protocols'
       });
     });
-    // 客户端
+    // Clients
     (window.SITE_DATA && window.SITE_DATA.clients || []).forEach(function (c) {
       items.push({
-        icon: '⬇', name: c.name, meta: '客户端 · ' + c.platform,
-        url: '/guides.html', group: '客户端'
+        icon: '⬇', name: c.name, meta: 'Client · ' + c.platform,
+        url: '/guides.html', group: 'Clients'
       });
     });
-    // 订阅
+    // Subscriptions
     (window.SITE_DATA && window.SITE_DATA.subscriptions || []).forEach(function (s) {
       items.push({
-        icon: s.icon, name: s.title, meta: '订阅 · ' + s.format,
-        url: '/', group: '订阅'
+        icon: s.icon, name: s.title, meta: 'Subscription · ' + s.format,
+        url: '/', group: 'Subscriptions'
       });
     });
-    // 静态导航
-    items.push({ icon: '📡', name: '数据源目录', meta: '页面', url: '/sources.html', group: '页面' });
-    items.push({ icon: '📖', name: '协议与客户端指南', meta: '页面', url: '/guides.html', group: '页面' });
-    items.push({ icon: 'ℹ️', name: '关于', meta: '页面', url: '/about.html', group: '页面' });
+    // Static pages
+    items.push({ icon: '📡', name: 'Sources Directory', meta: 'Page', url: '/sources.html', group: 'Pages' });
+    items.push({ icon: '📖', name: 'Protocol & Client Guide', meta: 'Page', url: '/guides.html', group: 'Pages' });
+    items.push({ icon: 'ℹ️', name: 'About', meta: 'Page', url: '/about.html', group: 'Pages' });
     return items;
   }
 
@@ -376,7 +376,7 @@
       return fuzzyMatch(query, item.name) || fuzzyMatch(query, item.meta);
     });
     if (!matched.length) {
-      container.innerHTML = '<div class="empty">无匹配结果</div>';
+      container.innerHTML = '<div class="empty">No matches</div>';
       container.hidden = false;
       return;
     }
@@ -558,7 +558,7 @@
     var statusDot = document.createElement('span');
     statusDot.className = 'sub-status';
     statusDot.style.cssText = 'color: var(--color-success); font-size: 11px; margin-left: 6px;';
-    statusDot.textContent = '✓ 已生成';
+    statusDot.textContent = '✓ Generated';
     linkEl.appendChild(statusDot);
   }
 

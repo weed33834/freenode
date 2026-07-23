@@ -1,36 +1,59 @@
 ---
 layout: default
-title: 关于
+title: About
+description: FreeNode — open-source free public proxy / node subscription source aggregator. Learn how the pipeline crawls, parses, dedupes and verifies 80+ community sources.
+keywords: freenode, about, open source, proxy aggregator, node subscription, github pages, clash, v2ray, vmess, vless, trojan, shadowsocks
 ---
 
-<h1 class="page-title">ℹ️ 关于 FreeNode</h1>
-<p class="page-subtitle">// 开源 · 社区驱动 · MIT 协议</p>
+<h1 class="page-title">ℹ️ About FreeNode</h1>
+<p class="page-subtitle">// Open source · Community-driven · MIT licensed</p>
 
 <div class="markdown-content">
-  <p>FreeNode 是一个免费公开节点 / 代理订阅源的<strong>聚合采集仓库</strong>。</p>
+  <p><strong>FreeNode</strong> is an open-source aggregator of free public proxy /
+     node subscription sources. It crawls 80+ community channels, parses 6 protocols,
+     deduplicates by fingerprint, verifies reachability via TCP + protocol handshake,
+     and outputs ready-to-use subscription files in three formats.</p>
 
-  <h2>工作原理</h2>
-  <p>数据流水线在 GitHub Actions 中跑,触发后跑完创建 PR,owner 审核后合并、部署:</p>
+  <h2>How it works</h2>
+  <p>The data pipeline runs in GitHub Actions on manual trigger. When done, it opens
+     a Pull Request — the owner reviews and merges, which triggers Pages redeploy:</p>
   <ol>
-    <li><strong>crawler</strong> — 并发抓取所有启用数据源 (httpx + 流式 <code>max_bytes</code> 上限),按 reliability 分级并发 + 指数退避重试。</li>
-    <li><strong>parser</strong> — 从原始文本里解析 <code>vmess</code> / <code>vless</code> / <code>ss</code> / <code>trojan</code> / <code>hysteria2</code> / <code>tuic</code> 等协议链接。</li>
-    <li><strong>dedup</strong> — 按 <code>(protocol, server, port, auth_secret)</code> 指纹去重。</li>
-    <li><strong>verifier</strong> — TCP connect + 协议握手二段验证,过滤死节点。</li>
-    <li><strong>formatter</strong> — 输出 <code>clash.yaml</code> / <code>v2ray.txt</code> / <code>proxies.txt</code> + 质量报告。</li>
-    <li><strong>site_builder</strong> — 把上述数据合成 <code>_data/*.json</code>,本站自动渲染。</li>
+    <li><strong>crawler</strong> — concurrent fetch of all enabled sources (httpx +
+        streaming <code>max_bytes</code> cap), reliability-tiered concurrency +
+        exponential backoff retries + HTTP 429 Retry-After handling.</li>
+    <li><strong>parser</strong> — extracts <code>vmess</code> / <code>vless</code> /
+        <code>ss</code> / <code>trojan</code> / <code>hysteria2</code> / <code>tuic</code>
+        protocol links from raw text.</li>
+    <li><strong>dedup</strong> — fingerprint by <code>(protocol, server, port, auth_secret)</code>
+        to eliminate duplicates across sources.</li>
+    <li><strong>verifier</strong> — TCP connect + protocol handshake (TLS / SS probe)
+        two-stage verification; flaky failures (timeout, network unreachable) retried.</li>
+    <li><strong>formatter</strong> — outputs <code>clash.yaml</code> /
+        <code>v2ray.txt</code> / <code>proxies.txt</code> + quality report
+        (<code>quality.json</code>).</li>
+    <li><strong>site_builder</strong> — composes the above into <code>_data/*.json</code>
+        that this Jekyll site renders.</li>
   </ol>
 
-  <h2>数据源</h2>
-  <p>所有源均来自社区公开渠道。新加的源会先进「观察区」(<code>status=observing</code>),
-     连续 3 天 <code>reliability &gt; 70%</code> 才升级为正式启用。详见
-     <a href="{{ '/sources.html' | relative_url }}">数据源目录</a>。</p>
+  <h2>Data sources</h2>
+  <p>All sources come from community public channels (GitHub raw files, subscription
+     endpoints, Telegram channels). New sources enter <strong>observation mode</strong>
+     (<code>status=observing</code>) and must sustain <code>reliability &gt; 70%</code>
+     for 3 consecutive days before being promoted to <code>active</code>. Sources
+     below 30% for 7 days are demoted back to observation. See the live
+     <a href="{{ '/sources.html' | relative_url }}">Sources Directory</a>.</p>
 
-  <h2>开源</h2>
-  <p>本仓库基于 MIT 协议开源,欢迎在
-     <a href="{{ site.data.site.repo_urls.gitcode }}" target="_blank" rel="noopener">GitCode</a> 或
-     <a href="{{ site.data.site.repo_urls.github }}" target="_blank" rel="noopener">GitHub</a> 提 Issue / PR 贡献新的数据源或修复 Bug。</p>
+  <h2>Open source</h2>
+  <p>This repository is open source under the MIT license. Contributions of new data
+     sources or bug fixes are welcome on
+     <a href="{{ site.data.site.repo_urls.gitcode }}" target="_blank" rel="noopener">GitCode</a> or
+     <a href="{{ site.data.site.repo_urls.github }}" target="_blank" rel="noopener">GitHub</a>
+     via Issue or Pull Request. See <a href="{{ '/guides.html' | relative_url }}">the guide</a>
+     for client setup help.</p>
 
-  <h2>免责声明</h2>
-  <p>本项目仅供网络协议学习、安全测试与隐私技术研究。所有节点来自第三方公开渠道,
-     我们不拥有、运营或保证它们。请勿用于银行、支付或任何敏感登录。遵守您所在地的法律。</p>
+  <h2>Disclaimer</h2>
+  <p>This project is for network protocol learning, security testing and privacy
+     research only. All nodes come from third-party public sources; we do not own,
+     operate or guarantee them. Do not use for banking, payments or any sensitive
+     login. Follow your local laws.</p>
 </div>

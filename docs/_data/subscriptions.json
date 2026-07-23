@@ -2,7 +2,7 @@
   {
     "id": "clash",
     "icon": "⚡",
-    "title": "Clash 订阅",
+    "title": "Clash Subscription",
     "clients": "Clash / Clash Verge / Stash / Karing",
     "format": "clash.yaml",
     "url": "https://gitcode.com/badhope/freenode/raw/main/nodes/clash.yaml",
@@ -15,7 +15,7 @@
   {
     "id": "v2ray",
     "icon": "🌐",
-    "title": "V2Ray 订阅",
+    "title": "V2Ray Subscription",
     "clients": "v2rayN / v2rayNG / Karing",
     "format": "v2ray.txt",
     "url": "https://gitcode.com/badhope/freenode/raw/main/nodes/v2ray.txt",
@@ -28,8 +28,8 @@
   {
     "id": "proxies",
     "icon": "🔗",
-    "title": "代理列表",
-    "clients": "HTTP(S) / SOCKS4 / SOCKS5 客户端",
+    "title": "Proxy List",
+    "clients": "HTTP(S) / SOCKS4 / SOCKS5 clients",
     "format": "proxies.txt",
     "url": "https://gitcode.com/badhope/freenode/raw/main/nodes/proxies.txt",
     "mirrors": [

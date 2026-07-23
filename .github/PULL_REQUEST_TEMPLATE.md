@@ -1,21 +1,21 @@
-## 描述
+## Description
 
-<!-- 简要说明此 PR 做了什么以及为什么需要这个改动 -->
+<!-- Briefly describe what this PR does and why the change is needed -->
 
-## 变更类型
+## Change type
 
-- [ ] 新数据源 / 新协议支持
-- [ ] Bug 修复
-- [ ] 功能改进
-- [ ] 文档 / 测试
+- [ ] New data source / new protocol support
+- [ ] Bug fix
+- [ ] Feature improvement
+- [ ] Docs / tests
 
-## 自检清单
+## Checklist
 
-- [ ] 本地测试通过：`make test`
-- [ ] lint 无新增警告：`make lint`
-- [ ] 如果修改了流水线逻辑，`python scripts/update.py --no-verify` 能正常跑通
-- [ ] 没有在代码中引入新的密钥/令牌（参见 `scripts/check_secrets.sh`）
+- [ ] Local tests pass: `make test`
+- [ ] Lint introduces no new warnings: `make lint`
+- [ ] If pipeline logic changed, `python scripts/update.py --no-verify` runs cleanly
+- [ ] No new secrets/tokens added to code (see `scripts/check_secrets.sh`)
 
-## 其他说明
+## Notes
 
-<!-- 任何审查者需要注意的事项 -->
+<!-- Anything reviewers should pay attention to -->

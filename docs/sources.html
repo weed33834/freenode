@@ -1,25 +1,27 @@
 ---
 layout: default
-title: 数据源目录
+title: Sources
+description: Browse 80+ community data sources crawled by FreeNode — reliability-ranked, status-filtered, with protocol tags.
+keywords: freenode sources, data sources, proxy sources, node sources, reliability, vmess, vless, ss, trojan, hysteria2, tuic, community nodes
 ---
 
-<h1 class="page-title">📡 数据源目录</h1>
-<p class="page-subtitle">// 共 {{ site.data.sources | size }} 个源 · 按 14 天可靠性排序 · 状态自动评估</p>
+<h1 class="page-title">📡 Data Sources</h1>
+<p class="page-subtitle">// {{ site.data.sources | size }} sources · ranked by 14-day reliability · status auto-evaluated</p>
 
 <!-- 筛选按钮 -->
 <div class="filter-bar">
-  <span class="filter-label">筛选:</span>
+  <span class="filter-label">Filter:</span>
   <button class="filter-btn active" data-filter="all">
-    全部 <span class="filter-count" data-count="all">0</span>
+    All <span class="filter-count" data-count="all">0</span>
   </button>
   <button class="filter-btn" data-filter="active">
-    正式启用 <span class="filter-count" data-count="active">0</span>
+    Active <span class="filter-count" data-count="active">0</span>
   </button>
   <button class="filter-btn" data-filter="observing">
-    观察中 <span class="filter-count" data-count="observing">0</span>
+    Observing <span class="filter-count" data-count="observing">0</span>
   </button>
   <button class="filter-btn" data-filter="disabled">
-    已禁用 <span class="filter-count" data-count="disabled">0</span>
+    Disabled <span class="filter-count" data-count="disabled">0</span>
   </button>
 </div>
 
@@ -63,6 +65,7 @@ title: 数据源目录
 </div>
 
 <p style="margin-top: 22px; font-size: 12px; color: var(--text-faint); font-family: var(--font-mono); text-align: center;">
-  // 数据源均来自社区公开渠道。新源先进「观察区」,连续 3 天 reliability &gt; 70% 才升级为正式启用;
-  连续 7 天 &lt; 30% 转回观察。变更记录写入 nodes/sources-report.json 的 promotion_log。
+  // All sources come from community public channels. New sources enter observation mode;
+  they must sustain reliability &gt; 70% for 3 consecutive days to be promoted to active,
+  and drop back to observing if below 30% for 7 days. Promotion log is in nodes/sources-report.json.
 </p>

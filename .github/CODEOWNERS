@@ -1,10 +1,10 @@
-# CODEOWNERS — 强制真人 review，包括自动创建的 PR
-# 任何文件改动都需要 owner approve，杜绝 bot 直接 merge
-# 详见 https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+# CODEOWNERS — enforces human review, including auto-created PRs.
+# Any file change requires owner approval, blocking bots from merging directly.
+# See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
 * @weed33834
 
-# 配置文件改动需要更严格 review
+# Config / pipeline / docs changes get stricter review
 /.github/             @weed33834
 /config/              @weed33834
 /scripts/             @weed33834

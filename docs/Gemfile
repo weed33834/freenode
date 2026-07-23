@@ -1,4 +1,4 @@
 source "https://rubygems.org"
 
-# GitHub Pages 自动构建用的 gem，本地构建可选安装
+# Gem used by GitHub Pages auto-build; optional for local builds.
 gem "github-pages", group: :jekyll_plugins

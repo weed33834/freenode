@@ -1,15 +1,17 @@
 ---
 layout: default
-title: 协议与客户端指南
+title: Protocols & Client Guide
+description: Guide to the 6 supported protocols (vmess, vless, ss, trojan, hysteria2, tuic) and recommended clients for Windows, macOS, Linux, iOS, Android.
+keywords: proxy protocols, vmess guide, vless guide, shadowsocks, trojan, hysteria2, tuic, clash client, v2ray client, windows, macos, linux, ios, android
 ---
 
-<h1 class="page-title">📖 协议与客户端指南</h1>
-<p class="page-subtitle">// {{ site.data.protocols | size }} 种协议 · {{ site.data.clients | size }} 个推荐客户端</p>
+<h1 class="page-title">📖 Protocols & Client Guide</h1>
+<p class="page-subtitle">// {{ site.data.protocols | size }} protocols · {{ site.data.clients | size }} recommended clients</p>
 
 <!-- 协议说明 -->
 <section class="section">
-  {% capture proto_count_meta %}{{ site.data.protocols.size }} 种协议{% endcapture %}
-  {% include section-title.html title="协议说明" meta=proto_count_meta %}
+  {% capture proto_count_meta %}{{ site.data.protocols.size }} protocols{% endcapture %}
+  {% include section-title.html title="Protocols" meta=proto_count_meta %}
   <div class="proto-cards">
     {% for proto in site.data.protocols %}
     <div class="proto-card">
@@ -36,15 +38,15 @@ title: 协议与客户端指南
 
 <!-- 客户端推荐 -->
 <section class="section">
-  {% include section-title.html title="客户端推荐" meta="跨平台 / Windows / macOS / Linux / iOS / Android" %}
+  {% include section-title.html title="Recommended Clients" meta="cross-platform / Windows / macOS / Linux / iOS / Android" %}
   <div class="source-table-wrap">
     <table class="source-table">
       <thead>
         <tr>
-          <th>客户端</th>
-          <th>平台</th>
-          <th>支持协议</th>
-          <th>下载</th>
+          <th>Client</th>
+          <th>Platform</th>
+          <th>Protocols</th>
+          <th>Download</th>
         </tr>
       </thead>
       <tbody>
@@ -59,7 +61,7 @@ title: 协议与客户端指南
           </td>
           <td>
             {% if client.download_url %}
-            <a href="{{ client.download_url }}" target="_blank" rel="noopener" class="btn">⬇ 下载</a>
+            <a href="{{ client.download_url }}" target="_blank" rel="noopener" class="btn">⬇ Download</a>
             {% endif %}
           </td>
         </tr>
@@ -71,15 +73,15 @@ title: 协议与客户端指南
 
 <!-- 使用步骤时间线 -->
 <section class="section">
-  {% include section-title.html title="使用步骤" meta="从订阅到连接 · 8 步" %}
+  {% include section-title.html title="Setup Steps" meta="from subscription to connection · 8 steps" %}
   <div class="timeline">
-    <div class="timeline-step"><h4>选择订阅链接</h4><p>从首页选 Clash / V2Ray / 代理列表其中一种格式。</p></div>
-    <div class="timeline-step"><h4>安装客户端</h4><p>根据你的操作系统选择上方推荐客户端之一。</p></div>
-    <div class="timeline-step"><h4>添加订阅</h4><p>在客户端「订阅」或「Profile」设置里粘贴订阅链接。</p></div>
-    <div class="timeline-step"><h4>更新订阅</h4><p>客户端会自动按间隔更新,也可手动触发。</p></div>
-    <div class="timeline-step"><h4>选择节点</h4><p>从节点列表里选一个延迟较低的节点连接。</p></div>
-    <div class="timeline-step"><h4>配置代理</h4><p>客户端通常自带系统代理开关,打开即可。</p></div>
-    <div class="timeline-step"><h4>定期更新</h4><p>节点过期很快,建议客户端每隔几小时自动更新订阅。</p></div>
-    <div class="timeline-step"><h4>故障排查</h4><p>如订阅失效,等下一次数据同步后恢复,或到仓库提 Issue 反馈。</p></div>
+    <div class="timeline-step"><h4>Pick a subscription</h4><p>Choose Clash, V2Ray or proxy list format from the home page.</p></div>
+    <div class="timeline-step"><h4>Install a client</h4><p>Pick one of the recommended clients above for your OS.</p></div>
+    <div class="timeline-step"><h4>Add subscription</h4><p>Paste the subscription URL into the client's Profile / Subscription settings.</p></div>
+    <div class="timeline-step"><h4>Update subscription</h4><p>The client auto-updates on a schedule, or you can trigger it manually.</p></div>
+    <div class="timeline-step"><h4>Choose a node</h4><p>Pick a low-latency node from the list and connect.</p></div>
+    <div class="timeline-step"><h4>Enable proxy</h4><p>Most clients have a system proxy toggle — turn it on.</p></div>
+    <div class="timeline-step"><h4>Refresh regularly</h4><p>Nodes expire fast; set the client to auto-update every few hours.</p></div>
+    <div class="timeline-step"><h4>Troubleshoot</h4><p>If a subscription breaks, wait for the next sync or open an Issue on the repo.</p></div>
   </div>
 </section>

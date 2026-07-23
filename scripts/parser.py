@@ -98,10 +98,7 @@ def parse_ss_link(link: str) -> dict | None:
     if "@" in body:
         auth_part, rest = body.split("@", 1)
         decoded_auth = safe_b64decode(auth_part)
-        if decoded_auth:
-            auth = decoded_auth.decode("utf-8", errors="ignore")
-        else:
-            auth = auth_part
+        auth = decoded_auth.decode("utf-8", errors="ignore") if decoded_auth else auth_part
         if ":" not in auth:
             return None
         method, password = auth.split(":", 1)

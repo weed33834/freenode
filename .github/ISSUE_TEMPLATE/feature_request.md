@@ -1,22 +1,22 @@
 ---
-name: 功能建议 / 新数据源
-about: 建议新功能或推荐新的公开节点源
+name: Feature request / new source
+about: Suggest a new feature or recommend a new public node source
 title: ''
 labels: enhancement
 assignees: ''
 
 ---
 
-**你的建议与什么场景相关？**
-简明描述你想解决的问题。
+**What scenario is your suggestion related to?**
+Briefly describe the problem you want to solve.
 
-**期望的解决方案**
-你希望流水线新增什么行为。
+**Expected solution**
+What behavior you want the pipeline to add.
 
-**备选方案**
-你考虑过的其他方式。
+**Alternatives considered**
+Other approaches you have considered.
 
-**数据源推荐（如果是新增源）**
-- URL：
-- 格式（Clash / V2Ray / 代理列表 / Base64 等）：
-- 更新频率：
+**Source recommendation (if adding a new source)**
+- URL:
+- Format (Clash / V2Ray / proxy list / Base64 etc.):
+- Update frequency:

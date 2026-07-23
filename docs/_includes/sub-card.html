@@ -1,5 +1,5 @@
-<!-- 可复用订阅卡片
-     参数 sub: 订阅数据对象 (来自 site.data.subscriptions)
+<!-- Reusable subscription card
+     Param sub: subscription data object (from site.data.subscriptions)
 -->
 <div class="sub-card" data-tilt>
   <div class="sub-card-header">
@@ -12,18 +12,18 @@
   <div class="sub-card-link" title="{{ sub.url }}">{{ sub.url }}</div>
   {% if sub.mirrors and sub.mirrors.size > 0 %}
   <details class="sub-card-mirrors">
-    <summary>镜像地址 ({{ sub.mirrors.size }})</summary>
+    <summary>Mirrors ({{ sub.mirrors.size }})</summary>
     {% for m in sub.mirrors %}
     <div class="mirror-link" data-copy="{{ m | escape }}">{{ m }}</div>
     {% endfor %}
   </details>
   {% endif %}
   <div class="sub-card-actions">
-    <button class="btn btn-primary" data-copy="{{ sub.url | escape }}">📋 复制链接</button>
-    <a class="btn" href="{{ sub.url }}" target="_blank" rel="noopener">🔗 打开</a>
+    <button class="btn btn-primary" data-copy="{{ sub.url | escape }}">📋 Copy link</button>
+    <a class="btn" href="{{ sub.url }}" target="_blank" rel="noopener">🔗 Open</a>
     {% if sub.docs_url %}
-    <a class="btn" href="{{ sub.docs_url }}" target="_blank" rel="noopener">📖 文档</a>
+    <a class="btn" href="{{ sub.docs_url }}" target="_blank" rel="noopener">📖 Docs</a>
     {% endif %}
-    <button class="btn" data-qr="{{ sub.url | escape }}" data-qr-title="{{ sub.title | escape }}">📱 二维码</button>
+    <button class="btn" data-qr="{{ sub.url | escape }}" data-qr-title="{{ sub.title | escape }}">📱 QR</button>
   </div>
 </div>

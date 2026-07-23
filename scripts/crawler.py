@@ -211,11 +211,8 @@ def _fetch_source_safe(source: dict, category: str) -> dict | None:
     try:
         start = time.perf_counter()
         adapter = get_adapter(source.get("type", ""))
-        if adapter is not None:
-            text = adapter.fetch(source)
-        else:
-            # 兜底：没注册 adapter 时走旧的 fetch_source
-            text = fetch_source(source)
+        # 兜底：没注册 adapter 时走旧的 fetch_source
+        text = adapter.fetch(source) if adapter is not None else fetch_source(source)
         elapsed = time.perf_counter() - start
         logger.info("fetched %s in %.2fs", name, elapsed)
         entry = {"name": name, "text": text, "category": category}

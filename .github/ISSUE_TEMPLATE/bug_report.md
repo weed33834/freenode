@@ -1,27 +1,27 @@
 ---
-name: Bug 报告
-about: 报告流水线或脚本的异常行为
+name: Bug report
+about: Report unexpected behavior in the pipeline or scripts
 title: ''
 labels: bug
 assignees: ''
 
 ---
 
-**描述问题**
-清晰简要地说明问题是什么。
+**Describe the problem**
+A clear and concise description of what the problem is.
 
-**复现步骤**
-1. 执行 `python scripts/update.py ...`
-2. 看到错误输出：`...`
+**Steps to reproduce**
+1. Run `python scripts/update.py ...`
+2. Saw error output: `...`
 3. ...
 
-**预期行为**
-正常情况下应该发生什么。
+**Expected behavior**
+What should have happened normally.
 
-**环境信息**
-- Python 版本：
-- 操作系统：
-- `pip list | grep freenode` 输出（如果有）：
+**Environment**
+- Python version:
+- Operating system:
+- `pip list | grep freenode` output (if any):
 
-**日志 / 截图**
-附上相关日志或终端输出。
+**Logs / screenshots**
+Attach relevant logs or terminal output.

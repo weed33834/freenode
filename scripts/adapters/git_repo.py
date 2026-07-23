@@ -35,15 +35,15 @@ class GitRepoAdapter:
                 check=True,
             )
             return self._read_patterns(Path(tmpdir), patterns)
-        except subprocess.TimeoutExpired:
-            raise FetchError(f"git clone timed out after {_CLONE_TIMEOUT}s: {repo_url}")
+        except subprocess.TimeoutExpired as exc:
+            raise FetchError(f"git clone timed out after {_CLONE_TIMEOUT}s: {repo_url}") from exc
         except subprocess.CalledProcessError as exc:
             err = ""
             if exc.stderr:
                 err = (exc.stderr.decode("utf-8", errors="ignore") if isinstance(exc.stderr, bytes) else str(exc.stderr))[
                     :200
                 ]
-            raise FetchError(f"git clone failed: {err}")
+            raise FetchError(f"git clone failed: {err}") from exc
         finally:
             # 不管成功失败都清掉临时目录
             shutil.rmtree(tmpdir, ignore_errors=True)

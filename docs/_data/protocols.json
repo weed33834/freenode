@@ -3,54 +3,54 @@
     "id": "vmess",
     "name": "VMess",
     "icon": "🌀",
-    "tagline": "V2Ray 原生协议",
-    "description": "V2Ray 项目原生协议，支持动态端口、传输层伪装。配置较复杂但功能丰富。",
-    "pros": "抗封锁能力强、传输层灵活",
-    "cons": "客户端配置复杂、性能略低于 ss"
+    "tagline": "V2Ray native protocol",
+    "description": "Native V2Ray protocol. Supports dynamic ports and transport-layer obfuscation. More complex to configure but feature-rich.",
+    "pros": "Strong anti-censorship, flexible transport",
+    "cons": "Complex client config, slightly slower than ss"
   },
   {
     "id": "vless",
     "name": "VLESS",
     "icon": "✨",
-    "tagline": "VMess 简化版",
-    "description": "VMess 的轻量化版本，去掉了时间戳认证，性能更好。常配 REALITY/TLS。",
-    "pros": "性能高、伪装能力强（配 REALITY）",
-    "cons": "需服务端配合、对时钟同步敏感"
+    "tagline": "Lightweight VMess",
+    "description": "Lightweight VMess variant. Drops timestamp auth for better performance. Often paired with REALITY/TLS.",
+    "pros": "High performance, strong obfuscation (with REALITY)",
+    "cons": "Needs server-side support, sensitive to clock sync"
   },
   {
     "id": "ss",
     "name": "Shadowsocks",
     "icon": "🔐",
-    "tagline": "老牌轻量加密",
-    "description": "最早的轻量代理协议，客户端支持广，性能好。但抗封锁能力一般。",
-    "pros": "客户端多、性能好、配置简单",
-    "cons": "流量特征明显，易被识别"
+    "tagline": "Classic lightweight cipher",
+    "description": "The original lightweight proxy protocol. Wide client support, good performance. Anti-censorship is average.",
+    "pros": "Many clients, fast, simple config",
+    "cons": "Distinct traffic fingerprint, easy to detect"
   },
   {
     "id": "trojan",
     "name": "Trojan",
     "icon": "🐎",
-    "tagline": "TLS 伪装",
-    "description": "伪装成正常 HTTPS 流量的协议，依靠 TLS 加密。需要域名和证书。",
-    "pros": "伪装好、客户端支持广",
-    "cons": "需要域名 + 证书"
+    "tagline": "TLS camouflaged",
+    "description": "Camouflages as normal HTTPS traffic, secured by TLS. Requires a domain and certificate.",
+    "pros": "Good obfuscation, wide client support",
+    "cons": "Requires domain + certificate"
   },
   {
     "id": "hysteria2",
     "name": "Hysteria2",
     "icon": "⚡",
-    "tagline": "QUIC 高速协议",
-    "description": "基于 QUIC 的高速协议，弱网环境下表现好。适合移动网络。",
-    "pros": "弱网速度快、抗丢包",
-    "cons": "客户端较少、依赖 UDP"
+    "tagline": "QUIC high-speed",
+    "description": "High-speed protocol built on QUIC. Performs well on lossy networks. Good for mobile.",
+    "pros": "Fast on weak networks, packet-loss resistant",
+    "cons": "Fewer clients, UDP-dependent"
   },
   {
     "id": "tuic",
     "name": "TUIC",
     "icon": "🚀",
-    "tagline": "QUIC 轻量协议",
-    "description": "另一个基于 QUIC 的协议，比 Hysteria 更轻量，配置简单。",
-    "pros": "轻量、延迟低",
-    "cons": "客户端少、生态小"
+    "tagline": "QUIC lightweight",
+    "description": "Another QUIC-based protocol, lighter than Hysteria with simpler config.",
+    "pros": "Lightweight, low latency",
+    "cons": "Few clients, small ecosystem"
   }
 ]

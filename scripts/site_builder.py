@@ -46,18 +46,18 @@ SITE_CONFIG = {
         "github": "https://github.com/weed33834/freenode",
     },
     "pages_url": "https://weed33834.github.io/freenode/",
-    # 更新机制文案 — 必须与实际 workflow 一致，避免误导用户
+    # Update-mechanism copy — must match the actual workflow to avoid misleading users
     "update_mechanism": "manual",  # manual | scheduled
-    "update_description": "手动触发 GitHub Actions，跑完后创建 PR，owner 合并后部署",
+    "update_description": "Manual GitHub Actions trigger, opens a PR, owner merges to deploy",
 }
 
 
-# 三种订阅格式：静态元数据，URL 在 build 时拼接
+# Three subscription formats: static metadata, URL is appended at build time
 SUBSCRIPTIONS = [
     {
         "id": "clash",
         "icon": "⚡",
-        "title": "Clash 订阅",
+        "title": "Clash Subscription",
         "format": "clash.yaml",
         "clients": "Clash / Clash Verge / Stash / Karing",
         "file": "clash.yaml",
@@ -66,7 +66,7 @@ SUBSCRIPTIONS = [
     {
         "id": "v2ray",
         "icon": "🌐",
-        "title": "V2Ray 订阅",
+        "title": "V2Ray Subscription",
         "format": "v2ray.txt",
         "clients": "v2rayN / v2rayNG / Karing",
         "file": "v2ray.txt",
@@ -75,52 +75,52 @@ SUBSCRIPTIONS = [
     {
         "id": "proxies",
         "icon": "🔗",
-        "title": "代理列表",
+        "title": "Proxy List",
         "format": "proxies.txt",
-        "clients": "HTTP(S) / SOCKS4 / SOCKS5 客户端",
+        "clients": "HTTP(S) / SOCKS4 / SOCKS5 clients",
         "file": "proxies.txt",
         "docs_url": None,
     },
 ]
 
 
-# 协议指南（静态，按需手动维护）
+# Protocol guide (static, maintained by hand as needed)
 PROTOCOLS_GUIDE = [
     {
         "id": "vmess", "name": "VMess", "icon": "🌀",
-        "tagline": "V2Ray 原生协议",
-        "description": "V2Ray 项目原生协议，支持动态端口、传输层伪装。配置较复杂但功能丰富。",
-        "pros": "抗封锁能力强、传输层灵活", "cons": "客户端配置复杂、性能略低于 ss",
+        "tagline": "V2Ray native protocol",
+        "description": "Native V2Ray protocol. Supports dynamic ports and transport-layer obfuscation. More complex to configure but feature-rich.",
+        "pros": "Strong anti-censorship, flexible transport", "cons": "Complex client config, slightly slower than ss",
     },
     {
         "id": "vless", "name": "VLESS", "icon": "✨",
-        "tagline": "VMess 简化版",
-        "description": "VMess 的轻量化版本，去掉了时间戳认证，性能更好。常配 REALITY/TLS。",
-        "pros": "性能高、伪装能力强（配 REALITY）", "cons": "需服务端配合、对时钟同步敏感",
+        "tagline": "Lightweight VMess",
+        "description": "Lightweight VMess variant. Drops timestamp auth for better performance. Often paired with REALITY/TLS.",
+        "pros": "High performance, strong obfuscation (with REALITY)", "cons": "Needs server-side support, sensitive to clock sync",
     },
     {
         "id": "ss", "name": "Shadowsocks", "icon": "🔐",
-        "tagline": "老牌轻量加密",
-        "description": "最早的轻量代理协议，客户端支持广，性能好。但抗封锁能力一般。",
-        "pros": "客户端多、性能好、配置简单", "cons": "流量特征明显，易被识别",
+        "tagline": "Classic lightweight cipher",
+        "description": "The original lightweight proxy protocol. Wide client support, good performance. Anti-censorship is average.",
+        "pros": "Many clients, fast, simple config", "cons": "Distinct traffic fingerprint, easy to detect",
     },
     {
         "id": "trojan", "name": "Trojan", "icon": "🐎",
-        "tagline": "TLS 伪装",
-        "description": "伪装成正常 HTTPS 流量的协议，依靠 TLS 加密。需要域名和证书。",
-        "pros": "伪装好、客户端支持广", "cons": "需要域名 + 证书",
+        "tagline": "TLS camouflaged",
+        "description": "Camouflages as normal HTTPS traffic, secured by TLS. Requires a domain and certificate.",
+        "pros": "Good obfuscation, wide client support", "cons": "Requires domain + certificate",
     },
     {
         "id": "hysteria2", "name": "Hysteria2", "icon": "⚡",
-        "tagline": "QUIC 高速协议",
-        "description": "基于 QUIC 的高速协议，弱网环境下表现好。适合移动网络。",
-        "pros": "弱网速度快、抗丢包", "cons": "客户端较少、依赖 UDP",
+        "tagline": "QUIC high-speed",
+        "description": "High-speed protocol built on QUIC. Performs well on lossy networks. Good for mobile.",
+        "pros": "Fast on weak networks, packet-loss resistant", "cons": "Fewer clients, UDP-dependent",
     },
     {
         "id": "tuic", "name": "TUIC", "icon": "🚀",
-        "tagline": "QUIC 轻量协议",
-        "description": "另一个基于 QUIC 的协议，比 Hysteria 更轻量，配置简单。",
-        "pros": "轻量、延迟低", "cons": "客户端少、生态小",
+        "tagline": "QUIC lightweight",
+        "description": "Another QUIC-based protocol, lighter than Hysteria with simpler config.",
+        "pros": "Lightweight, low latency", "cons": "Few clients, small ecosystem",
     },
 ]
 
@@ -183,18 +183,19 @@ def _load_json(path: Path, default):
 
 
 def _compute_freshness(generated_at: str | None) -> dict:
-    """根据 quality.json 的 generated_at 计算数据新鲜度等级。
+    """Compute a data-freshness tier from quality.json's generated_at.
 
-    用于前端诚实展示数据时效性，避免「实时」错觉：
-    - fresh   (< 24h)   绿
-    - stale   (1-3d)    黄
-    - outdated(> 3d)    红
+    Drives an honest freshness badge on the front-end so users don't get a
+    false sense of "real-time" data:
+    - fresh   (< 24h)   green
+    - stale   (1-3d)    yellow
+    - outdated(> 3d)    red
     """
     if not generated_at:
-        return {"level": "unknown", "hours_ago": None, "label": "未知"}
+        return {"level": "unknown", "hours_ago": None, "label": "Unknown"}
 
     try:
-        # 兼容 ISO 8601 带 Z 与不带 Z
+        # Accept ISO 8601 with or without trailing Z
         ts = generated_at.replace("Z", "+00:00")
         dt = datetime.fromisoformat(ts)
         if dt.tzinfo is None:
@@ -202,22 +203,22 @@ def _compute_freshness(generated_at: str | None) -> dict:
         delta = datetime.now(UTC) - dt
         hours = delta.total_seconds() / 3600
     except (ValueError, TypeError):
-        return {"level": "unknown", "hours_ago": None, "label": "未知"}
+        return {"level": "unknown", "hours_ago": None, "label": "Unknown"}
 
     if hours < 24:
-        level, label = "fresh", "新鲜"
+        level, label = "fresh", "Fresh"
     elif hours < 72:
-        level, label = "stale", "已过期"
+        level, label = "stale", "Stale"
     else:
-        level, label = "outdated", "严重过期"
+        level, label = "outdated", "Outdated"
     return {"level": level, "hours_ago": round(hours, 1), "label": label}
 
 
 def build_site() -> dict:
-    """站点元信息：URL、更新机制、版权等，供 SEO / footer / 全局文案使用。"""
+    """Site meta: URL, update mechanism, copyright, etc. for SEO / footer / global copy."""
     return {
         "title": "FreeNode",
-        "description": "免费公开节点 / 代理订阅源聚合导航",
+        "description": "Open-source free public proxy / node subscription source aggregator with a GitHub Pages navigation site.",
         "pages_url": SITE_CONFIG["pages_url"],
         "repo_urls": SITE_CONFIG["repo_urls"],
         "update_mechanism": SITE_CONFIG["update_mechanism"],
@@ -227,9 +228,10 @@ def build_site() -> dict:
 
 
 def build_subscriptions() -> list[dict]:
-    """订阅链接卡片数据：静态元数据 + raw URL 拼接。
+    """Subscription card data: static metadata + raw URL stitching.
 
-    同时提供 primary 与 mirrors，前端按可达性选（首选 GitCode raw，失败回退 GitHub raw）。
+    Provides both primary and mirrors; the front-end picks by reachability
+    (prefer GitCode raw, fall back to GitHub raw on failure).
     """
     primary = SITE_CONFIG["primary_raw_base"]
     mirrors = [u for u in SITE_CONFIG["raw_base_urls"] if u != primary]

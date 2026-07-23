@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import ipaddress
 import json
 import os
@@ -241,10 +242,7 @@ def verify_node(link: str, timeout: int = TIMEOUT, geo_enabled: bool = True) -> 
     alive, latency_ms, error = tcp_check(host, port, timeout)
     latency_ms = int(round(latency_ms)) if alive else None
 
-    if alive:
-        region = query_geo_api(ip) if (geo_enabled and ip) else "unknown"
-    else:
-        region = "unknown"
+    region = (query_geo_api(ip) if (geo_enabled and ip) else "unknown") if alive else "unknown"
 
     return {
         "link": link,
@@ -267,10 +265,8 @@ def _verify_method_for_scheme(scheme: str | None) -> str:
 def _safe_close(sock: socket.socket | None) -> None:
     """静默关闭 socket，忽略已关闭的异常。"""
     if sock:
-        try:
+        with contextlib.suppress(OSError):
             sock.close()
-        except OSError:
-            pass
 
 
 def _ss_probe(sock: socket.socket, latency_ms: int, timeout: float) -> dict:

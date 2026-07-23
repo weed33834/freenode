@@ -1,9 +1,9 @@
-<!-- 可复用 Section 标题
-     参数:
-       title:    主标题 (中文)
-       meta:     右侧小字 (可选)
-       link:     右侧链接 URL (可选)
-       link_text: 右侧链接文字 (可选)
+<!-- Reusable section title
+     Params:
+       title:     main title (English)
+       meta:      right-side small text (optional)
+       link:      right-side link URL (optional)
+       link_text: right-side link text (optional)
 -->
 <h2 class="section-title">
   <span class="section-title-left">
@@ -11,6 +11,6 @@
     {% if include.meta %}<span class="meta">{{ include.meta }}</span>{% endif %}
   </span>
   {% if include.link %}
-  <span class="meta"><a href="{{ include.link }}">{{ include.link_text | default: '查看全部 →' }}</a></span>
+  <span class="meta"><a href="{{ include.link }}">{{ include.link_text | default: 'View all →' }}</a></span>
   {% endif %}
 </h2>

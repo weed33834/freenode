@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import contextlib
 import json
 import os
 import re
@@ -58,10 +59,7 @@ def _compute_stats(items: list) -> dict:
     avg_latency = round(sum(latencies) / len(latencies), 1) if latencies else None
     regions: dict[str, int] = {}
     for i in candidates:
-        if isinstance(i, dict):
-            region = i.get("region") or "unknown"
-        else:
-            region = "unknown"
+        region = (i.get("region") or "unknown") if isinstance(i, dict) else "unknown"
         regions[region] = regions.get(region, 0) + 1
     return {
         "total": total,
@@ -348,10 +346,8 @@ def _atomic_write(path: Path, content: str) -> None:
             f.write(content)
         os.replace(tmp, str(path))
     except BaseException:
-        try:
+        with contextlib.suppress(OSError):
             os.unlink(tmp)
-        except OSError:
-            pass
         raise
 
 
