@@ -45,7 +45,7 @@ SITE_CONFIG = {
         "gitcode": "https://gitcode.com/badhope/freenode",
         "github": "https://github.com/weed33834/freenode",
     },
-    "pages_url": "https://weed33834.github.io/freenode/",
+    "pages_url": "https://weed33834.github.io/freenode",
     # Update-mechanism copy — must match the actual workflow to avoid misleading users
     "update_mechanism": "manual",  # manual | scheduled
     "update_description": "Manual GitHub Actions trigger, opens a PR, owner merges to deploy",

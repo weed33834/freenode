@@ -402,7 +402,7 @@
     ],
     "update_interval": "daily",
     "url": "https://raw.githubusercontent.com/littlebais/free-proxy-nodes/main/README.md",
-    "note": "⭐113 littlebais 每日更新免费节点聚合。"
+    "note": "⭐113 littlebais — daily-updated free node aggregator."
   },
   {
     "name": "mahdibland-shadowsocks-eternity",
@@ -804,7 +804,7 @@
     ],
     "update_interval": "daily",
     "url": "https://raw.githubusercontent.com/wrfree/free/main/ssr",
-    "note": "1.1k⭐ wrfree/free SSR/SS 节点。"
+    "note": "1.1k⭐ wrfree/free — SSR/SS node library."
   },
   {
     "name": "wrfree-v2",
@@ -818,7 +818,7 @@
     ],
     "update_interval": "daily",
     "url": "https://raw.githubusercontent.com/wrfree/free/main/v2",
-    "note": "1.1k⭐ wrfree/free 经典免费 v2ray 节点库。"
+    "note": "1.1k⭐ wrfree/free — classic free v2ray node library."
   },
   {
     "name": "xyfqzy-clash",
@@ -834,7 +834,7 @@
     ],
     "update_interval": "daily",
     "url": "https://raw.githubusercontent.com/xyfqzy/free-nodes/main/nodes/clash.yaml",
-    "note": "⭐132 免费代理节点大全 Clash 订阅。"
+    "note": "⭐132 Free proxy node collection — Clash subscription."
   },
   {
     "name": "xyfqzy-v2ray",
@@ -848,7 +848,7 @@
     ],
     "update_interval": "daily",
     "url": "https://raw.githubusercontent.com/xyfqzy/free-nodes/main/nodes/v2ray.txt",
-    "note": "⭐132 免费代理节点大全 V2Ray 订阅。"
+    "note": "⭐132 Free proxy node collection — V2Ray subscription."
   },
   {
     "name": "Ruk1ng001-freeSub-v2ray",
@@ -938,7 +938,7 @@
     ],
     "update_interval": "inactive",
     "url": "https://raw.githubusercontent.com/freefq/free/master/v2",
-    "note": "41k⭐ freefq/free 经典免费节点库。"
+    "note": "41k⭐ freefq/free — classic free node library."
   },
   {
     "name": "aiboboxx-v2rayfree",
@@ -954,7 +954,7 @@
     ],
     "update_interval": "daily",
     "url": "https://raw.githubusercontent.com/aiboboxx/v2rayfree/main/v202607112",
-    "note": "13k⭐ aiboboxx/v2rayfree 每日自动更新的免费 v2ray 配置。"
+    "note": "13k⭐ aiboboxx/v2rayfree — daily auto-updated free v2ray configs."
   },
   {
     "name": "clashx-topfreeproxy",
@@ -970,7 +970,7 @@
     ],
     "update_interval": "daily",
     "url": "https://raw.githubusercontent.com/VPN-Subcription-Links/ClashX-V2Ray-TopFreeProxy/main/subscription.txt",
-    "note": "TopFreeProxy 聚合器，5.3k⭐，每日更新多协议订阅。"
+    "note": "TopFreeProxy aggregator, 5.3k⭐ — daily-updated multi-protocol subscriptions."
   },
   {
     "name": "configstream",
@@ -986,7 +986,7 @@
     ],
     "update_interval": "daily",
     "url": "https://raw.githubusercontent.com/AmirrezaFarnamTaheri/ConfigStream/main/sub.txt",
-    "note": "⭐8 ConfigStream — 收集、去重、测速并排序的免费 VPN/proxy 配置。"
+    "note": "⭐8 ConfigStream — collects, dedups, speed-tests and ranks free VPN/proxy configs."
   },
   {
     "name": "epodonios-v2ray-sub11",
@@ -1131,7 +1131,7 @@
     ],
     "update_interval": "daily",
     "url": "https://raw.githubusercontent.com/rtwo2/FastNodes/main/sub/everything.txt",
-    "note": "⭐47 rtwo2/FastNodes 聚合器 — 5万+ 活跃节点，每日自动更新。"
+    "note": "⭐47 rtwo2/FastNodes aggregator — 50k+ active nodes, daily auto-updated."
   },
   {
     "name": "snapdragon-systemproxy-clash",
@@ -1147,7 +1147,7 @@
     ],
     "update_interval": "daily",
     "url": "https://raw.githubusercontent.com/SnapdragonLee/SystemProxy/main/dist/clash_config.yaml",
-    "note": "⭐121 SnapdragonLee/SystemProxy Clash 订阅（多协议聚合）。"
+    "note": "⭐121 SnapdragonLee/SystemProxy Clash subscription (multi-protocol aggregator)."
   },
   {
     "name": "spys-me",
@@ -1178,7 +1178,7 @@
     ],
     "update_interval": "daily",
     "url": "https://raw.githubusercontent.com/UIforFreedom/Free_Proxy_Nodes/main/nodes.txt",
-    "note": "⭐19 UIforFreedom 自动抓取合并互联网公开节点。"
+    "note": "⭐19 UIforFreedom — auto-crawls and merges public internet nodes."
   },
   {
     "name": "zhuhaiuk-free-nodes-clash",
@@ -1194,7 +1194,7 @@
     ],
     "update_interval": "hourly",
     "url": "https://raw.githubusercontent.com/zhuhaiuk/free-nodes/main/nodes/clash.yaml",
-    "note": "⭐17 zhuhaiuk/free-nodes 每小时自动更新的 Clash 订阅。"
+    "note": "⭐17 zhuhaiuk/free-nodes — hourly auto-updated Clash subscription."
   },
   {
     "name": "zhuhaiuk-free-nodes-v2ray",
@@ -1208,6 +1208,6 @@
     ],
     "update_interval": "hourly",
     "url": "https://raw.githubusercontent.com/zhuhaiuk/free-nodes/main/nodes/v2ray.txt",
-    "note": "⭐17 zhuhaiuk/free-nodes 每小时自动更新的 V2Ray 订阅。"
+    "note": "⭐17 zhuhaiuk/free-nodes — hourly auto-updated V2Ray subscription."
   }
 ]

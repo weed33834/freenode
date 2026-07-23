@@ -1,14 +1,14 @@
-# 运行时依赖（scripts/ 流水线）
-PyYAML>=6.0           # formatter 写 Clash YAML
-httpx>=0.27.0         # crawler / discover_sources 统一 HTTP 客户端
-cachetools>=5.5.0     # verifier 结果缓存
-beautifulsoup4>=4.12  # adapters/html 解析网页
+# Runtime deps (scripts/ pipeline)
+PyYAML>=6.0           # formatter writes Clash YAML
+httpx>=0.27.0         # crawler / discover_sources unified HTTP client
+cachetools>=5.5.0     # verifier result cache
+beautifulsoup4>=4.12  # adapters/html page parser
 
-# 可选：Telegram 频道数据源（scripts/telegram_source.py）
-# 不装也不影响其他功能，只有显式抓取 Telegram 时才需要
+# Optional: Telegram channel source (scripts/telegram_source.py)
+# Not required for other features; only needed when crawling Telegram
 telethon>=1.36.0
 
-# 开发 / 测试
+# Dev / test
 ruff>=0.15.20
 pytest>=8.0.0
 pytest-asyncio>=0.24.0

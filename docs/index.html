@@ -18,9 +18,9 @@ keywords: freenode, free proxy, free nodes, clash subscription, v2ray subscripti
     All data is owner-reviewed via PR before deploy.
   </p>
   <div class="hero-meta">
-    <span class="kv"><span class="k">SOURCES</span> <span class="v">{{ site.data.stats.total_sources }}</span></span>
-    <span class="kv"><span class="k">NODES</span> <span class="v">{{ site.data.stats.total_nodes }}</span></span>
-    <span class="kv"><span class="k">ALIVE</span> <span class="v">{{ site.data.stats.alive_nodes }}</span></span>
+    <span class="kv"><span class="k">SOURCES</span> <span class="v">{{ site.data.stats.total_sources | default: '—' }}</span></span>
+    <span class="kv"><span class="k">NODES</span> <span class="v">{{ site.data.stats.total_nodes | default: '—' }}</span></span>
+    <span class="kv"><span class="k">ALIVE</span> <span class="v">{{ site.data.stats.alive_nodes | default: '—' }}</span></span>
     {% if site.data.stats.freshness %}
     <span class="kv">
       <span class="k">DATA</span>
@@ -85,7 +85,7 @@ keywords: freenode, free proxy, free nodes, clash subscription, v2ray subscripti
             <div class="proto-ring-pct" data-ring-pct="{{ proto.percentage }}">
               {{ proto.percentage }}<span class="pct-sign">%</span>
             </div>
-            <div class="proto-ring-count">{{ proto.alive }}/{{ proto.total }}</div>
+            <div class="proto-ring-count">{{ proto.alive | default: '—' }}/{{ proto.total }}</div>
           </div>
         </div>
         <div class="proto-ring-name">{{ proto.name }}</div>

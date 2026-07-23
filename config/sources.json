@@ -163,7 +163,7 @@
         "vmess",
         "vless"
       ],
-      "note": "41k⭐ freefq/free 经典免费节点库。"
+      "note": "41k⭐ freefq/free — classic free node library."
     },
     {
       "name": "nirevil-sstime",
@@ -591,7 +591,7 @@
         "ss",
         "trojan"
       ],
-      "note": "13k⭐ aiboboxx/v2rayfree 每日自动更新的免费 v2ray 配置。"
+      "note": "13k⭐ aiboboxx/v2rayfree — daily auto-updated free v2ray configs."
     },
     {
       "name": "openrunner-clash-freenode",
@@ -619,7 +619,7 @@
         "ss",
         "trojan"
       ],
-      "note": "TopFreeProxy 聚合器，5.3k⭐，每日更新多协议订阅。"
+      "note": "TopFreeProxy aggregator, 5.3k⭐ — daily-updated multi-protocol subscriptions."
     },
     {
       "name": "crossxx-free-proxy",
@@ -646,7 +646,7 @@
         "vmess",
         "vless"
       ],
-      "note": "1.1k⭐ wrfree/free 经典免费 v2ray 节点库。"
+      "note": "1.1k⭐ wrfree/free — classic free v2ray node library."
     },
     {
       "name": "wrfree-ssr",
@@ -659,7 +659,7 @@
         "ss",
         "ssr"
       ],
-      "note": "1.1k⭐ wrfree/free SSR/SS 节点。"
+      "note": "1.1k⭐ wrfree/free — SSR/SS node library."
     },
     {
       "name": "xyfqzy-clash",
@@ -674,7 +674,7 @@
         "ss",
         "trojan"
       ],
-      "note": "⭐132 免费代理节点大全 Clash 订阅。"
+      "note": "⭐132 Free proxy node collection — Clash subscription."
     },
     {
       "name": "xyfqzy-v2ray",
@@ -687,7 +687,7 @@
         "vmess",
         "vless"
       ],
-      "note": "⭐132 免费代理节点大全 V2Ray 订阅。"
+      "note": "⭐132 Free proxy node collection — V2Ray subscription."
     },
     {
       "name": "snapdragon-systemproxy-clash",
@@ -702,7 +702,7 @@
         "ss",
         "trojan"
       ],
-      "note": "⭐121 SnapdragonLee/SystemProxy Clash 订阅（多协议聚合）。"
+      "note": "⭐121 SnapdragonLee/SystemProxy Clash subscription (multi-protocol aggregator)."
     },
     {
       "name": "littlebais-free-proxy-nodes",
@@ -717,7 +717,7 @@
         "ss",
         "trojan"
       ],
-      "note": "⭐113 littlebais 每日更新免费节点聚合。"
+      "note": "⭐113 littlebais — daily-updated free node aggregator."
     },
     {
       "name": "rtwo2-fastnodes-all",
@@ -733,7 +733,7 @@
         "trojan",
         "hysteria2"
       ],
-      "note": "⭐47 rtwo2/FastNodes 聚合器 — 5万+ 活跃节点，每日自动更新。"
+      "note": "⭐47 rtwo2/FastNodes aggregator — 50k+ active nodes, daily auto-updated."
     },
     {
       "name": "uiforfreedom-proxy-nodes",
@@ -748,7 +748,7 @@
         "ss",
         "trojan"
       ],
-      "note": "⭐19 UIforFreedom 自动抓取合并互联网公开节点。"
+      "note": "⭐19 UIforFreedom — auto-crawls and merges public internet nodes."
     },
     {
       "name": "zhuhaiuk-free-nodes-clash",
@@ -763,7 +763,7 @@
         "ss",
         "trojan"
       ],
-      "note": "⭐17 zhuhaiuk/free-nodes 每小时自动更新的 Clash 订阅。"
+      "note": "⭐17 zhuhaiuk/free-nodes — hourly auto-updated Clash subscription."
     },
     {
       "name": "zhuhaiuk-free-nodes-v2ray",
@@ -776,7 +776,7 @@
         "vmess",
         "vless"
       ],
-      "note": "⭐17 zhuhaiuk/free-nodes 每小时自动更新的 V2Ray 订阅。"
+      "note": "⭐17 zhuhaiuk/free-nodes — hourly auto-updated V2Ray subscription."
     },
     {
       "name": "configstream",
@@ -791,7 +791,7 @@
         "ss",
         "trojan"
       ],
-      "note": "⭐8 ConfigStream — 收集、去重、测速并排序的免费 VPN/proxy 配置。"
+      "note": "⭐8 ConfigStream — collects, dedups, speed-tests and ranks free VPN/proxy configs."
     },
     {
       "name": "alirewa-v2ray-configs",

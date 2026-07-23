@@ -1,4 +1,4 @@
-# 仅保留 ruff / pytest / mypy 配置，去掉了原仓库的打包与后端配置。
+# Only ruff / pytest / mypy config kept here. Packaging & backend config removed.
 
 [tool.ruff]
 line-length = 100
@@ -7,10 +7,10 @@ target-version = "py312"
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "SIM", "B"]
 ignore = [
-    "E501",   # 行长由 formatter 管
-    "E402",   # 测试里 sys.path.insert 后 import 是常见模式
-    "B011",   # 测试里 assert False 占位
-    "UP046",  # PEP 695 泛型不强制
+    "E501",   # line length is handled by the formatter
+    "E402",   # sys.path.insert before import is common in tests
+    "B011",   # assert False placeholder in tests
+    "UP046",  # PEP 695 generics not enforced
 ]
 
 [tool.ruff.lint.isort]

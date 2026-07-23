@@ -1,12 +1,12 @@
 {
   "title": "FreeNode",
   "description": "Open-source free public proxy / node subscription source aggregator with a GitHub Pages navigation site.",
-  "pages_url": "https://weed33834.github.io/freenode/",
+  "pages_url": "https://weed33834.github.io/freenode",
   "repo_urls": {
     "gitcode": "https://gitcode.com/badhope/freenode",
     "github": "https://github.com/weed33834/freenode"
   },
   "update_mechanism": "manual",
   "update_description": "Manual GitHub Actions trigger, opens a PR, owner merges to deploy",
-  "generated_at": "2026-07-22T23:19:34Z"
+  "generated_at": "2026-07-23T00:14:59Z"
 }

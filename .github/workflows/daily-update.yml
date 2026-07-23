@@ -1,36 +1,36 @@
 name: Manual Update & PR
 
-# 不再有 schedule 自动触发，避免 bot 污染 main 历史与分支。
-# 用户在 GitHub Actions 页面手动点 "Run workflow" 触发，跑完会自动创建 PR。
-# 用户 review 后点 Merge，main 永远是真人审核后的提交。
+# No more scheduled triggers — keeps the bot from polluting main history & branches.
+# The user manually clicks "Run workflow" on the GitHub Actions page; on completion
+# a PR is auto-created. After review & Merge, main always reflects human-approved commits.
 #
-# 三重防 PR 堆积机制：
-# 1. 固定分支名 auto/pending-update（不再用 timestamp 后缀）
-# 2. 创建 PR 前自动关闭同分支的旧 PR
-# 3. concurrency group 串行化，避免并发触发
+# Triple PR-pileup guard:
+# 1. Fixed branch name auto/pending-update (no timestamp suffix)
+# 2. Auto-close stale PRs on the same branch before creating a new one
+# 3. Concurrency group serializes runs to avoid concurrent triggers
 on:
   workflow_dispatch:
     inputs:
       verify_nodes:
-        description: '验证节点连通性（耗时增加但节点质量更高）'
+        description: 'Verify node reachability (slower but higher-quality nodes)'
         required: false
         default: 'true'
         type: choice
         options: ['true', 'false']
       verify_level:
-        description: '验证级别：tcp（仅 TCP connect，快） / protocol（TCP + 协议握手，慢但更准）'
+        description: 'Verify level: tcp (TCP connect only, fast) / protocol (TCP + protocol handshake, slower but more accurate)'
         required: false
         default: 'tcp'
         type: choice
         options: ['tcp', 'protocol']
 
 permissions:
-  contents: write        # push 到 PR 分支
-  pull-requests: write   # 创建 / 关闭 PR
+  contents: write        # push to the PR branch
+  pull-requests: write   # create / close PRs
 
 concurrency:
   group: manual-update
-  cancel-in-progress: false  # 不取消正在跑的，避免半成品 PR
+  cancel-in-progress: false  # never cancel a running job — avoids half-baked PRs
 
 jobs:
   update:
@@ -59,7 +59,7 @@ jobs:
           FREENODE_VERIFY_TIMEOUT: '5'
           FREENODE_VERIFY_WORKERS: '50'
           FREENODE_VERIFY_LEVEL: ${{ inputs.verify_level }}
-          FREENODE_VERIFY_CAP: '2500'   # 节点激增预截断，避免 5000+ 验证耗时爆炸
+          FREENODE_VERIFY_CAP: '2500'   # pre-truncate node spikes so 5000+ verifications don't blow up the runtime
           FREENODE_MAX_NODES: '800'
           FREENODE_MAX_PROXIES: '300'
           FREENODE_ARCHIVE_RETENTION: '30'
@@ -78,18 +78,19 @@ jobs:
         run: gem install jekyll --no-document
 
       - name: Verify Jekyll build
-        # 关键防线：在创建 PR 前先跑 jekyll build 验证 Liquid 模板语法
-        # 如果 _data JSON 损坏或 HTML 改坏，这一步会失败并中止 workflow，不会创建半成品 PR
+        # Critical gate: run jekyll build BEFORE creating the PR to validate Liquid template syntax.
+        # If _data JSON is corrupted or HTML is broken, this step fails and aborts the workflow —
+        # no half-baked PR will be created.
         run: |
           cd docs
-          # 移除 Gemfile（GitHub Pages 用 github-pages gem，本地用纯 jekyll）
+          # Remove Gemfile (GitHub Pages uses github-pages gem; local uses plain jekyll)
           mv Gemfile Gemfile.bak 2>/dev/null || true
           jekyll build --destination ../_site_preview --trace
           mv Gemfile.bak Gemfile 2>/dev/null || true
           echo "✅ Jekyll build passed"
 
       - name: Close stale PRs
-        # 创建新 PR 前，自动关闭同分支的旧 PR，避免 PR 堆积
+        # Before creating a new PR, auto-close existing open PRs on the same branch (prevents pileup)
         uses: actions/github-script@v7
         with:
           script: |
@@ -110,43 +111,43 @@ jobs:
             }
 
       - name: Create PR
-        # 用 peter-evans/create-pull-request：固定分支 auto/pending-update
-        # 不用 branch-suffix: timestamp，避免每次都建新分支
+        # Use peter-evans/create-pull-request with a fixed branch auto/pending-update
+        # (no branch-suffix: timestamp — avoids spawning a new branch every run)
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: |
             chore: manual node update $(date -u +%Y-%m-%d)
 
-            - 跑 update.py 流水线（crawler/parser/dedup/verifier/formatter）
-            - 跑 site_builder.py 生成 docs/_data/*.json
-            - 跑 jekyll build 验证模板语法通过
-            - 由人工触发，等待真人 review & merge
+            - Run update.py pipeline (crawler/parser/dedup/verifier/formatter)
+            - Run site_builder.py to generate docs/_data/*.json
+            - Run jekyll build to verify template syntax passes
+            - Manually triggered; awaiting human review & merge
           branch: auto/pending-update
           delete-branch: true
           title: 'chore: node update $(date -u +%Y-%m-%d)'
           body: |
-            ## 本次更新
+            ## This update
 
-            由 GitHub Actions 手动触发，等待 owner review。
+            Manually triggered via GitHub Actions; awaiting owner review.
 
-            ### 改动内容
-            - `nodes/*.json` 节点数据（quality / clash / v2ray / proxies / sources-report）
-            - `nodes/archive/YYYY-MMDD/` 数据快照（保留 30 天，便于回滚）
-            - `docs/_data/*.json` 网站数据 JSON
-            - 可能含 `config/sources.json` 的 status 字段升降级（灰度准入）
+            ### Changes
+            - `nodes/*.json` node data (quality / clash / v2ray / proxies / sources-report)
+            - `nodes/archive/YYYY-MMDD/` data snapshot (30-day retention, for rollback)
+            - `docs/_data/*.json` site data JSON
+            - May include `config/sources.json` status field promotions/demotions (gradual onboarding)
 
-            ### 验证清单
-            - [x] jekyll build 通过（模板语法 OK）
-            - [ ] 检查 `nodes/quality.json` 的 `summary.survival_rate` 合理（>50%）
-            - [ ] 检查 `nodes/sources-report.json` 的 `promotion_log` 是否有异常升降级
-            - [ ] 部署后访问 https://weed33834.github.io/freenode/ 确认数据正确
+            ### Verification checklist
+            - [x] jekyll build passed (template syntax OK)
+            - [ ] Check `nodes/quality.json` `summary.survival_rate` is reasonable (>50%)
+            - [ ] Check `nodes/sources-report.json` `promotion_log` for abnormal promotions/demotions
+            - [ ] After deploy, visit https://weed33834.github.io/freenode/ to confirm data
 
-            ### 合并后
-            合并到 main 即触发 GitHub Pages 自动部署，1-2 分钟后网站刷新。
+            ### After merge
+            Merging to main triggers an automatic GitHub Pages deploy; the site refreshes within 1-2 minutes.
 
-            ### 回滚
-            若合并后数据异常，可从 `nodes/archive/YYYY-MMDD/` 恢复上一份可用数据。
+            ### Rollback
+            If data looks wrong after merge, restore the last good snapshot from `nodes/archive/YYYY-MMDD/`.
           labels: |
             automated-update
             data-only
