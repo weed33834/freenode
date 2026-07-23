@@ -14,7 +14,7 @@
 
 **🌐 Website** · **📦 GitHub** · **📦 GitCode**
 
-[English](README.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md)
+[English](README.md) | [中文](README.zh.md) | [日本語](README.ja.md)
 
 </div>
 
@@ -24,8 +24,8 @@
 
 **FreeNode** is an open-source pipeline that aggregates free public proxy / node
 subscription sources from 80+ community channels, deduplicates and verifies them,
-then publishes ready-to-use subscription files (Clash / V2Ray / plain proxy list)
-behind a fast GitHub Pages navigation site.
+and publishes subscription files (Clash / V2Ray / plain proxy list) through a
+GitHub Pages navigation site.
 
 - **80+ sources** crawled in parallel with reliability-aware scheduling
 - **6 protocols** parsed: `vmess` · `vless` · `ss` · `trojan` · `hysteria2` · `tuic`
@@ -237,5 +237,5 @@ make update      # run pipeline
 
 ## Star History
 
-If this project helps you, please consider giving it a ⭐ on GitHub — it helps
-others discover FreeNode and keeps the project maintained.
+If FreeNode is useful to you, a star on GitHub helps others find the project and
+signals demand for continued maintenance.
